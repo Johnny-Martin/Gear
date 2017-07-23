@@ -43,6 +43,9 @@ ipch/
 *.user
 *.tlog
 *.log
+*.idb
+*.aps
+*.ncb
 *.obj
 *.exe
 *.ilk

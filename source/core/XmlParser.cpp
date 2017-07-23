@@ -144,6 +144,7 @@ XMLERROR XMLabel::HandleAttrLabel()
 	if (attrObj->GetLabelClassName() != "attr")
 		return XML_ERROR_UNKNOWN;
 	//list<XMLabel>::iterator iter = attrObj->
+	return XML_ERROR_UNKNOWN;
 }
 
 void XMLabel::SetLabelClose(bool bClose)

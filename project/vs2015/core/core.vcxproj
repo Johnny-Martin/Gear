@@ -44,6 +44,7 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>..\..\..\library\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
@@ -53,18 +54,18 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>D:\DevelopTools\DirectX\Include;..\..\..\include\zlib;..\..\..\include\lua;..\..\..\include\libpng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\..\..\include\libpng\libpng16.lib;..\..\..\include\zlib\zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\DevelopTools\DirectX\Lib\x86;..\..\..\include\lua;..\..\..\include\libpng;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zlib.lib;tinyxml.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\DevelopTools\DirectX\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -80,6 +81,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

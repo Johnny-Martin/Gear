@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "libpng\libpng.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib\zlib.vcxproj", "{19BB444D-5C4B-4D91-B72D-9C5C33586DB0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "tinyxml\tinyxml.vcxproj", "{466F535B-2179-44C2-86A4-404F9B1A320C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{19BB444D-5C4B-4D91-B72D-9C5C33586DB0}.Release|x64.Build.0 = Release|x64
 		{19BB444D-5C4B-4D91-B72D-9C5C33586DB0}.Release|x86.ActiveCfg = Release|Win32
 		{19BB444D-5C4B-4D91-B72D-9C5C33586DB0}.Release|x86.Build.0 = Release|Win32
+		{466F535B-2179-44C2-86A4-404F9B1A320C}.Debug|x64.ActiveCfg = Debug|x64
+		{466F535B-2179-44C2-86A4-404F9B1A320C}.Debug|x64.Build.0 = Debug|x64
+		{466F535B-2179-44C2-86A4-404F9B1A320C}.Debug|x86.ActiveCfg = Debug|Win32
+		{466F535B-2179-44C2-86A4-404F9B1A320C}.Debug|x86.Build.0 = Debug|Win32
+		{466F535B-2179-44C2-86A4-404F9B1A320C}.Release|x64.ActiveCfg = Release|x64
+		{466F535B-2179-44C2-86A4-404F9B1A320C}.Release|x64.Build.0 = Release|x64
+		{466F535B-2179-44C2-86A4-404F9B1A320C}.Release|x86.ActiveCfg = Release|Win32
+		{466F535B-2179-44C2-86A4-404F9B1A320C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

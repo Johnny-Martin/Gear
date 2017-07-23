@@ -8,7 +8,7 @@ extern "C" {
 #include "lauxlib.h" 
 }
 
-#pragma comment(lib, "lua53.lib")
+#pragma comment(lib, "lua.lib")
 
 #include <string>
 #include <map>

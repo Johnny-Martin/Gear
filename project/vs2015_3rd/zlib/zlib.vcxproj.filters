@@ -76,14 +76,4 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="zlib.rc">
-      <Filter>资源文件</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="zlibvc.def">
-      <Filter>资源文件</Filter>
-    </None>
-  </ItemGroup>
 </Project>

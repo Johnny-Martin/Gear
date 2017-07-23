@@ -67,9 +67,4 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\..\3rd\libpng\scripts\pngwin.rc">
-      <Filter>源文件</Filter>
-    </ResourceCompile>
-  </ItemGroup>
 </Project>

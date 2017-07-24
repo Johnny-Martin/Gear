@@ -16,7 +16,7 @@
 //#define PNG_DEBUG 3
 //#define PNG_VERSION_INFO_ONLY
 #include "png.h"
-
+#include "spdlog.h"
 using namespace std;
 //using namespace tinyxml2;
 
@@ -319,6 +319,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//example_2();
 	//example_3();
 	
+	spd::
 	//example_4();
 	//example_5();
 	example_6(hInstance);

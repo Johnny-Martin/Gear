@@ -11,8 +11,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib\zlib.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "tinyxml\tinyxml.vcxproj", "{466F535B-2179-44C2-86A4-404F9B1A320C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdlog", "spdlog\spdlog.vcxproj", "{1B241831-2F8D-44E5-ADF6-61E823625ED3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -53,14 +51,6 @@ Global
 		{466F535B-2179-44C2-86A4-404F9B1A320C}.Release|x64.Build.0 = Release|x64
 		{466F535B-2179-44C2-86A4-404F9B1A320C}.Release|x86.ActiveCfg = Release|Win32
 		{466F535B-2179-44C2-86A4-404F9B1A320C}.Release|x86.Build.0 = Release|Win32
-		{1B241831-2F8D-44E5-ADF6-61E823625ED3}.Debug|x64.ActiveCfg = Debug|x64
-		{1B241831-2F8D-44E5-ADF6-61E823625ED3}.Debug|x64.Build.0 = Debug|x64
-		{1B241831-2F8D-44E5-ADF6-61E823625ED3}.Debug|x86.ActiveCfg = Debug|Win32
-		{1B241831-2F8D-44E5-ADF6-61E823625ED3}.Debug|x86.Build.0 = Debug|Win32
-		{1B241831-2F8D-44E5-ADF6-61E823625ED3}.Release|x64.ActiveCfg = Release|x64
-		{1B241831-2F8D-44E5-ADF6-61E823625ED3}.Release|x64.Build.0 = Release|x64
-		{1B241831-2F8D-44E5-ADF6-61E823625ED3}.Release|x86.ActiveCfg = Release|Win32
-		{1B241831-2F8D-44E5-ADF6-61E823625ED3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

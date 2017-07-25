@@ -19,11 +19,12 @@
 #include "spdlog.h"
 #include "tinyxml2.h"
 using namespace std;
-//using namespace tinyxml2;
+//namespace xml = tinyxml2;
+using namespace tinyxml2;
 
 //extern "C" int CCallLua ();
 
-/*
+/**/
 int example_1()
 {
 	tinyxml2::XMLDocument doc;
@@ -66,8 +67,8 @@ int example_1()
 
 	printf( "Both values are the same: %d and %d\n", v0, v1 );
 
-	return errid;   be able to parse xml,but do not support self-closed label
-}*/
+	return errid;   //be able to parse xml,but do not support self-closed label
+}
 
 void* GreateBaseWndObject()
 {
@@ -94,7 +95,7 @@ void example_2()
 {
 	XMLFile xmlFile;
 	XMLERROR ret = xmlFile.LoadXmlFile(_T("SampleWnd no bom.xml"));
-	if (XML_SUCCESS == ret)
+	if (::XML_SUCCESS == ret)
 	{
 		XMLabel* rootObj = xmlFile.GetRootObj();
 		cout<<rootObj->GetLabelClassName()<<endl;

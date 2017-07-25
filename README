@@ -1,3 +1,17 @@
 开发环境依赖：
 1，需安装DirectXSDK
-2，工程设置里添加DXSDK目录
+
+目录设置：
+3rd: 存放需要编译成静态库的第三方库，project目录中后缀为_3rd的工程负责将
+3rd内的库编译成lib，并将输出目录定位到libray目录。
+
+include目录，：存放lib库的头文件，以及仅依赖头文件的库（如spdlog）
+tinyxml2虽然只有一个h文件一个cpp文件，但是cpp文件需要放到主工程中编译，不太方便，故将
+tinyxml也编译成了lib
+
+project目录：存放各个VS版本的工程文件(由于使用到了C++11，最低需要VS2012)
+
+source目录：工程源代码
+
+环境搭建：
+先编译project下_3rd结尾的工程，再编译主工程

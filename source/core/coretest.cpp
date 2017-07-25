@@ -17,6 +17,7 @@
 //#define PNG_VERSION_INFO_ONLY
 #include "png.h"
 #include "spdlog.h"
+#include "tinyxml2.h"
 using namespace std;
 //using namespace tinyxml2;
 
@@ -316,6 +317,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 //int _tmain(int argc, _TCHAR* argv[])
 {
 	spdlog::set_level(spdlog::level::info);
+	tinyxml2::StrPair* node = nullptr;
+	node = new tinyxml2::StrPair();
+	node->SetStr("sd", 0);
 	//example_1();
 	//example_2();
 	//example_3();

@@ -319,7 +319,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//example_2();
 	//example_3();
 	
-	spd::
+	//spd::
 	//example_4();
 	//example_5();
 	example_6(hInstance);

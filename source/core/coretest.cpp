@@ -315,6 +315,7 @@ void example_7()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)
 //int _tmain(int argc, _TCHAR* argv[])
 {
+	spdlog::set_level(spdlog::level::info);
 	//example_1();
 	//example_2();
 	//example_3();

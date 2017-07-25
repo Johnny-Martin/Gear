@@ -313,10 +313,30 @@ void example_7()
 		}
 	}*/
 }
+
+void InitSpdlog()
+{
+	spdlog::set_level(spdlog::level::trace);
+	spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e][thread %t][%l] %v");
+	string filePath = "D:\\tmp\\test_spdlog.log";
+	if (PathFileExistsA(filePath.c_str())) {
+		DeleteFileA(filePath.c_str());
+	}
+	ofstream outFile;
+	outFile.open(filePath, ios::out | ios::app | ios::binary);
+	outFile.close();
+
+	shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt("TestLog", filePath);
+	logger->trace("Hello spdlog");
+
+	logger->flush();
+
+}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)
 //int _tmain(int argc, _TCHAR* argv[])
 {
-	spdlog::set_level(spdlog::level::info);
+	InitSpdlog();
+
 	tinyxml2::StrPair* node = nullptr;
 	node = new tinyxml2::StrPair();
 	node->SetStr("sd", 0);

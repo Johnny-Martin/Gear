@@ -18,9 +18,6 @@
     <ClCompile Include="..\..\..\source\core\coretest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\ResManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -36,14 +33,11 @@
     <ClCompile Include="..\..\..\source\core\UIRender.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\XmlParser.cpp">
+    <ClCompile Include="..\..\..\source\core\UIResource.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\core\ResManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -62,7 +56,13 @@
     <ClInclude Include="..\..\..\source\core\UIRender.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\XmlParser.h">
+    <ClInclude Include="..\..\..\source\core\UIResource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\UIError.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\XmlAgent.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

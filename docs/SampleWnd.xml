@@ -5,14 +5,14 @@
 							<!--#XX XX XX XX   -->
 <UIEngine>
 	<control class="MyButton">
-		<attr name="BkgListRes" type="string" default="texturelist.hthree.xxxyy" desc="横向三合一背景">
-		<attr id="BkgListRes" type="string" default="texturelist.hthree.xxxyy" desc="横向三合一背景">
+		<attr name="BkgListRes" type="string" default="texturelist.hthree.xxxyy" desc="横向三合一背景" />
+		<attr id="BkgListRes" type="string" default="texturelist.hthree.xxxyy" desc="横向三合一背景" />
 		
-		<method name="Init" file="dfsbds.lua" func="Init">
-		<method name="SetText" file="dfsbds.lua" func="SetText">
+		<method name="Init" file="dfsbds.lua" func="Init" />
+		<method name="SetText" file="dfsbds.lua" func="SetText" />
 
-		<event name="OnClick" param="int, int">
-		<event name="OnDrag" param="int, int">
+		<event name="OnClick" param="int, int" />
+		<event name="OnDrag" param="int, int" />
 
 		<children>
 		</children>
@@ -27,13 +27,20 @@
 			</layout>
 			<texture id="customRect" pos="0,20,parent.width, parent.height-20" res="texture.nine.customRectBkg">
 					<MyButton id="centerBtn" pos="#mid, #mid, 80, 30" Text="居中按钮" TextFont="宋体.13.normal" TextColor="255.255.255.255" BkgListRes="texturelist.hthree.aaabbb">
-						<event name="OnClick">
+						<event name="OnClick" />
 					</MyButton>
 			</texture>
 		</texture>
 	
-		<event name="OnCreate">
-		<event name="OnClose">
-		<event name="OnCreate">
+		<event name="OnCreate" />
+		<event name="OnClose" />
+		<event name="OnCreate" />
+	</window>
+	
+	<window id="TestLayout" pos="#mid, #mid, 500, 800" title="测试布局对象">
+		<layout id="root" pos="0, 0, parent.width, parent.height">
+			<image id="wnd.content.icon" pos="0, 0, 15, 15" res="imagelist.frameBkg.3" />
+			<image id="wnd.content.icon2" pos="15, 15, 15, 15" res="imagelist.frameBkg.3" />
+		</layout>
 	</window>
 </UIEngine>

@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include "ResManager.h"
+#include "UIResource.h"
 #include "png.h"
 #include <sstream>
+
+using namespace Gear::Res;
 
 RPicture::RPicture():m_hResHandle(NULL)
 					,m_szResID("")
@@ -373,6 +375,23 @@ RESERROR RTexture::ProcessTexture()
 	}else
 		abort();
 	return RES_SUCCESS;
+}
+
+void RTexture::SetTextureType(LPCSTR resID)
+{
+	string strResID = resID;
+	if (string::npos != strResID.find("ThreeV"))
+		m_textureType = THREE_V;
+	else if (string::npos != strResID.find("Nine"))
+		m_textureType = NINE;
+	else if (string::npos != strResID.find("ThreeH"))
+		m_textureType = THREE_H;
+	else
+		abort();
+}
+void RTexture::InitMemberVariable()
+{
+
 }
 string num2str(UINT i)
 {

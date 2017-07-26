@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "UIFrameWnd.h"
-#include "ResManager.h"
+#include "UIResource.h"
 #include "Wincodec.h"
+
+using namespace Gear::Res;
 
 #pragma comment(lib, "Windowscodecs.lib")
 

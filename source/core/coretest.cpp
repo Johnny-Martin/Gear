@@ -8,7 +8,7 @@
 #include "XmlParser.h"
 #include <assert.h>
 
-#include "ResManager.h"
+#include "UIResource.h"
 #include "UIFrameWnd.h"
 //#include "..\luabridge\LuaBridge.h"
 //#include "zlib.h"
@@ -21,6 +21,7 @@
 using namespace std;
 //namespace xml = tinyxml2;
 using namespace tinyxml2;
+using namespace Gear::Res;
 
 //extern "C" int CCallLua ();
 
@@ -77,31 +78,31 @@ void* GreateBaseWndObject()
 
 void example_3()
 {
-	//register class information
-	CObjectFactory& factortInstance = CObjectFactory::GetFactoryInstance();
-	//factortInstance.RegistClass("CBaseWnd", GreateBaseWndObject);
+	////register class information
+	//CObjectFactory& factortInstance = CObjectFactory::GetFactoryInstance();
+	////factortInstance.RegistClass("CBaseWnd", GreateBaseWndObject);
 
-	CBaseWnd* tmpWnd = (CBaseWnd*)factortInstance.CreateObjectByClassName("CBaseWnd");
-	if (NULL == tmpWnd)
-	{
-		int i = 1;
-	}else
-	{
-		int x= 1;
-	}
+	//CBaseWnd* tmpWnd = (CBaseWnd*)factortInstance.CreateObjectByClassName("CBaseWnd");
+	//if (NULL == tmpWnd)
+	//{
+	//	int i = 1;
+	//}else
+	//{
+	//	int x= 1;
+	//}
 	
 }
 void example_2()
 {
-	XMLFile xmlFile;
-	XMLERROR ret = xmlFile.LoadXmlFile(_T("SampleWnd no bom.xml"));
-	if (::XML_SUCCESS == ret)
-	{
-		XMLabel* rootObj = xmlFile.GetRootObj();
-		cout<<rootObj->GetLabelClassName()<<endl;
+	//XMLFile xmlFile;
+	//XMLERROR ret = xmlFile.LoadXmlFile(_T("SampleWnd no bom.xml"));
+	//if (::XML_SUCCESS == ret)
+	//{
+	//	XMLabel* rootObj = xmlFile.GetRootObj();
+	//	cout<<rootObj->GetLabelClassName()<<endl;
 
-		//XMLabel* child = rootObj->
-	}
+	//	//XMLabel* child = rootObj->
+	//}
 }
 void example_4()
 {

@@ -167,23 +167,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
-    <ClCompile Include="..\..\..\source\core\ResManager.cpp" />
     <ClCompile Include="..\..\..\source\core\stdafx.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
     <ClCompile Include="..\..\..\source\core\UIObject.cpp" />
     <ClCompile Include="..\..\..\source\core\UIRender.cpp" />
-    <ClCompile Include="..\..\..\source\core\XmlParser.cpp" />
+    <ClCompile Include="..\..\..\source\core\UIResource.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\core\ResManager.h" />
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />
+    <ClInclude Include="..\..\..\source\core\UIError.h" />
     <ClInclude Include="..\..\..\source\core\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
     <ClInclude Include="..\..\..\source\core\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\UIRender.h" />
-    <ClInclude Include="..\..\..\source\core\XmlParser.h" />
+    <ClInclude Include="..\..\..\source\core\UIResource.h" />
+    <ClInclude Include="..\..\..\source\core\XmlAgent.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\source\core\ReadMe.txt" />

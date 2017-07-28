@@ -25,8 +25,13 @@ namespace Gear {
 
 	namespace Xml {
 		enum XMLERROR {
+			//tinyxml2 XMLError
 			XML_SUCCESS = 0,
+			XML_TINYXML2_ERROR,
+
+			//XmlAgent error
 			XML_ERROR_ILLEGAL_ATTRIBUTE_NAME,
+			XML_ERROR_ILLEGAL_FILE_ENCODE,
 			XML_ERROR_UNKNOWN
 		};
 	}//namespace Xml

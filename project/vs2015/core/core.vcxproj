@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\..\source\core\UIObject.cpp" />
     <ClCompile Include="..\..\..\source\core\UIRender.cpp" />
     <ClCompile Include="..\..\..\source\core\UIResource.cpp" />
+    <ClCompile Include="..\..\..\source\core\XmlAgent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h" />

@@ -320,7 +320,7 @@ void InitSpdlog()
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e][thread %t][%l] %v");
-	string filePath = "D:\\tmp\\test_spdlog.log";
+	string filePath = "C:\\test_spdlog.log";
 	if (PathFileExistsA(filePath.c_str())) {
 		DeleteFileA(filePath.c_str());
 	}
@@ -328,10 +328,10 @@ void InitSpdlog()
 	outFile.open(filePath, ios::out | ios::app | ios::binary);
 	outFile.close();
 
-	shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt("TestLog", filePath);
-	logger->trace("Hello spdlog");
+	LOG = spdlog::basic_logger_mt("TestLog", filePath);
+	LOG->trace("Hello spdlog");
 
-	logger->flush();
+	LOG->flush();
 
 }
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)

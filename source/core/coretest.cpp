@@ -18,6 +18,8 @@
 #include "png.h"
 #include "spdlog.h"
 #include "tinyxml2.h"
+#include "XmlAgent.h"
+
 using namespace std;
 //namespace xml = tinyxml2;
 using namespace tinyxml2;
@@ -53,10 +55,10 @@ int example_1()
 	{
 		attrName = ((XMLElement*)ele)->Value();
 		attrValue = ((XMLElement*)ele)->GetText();
-		if (CBaseWnd::CheckAttrName(attrName))
+		/*if (CBaseWnd::CheckAttrName(attrName))
 		{
 			tmpWnd.SetAttr(attrName, attrValue);
-		}
+		}*/
 	}
 	
 	//cout<<tmpWnd.GetAttr()
@@ -320,7 +322,7 @@ void InitSpdlog()
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e][thread %t][%l] %v");
-	string filePath = "C:\\test_spdlog.log";
+	string filePath = "D:\\test_spdlog.log";
 	if (PathFileExistsA(filePath.c_str())) {
 		DeleteFileA(filePath.c_str());
 	}
@@ -339,9 +341,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	InitSpdlog();
 
-	tinyxml2::StrPair* node = nullptr;
-	node = new tinyxml2::StrPair();
-	node->SetStr("sd", 0);
+	Gear::Xml::XmlAgent& xmlAgent = Gear::Xml::XmlAgent::GetInstance();
+	xmlAgent.GetXmlRootElement("..\\..\\..\\docs\\SampleWnd.xml");
 	//example_1();
 	//example_2();
 	//example_3();
@@ -349,10 +350,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//spd::
 	//example_4();
 	//example_5();
-	example_6(hInstance);
+	//example_6(hInstance);
 	//CCallLua ();
 
-	example_7();
+	//example_7();
 	return 0;
 }
 

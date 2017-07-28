@@ -1,21 +1,61 @@
 #include "stdafx.h"
 #include "UIObject.h"
 
+UIBase::UIBase()
+{
+	InitAttrMap();
+	InitEventMap();
+}
+bool UIBase::Init(const XMLElement* pElement)
+{
+	return true;
+}
+void UIBase::InitAttrMap()
+{
+	
+	ADD_ATTR("left",		"0")
+	ADD_ATTR("top",			"0")
+	ADD_ATTR("right",		"0")
+	ADD_ATTR("bottom",		"0")
+	ADD_ATTR("visible",		"1")
+	ADD_ATTR("enable",		"1")
+
+	ADD_ATTR("id",			"")
+	ADD_ATTR("name",		"")
+	ADD_ATTR("pos",			"")
+	ADD_ATTR("leftexp",		"")
+	ADD_ATTR("topexp",		"")
+	ADD_ATTR("rightexp",	"")
+	ADD_ATTR("bottomexp",	"")
+	ADD_ATTR("rightexp",	"")
+
+}
+void UIBase::InitEventMap()
+{
+	ADD_EVENT("OnCreate",			"")
+	ADD_EVENT("OnDestory",			"")
+	ADD_EVENT("OnVisibleChange",	"")
+	ADD_EVENT("OnEnableChange",		"")
+	ADD_EVENT("OnMove",				"")
+	ADD_EVENT("OnSize",				"")
+	ADD_EVENT("OnMouseEnter",		"")
+	ADD_EVENT("OnMouseLeave",		"")
+	ADD_EVENT("OnMouseMove",		"")
+}
+
+bool UIBase::CheckAttrName(string strName)
+{
+	return (m_attrMap.end() != m_attrMap.find(strName)) ? true : false;
+}
+bool UIBase::CheckEventName(string strName)
+{
+	return (m_eventMap.end() != m_eventMap.find(strName)) ? true : false;
+}
+
 set<string> LayoutObject::m_eventNameSet = LayoutObject::InitEventNameSet();
 
 bool LayoutObject::InitAttrMap()
 {
-	m_attrMap.insert(pair<string, string>("position", ""));
-	m_attrMap.insert(pair<string, string>("left", "0"));
-	m_attrMap.insert(pair<string, string>("top", "0"));
-	m_attrMap.insert(pair<string, string>("right", "0"));
-	m_attrMap.insert(pair<string, string>("bottom", "0"));
-	m_attrMap.insert(pair<string, string>("leftexp", ""));
-	m_attrMap.insert(pair<string, string>("topexp", ""));
-	m_attrMap.insert(pair<string, string>("rightexp", ""));
-	m_attrMap.insert(pair<string, string>("bottomexp", ""));
-	m_attrMap.insert(pair<string, string>("visible", "1"));
-	m_attrMap.insert(pair<string, string>("enable", "1"));
 	m_attrMap.insert(pair<string, string>("topmost", "0"));
 	m_attrMap.insert(pair<string, string>("layered", "1"));
 	m_attrMap.insert(pair<string, string>("appwnd", "1"));

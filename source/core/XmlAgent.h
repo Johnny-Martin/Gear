@@ -8,6 +8,7 @@ Description:		xml代理，负责检验xml、生成对象列表
 #include "stdafx.h"
 #include "tinyxml2.h"
 #include "UIError.h"
+#include "UIObject.h"
 #include <string>
 
 using namespace tinyxml2;
@@ -18,13 +19,14 @@ namespace Gear {
 
 class XmlAgent {
 public:
-	XmlAgent&							GetInstance();
+	static XmlAgent&					GetInstance();
 	virtual XMLERROR					CreateObject(const XMLElement* pElement);
 	
 	//对XML进行语法检查、语义检查，没错误后，返回根对象
 	virtual XMLERROR					GetXmlRootElement(const string& sFilePath);
 protected:
-	virtual XMLERROR					CheckXmlNode(const XMLElement* pElement);
+	virtual XMLERROR					CheckXmlElement(const XMLElement* pElement);
+	UIBase*								CreateUIObject(const XMLElement* pElement);
 };
 
 

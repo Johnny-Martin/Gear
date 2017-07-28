@@ -2,6 +2,7 @@
 #define UIFRAMEWND_H
 
 #include "stdafx.h"
+#include "UIObject.h"
 #include <list>
 #include <xstring>
 
@@ -28,14 +29,12 @@ inline void SafeRelease(Type& pObjToRelease)
 // topmost, layered, appwnd, blur, maxenable, minenable
 // rootobjectid, 
 //
-class CBaseWnd
+class CBaseWnd:public UIBase
 {
 public:
 	CBaseWnd(){ InitAttrMap(); }
 	bool SetAttr(string key, string value);
 	bool GetAttr(string key, string* value);
-	static bool CheckAttrName(string strName){ return (m_attrNameSet.end() != m_attrNameSet.find(strName)) ? true:false;}
-	static bool CheckEventName(string strName){ return (m_attrNameSet.end() != m_eventNameSet.find(strName)) ? true:false;}
 private:
 	static set<string> InitAttrNameSet();
 	static set<string> InitEventNameSet();
@@ -44,8 +43,6 @@ private:
 	static set<string> m_eventNameSet;
 
 	bool InitAttrMap();
-	map<string, string> m_attrMap;
-	map<string, string> m_eventMap;	
 };
 
 class FrameWnd

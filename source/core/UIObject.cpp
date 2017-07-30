@@ -43,13 +43,49 @@ void UIBase::InitEventMap()
 	ADD_EVENT("OnMouseMove",		"")
 }
 
-bool UIBase::CheckAttrName(string strName)
+bool UIBase::CheckAttrName(const string& strName)
 {
 	return (m_attrMap.end() != m_attrMap.find(strName)) ? true : false;
 }
-bool UIBase::CheckEventName(string strName)
+bool UIBase::CheckEventName(const string& strName)
 {
 	return (m_eventMap.end() != m_eventMap.find(strName)) ? true : false;
+}
+bool UIBase::AddAttrName(const string& strName, const string& strDefaultValue /* = "" */)
+{
+	ADD_ATTR(strName, strDefaultValue)
+	return true;
+}
+bool UIBase::SetAttrValue(const string& strName, const string& strValue)
+{
+#ifdef DEBUG
+	if (!CheckAttrName(strName))
+		return false;
+#endif // DEBUG
+	m_attrMap[strName] = strValue;
+	return true;
+}
+const string& UIBase::GetAttrValue(const string& strName)
+{
+	return m_attrMap[strName];
+}
+bool UIBase::AddEventName(const string& strName, const string& strDefaultValue /* = "" */)
+{
+	ADD_EVENT(strName, strDefaultValue)
+	return true;
+}
+bool UIBase::SetEventHandler(const string& strName, const string& strValue)
+{
+#ifdef DEBUG
+	if (!CheckEventName(strName))
+		return false;
+#endif // DEBUG
+	m_eventMap[strName] = strValue;
+	return true;
+}
+const string& UIBase::GetEventHandler(const string& strName)
+{
+	return m_eventMap[strName];
 }
 
 set<string> LayoutObject::m_eventNameSet = LayoutObject::InitEventNameSet();

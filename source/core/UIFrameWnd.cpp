@@ -8,35 +8,7 @@ using namespace Gear::Res;
 #pragma comment(lib, "Windowscodecs.lib")
 
 
-set<string> CBaseWnd::m_attrNameSet = CBaseWnd::InitAttrNameSet();
-set<string> CBaseWnd::m_eventNameSet = CBaseWnd::InitEventNameSet();
-
-set<string> CBaseWnd::InitAttrNameSet()
-{
-	set<string> attrNameSet;
-	attrNameSet.insert("position");
-	attrNameSet.insert("left");
-	attrNameSet.insert("top");
-	attrNameSet.insert("right");
-	attrNameSet.insert("bottom");
-	attrNameSet.insert("leftexp");
-	attrNameSet.insert("topexp");
-	attrNameSet.insert("rightexp");
-	attrNameSet.insert("bottomexp");
-	attrNameSet.insert("title");
-	attrNameSet.insert("visible");
-	attrNameSet.insert("enable");
-	attrNameSet.insert("topmost");
-	attrNameSet.insert("layered");
-	attrNameSet.insert("appwnd");
-	attrNameSet.insert("blur");
-	attrNameSet.insert("minenable");
-	attrNameSet.insert("maxenable");
-	attrNameSet.insert("rootobjectid");
-
-	return attrNameSet;
-}
-bool CBaseWnd::InitAttrMap()
+void CBaseWnd::InitAttrMap()
 {
 	m_attrMap.insert(pair<string, string>("position", ""));
 	m_attrMap.insert(pair<string, string>("left", "0"));
@@ -56,27 +28,10 @@ bool CBaseWnd::InitAttrMap()
 	m_attrMap.insert(pair<string, string>("minenable", "1"));
 	m_attrMap.insert(pair<string, string>("maxenable", "1"));
 	m_attrMap.insert(pair<string, string>("rootobjectid", ""));
-	return true;
-}
-set<string> CBaseWnd::InitEventNameSet()
-{
-	set<string> eventNameSet;
-	eventNameSet.insert("OnCreate");
-	eventNameSet.insert("OnShowWnd");
-	eventNameSet.insert("OnShowWnd");
-	eventNameSet.insert("OnDestory");
-	eventNameSet.insert("OnStateChange");
-	eventNameSet.insert("OnMove");
-	eventNameSet.insert("OnSize");
-	eventNameSet.insert("OnVisibleChange");
-	eventNameSet.insert("OnEnableChange");
-	eventNameSet.insert("OnCreate");
-
-	return eventNameSet;
 }
 bool CBaseWnd::SetAttr(string key, string value)
 {
-	if (m_attrNameSet.end() != m_attrNameSet.find(key))
+	//if (m_attrNameSet.end() != m_attrNameSet.find(key))
 	{
 		m_attrMap.insert(pair<string, string>(key, value));
 		return true;

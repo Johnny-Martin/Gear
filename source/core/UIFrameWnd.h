@@ -32,48 +32,42 @@ inline void SafeRelease(Type& pObjToRelease)
 class CBaseWnd:public UIBase
 {
 public:
-	CBaseWnd(){ InitAttrMap(); }
-	bool SetAttr(string key, string value);
-	bool GetAttr(string key, string* value);
+											CBaseWnd(){ InitAttrMap(); }
+	bool									SetAttr(string key, string value);
+	bool									GetAttr(string key, string* value);
 private:
-	static set<string> InitAttrNameSet();
-	static set<string> InitEventNameSet();
-
-	static set<string> m_attrNameSet;
-	static set<string> m_eventNameSet;
-
-	bool InitAttrMap();
+	void									InitAttrMap();
 };
 
 class FrameWnd
 {
 public:
-	FrameWnd();
-	~FrameWnd();
-	HRESULT Initialize(HINSTANCE hInstance);
+											FrameWnd();
+											~FrameWnd();
+	HRESULT									Initialize(HINSTANCE hInstance);
 	
-	void RunMessageLoop();
-	HWND GetWndHandle();
+	void									RunMessageLoop();
+	HWND									GetWndHandle();
 protected:
-	HRESULT						CreateDeviceIndependentResources();
-	HRESULT						CreateDeviceResources();
-	void						DiscardDeviceResources();
-	void						OnRender(const PAINTSTRUCT &ps);
-	void						OnResize(UINT uWidth, UINT uHeight);
-	static LRESULT CALLBACK     WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
+	HRESULT									CreateDeviceIndependentResources();
+	HRESULT									CreateDeviceResources();
+	void									DiscardDeviceResources();
+	void									OnRender(const PAINTSTRUCT &ps);
+	void									OnResize(UINT uWidth, UINT uHeight);
+	static LRESULT CALLBACK					WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
 private:
-	HWND						m_hWnd;
-	HDC 						m_hWndDC;
-	ID2D1Factory*				m_pD2DFactory;
-	ID2D1HwndRenderTarget*		m_pRenderTarget;
-    ID2D1SolidColorBrush*		m_pSolidBrush;
+	HWND									m_hWnd;
+	HDC 									m_hWndDC;
+	ID2D1Factory*							m_pD2DFactory;
+	ID2D1HwndRenderTarget*					m_pRenderTarget;
+    ID2D1SolidColorBrush*					m_pSolidBrush;
 
 	//use ID2D1DCRenderTarget when drawing on the window instead of 
 	//ID2D1HwndRenderTarget. if use the ID2D1HwndRenderTarget, the
 	//background of the window will not be transparent even though
 	//set the layered-style window and set colorkey with function
 	//SetLayeredWindowAttributes
-	ID2D1DCRenderTarget*		m_pDCRenderTarget;
+	ID2D1DCRenderTarget*					m_pDCRenderTarget;
 	//ID2D1GdiInteropRenderTarget m_pGdiRenderTarget;
 };
 

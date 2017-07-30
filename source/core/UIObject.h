@@ -24,17 +24,37 @@ namespace Gear {
 class UIBase
 {
 public:
+	//UIBase的子类需要有一个无参构造，在里面初始化m_attrMap 和 m_eventMap
+	//(重写InitAttrMap、InitEventMap)此处应作编译时强制，但未想到好的方案
 											UIBase();
 	//使用XML节点初始化一个UI对象
 	virtual bool							Init(const XMLElement* pElement);
-	bool									CheckAttrName(string strName);
-	bool									CheckEventName(string strName);
+	bool									CheckAttrName(const string& strName);
+	bool									CheckEventName(const string& strName);
+	bool									AddAttrName(const string& strName, const string& strDefaultValue = "");
+	bool									SetAttrValue(const string& strName, const string& strValue);
+	const string&							GetAttrValue(const string& strName);
+	bool									AddEventName(const string& strName, const string& strDefaultValue = "");
+	bool									SetEventHandler(const string& strName, const string& strValue);
+	const string&							GetEventHandler(const string& strName);
 protected:
 	map<string, string>						m_attrMap;
 	map<string, string>						m_eventMap;
-private:
 	void									InitAttrMap();
 	void									InitEventMap();
+};
+
+class Test :public UIBase
+{
+public:
+	Test() {
+		InitAttrMap();
+		return;
+	};
+	bool Init(const XMLElement* pElement){ return true; };
+	void InitAttrMap() {
+		ADD_ATTR("TestAttr", "test")
+	};
 };
 
 class LayoutObject

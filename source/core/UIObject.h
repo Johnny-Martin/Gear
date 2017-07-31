@@ -36,10 +36,13 @@ public:
 	const string&							GetAttrValue(const string& strName);
 	bool									AddEventName(const string& strName, const string& strDefaultValue = "");
 	bool									SetEventHandler(const string& strName, const string& strValue);
+	bool									SetEventHandler(const XMLElement* pEventElement);
 	const string&							GetEventHandler(const string& strName);
 protected:
 	map<string, string>						m_attrMap;
 	map<string, string>						m_eventMap;
+	UIBase*									m_parentObj;
+	vector<UIBase*>							m_childrenVec;
 	void									InitAttrMap();
 	void									InitEventMap();
 };

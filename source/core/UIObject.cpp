@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIObject.h"
+#include "UIFactory.h"
 
 UIBase::UIBase()
 {
@@ -8,6 +9,36 @@ UIBase::UIBase()
 }
 bool UIBase::Init(const XMLElement* pElement)
 {
+	//保存element的属性
+	auto pAttr = pElement->FirstAttribute();
+	while (pAttr)
+	{
+		auto attrName = pAttr->Name();
+		if (CheckAttrName(attrName))
+		{
+			SetAttrValue(attrName, pAttr->Value());
+		}
+		pAttr = pAttr->Next();
+	}
+
+	//为方便XML文件的编写，避免一个标签的属性列表过长/过多，
+	//事件是以子标签的形式写在一个lable下面
+	//保存element的事件，生成并初始化子控件
+	auto pChild = pElement->FirstChildElement();
+	while (pChild)
+	{
+		auto childName = pChild->Value();
+		if (childName == "event" || SetEventHandler(pChild))
+			continue;
+
+		auto pObj = CREATE(UIBase, childName);
+		if (pObj && pObj->Init(pChild))
+			continue;
+
+		//出错了，事件名错误，或者是pChild内的错误
+
+		pChild = pChild->NextSiblingElement();
+	}
 	return true;
 }
 void UIBase::InitAttrMap()
@@ -82,6 +113,17 @@ bool UIBase::SetEventHandler(const string& strName, const string& strValue)
 #endif // DEBUG
 	m_eventMap[strName] = strValue;
 	return true;
+}
+bool UIBase::SetEventHandler(const XMLElement* pEventElement)
+{
+	auto eventName = pEventElement->Attribute("name");
+	if (eventName && CheckEventName(eventName))
+	{
+		auto eventHandler = pEventElement->Attribute("func");
+		return SetEventHandler(eventName, eventHandler);
+	}
+
+	return false;
 }
 const string& UIBase::GetEventHandler(const string& strName)
 {

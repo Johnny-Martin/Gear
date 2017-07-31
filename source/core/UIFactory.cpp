@@ -20,7 +20,7 @@ CObjectFactory::CObjectFactory()
 	m_classInfoMap = new _ClassInfoMapType(initValueRet, initValueRet + initValueLen);
 
 }
-void* CObjectFactory::CreateObjectByClassName(string strClassName) 
+void* CObjectFactory::CreateObject(string strClassName) 
 {
 	_ClassInfoMapType::const_iterator iter = m_classInfoMap->find(strClassName);
 
@@ -28,6 +28,11 @@ void* CObjectFactory::CreateObjectByClassName(string strClassName)
 		return nullptr;
 	else
 		return iter->second();
+}
+void* CObjectFactory::CreateObject(const XMLElement* pElement)
+{
+	auto className = pElement->Value();
+	return CreateObject(className);
 }
 void CObjectFactory::RegistClass(string strClassName, CreateObjectCallBack callBackFun) 
 {

@@ -8,6 +8,7 @@ Description:		实现一个简单的C++反射
 #pragma once
 #include "stdafx.h"
 #include "UIFrameWnd.h"
+#include "tinyxml2.h"
 
 using namespace std;
 
@@ -35,12 +36,14 @@ void* GreateObject()
 	};m_initialClassInfoArraySize = sizeof(initValue);						\
 	return initValue; }
 
+
 //单例工厂
 class CObjectFactory{
 private:
 												CObjectFactory();
 public:
-	void*										CreateObjectByClassName(string strClassName);
+	void*										CreateObject(string strClassName);
+	void*										CreateObject(const XMLElement* pElement);
 	void										RegistClass(string strClassName, CreateObjectCallBack callBackFun);
 	static CObjectFactory&						GetInstance();
 private:
@@ -51,3 +54,5 @@ private:
 		REGISTER_CLASS("window", CBaseWnd)
 	REFLECTION_DECLARE_END()
 };
+
+#define CREATE(classType, x) (classType*)CObjectFactory::GetInstance().CreateObject(x)

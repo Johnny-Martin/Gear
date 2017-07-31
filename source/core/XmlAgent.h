@@ -27,6 +27,13 @@ public:
 protected:
 	virtual XMLERROR					CheckXmlElement(const XMLElement* pElement);
 	UIBase*								CreateUIObject(const XMLElement* pElement);
+
+	//InitUIObject(UIBase* obj, XMLElement* element)
+	//CreateUiObject
+	//CheckElementAttrName
+	//CheckElementEventName
+	//
+
 };
 
 

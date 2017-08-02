@@ -17,6 +17,7 @@
 //#define PNG_VERSION_INFO_ONLY
 #include "png.h"
 #include "spdlog.h"
+#include "Log.h"
 #include "tinyxml2.h"
 #include "XmlAgent.h"
 
@@ -336,11 +337,14 @@ void InitSpdlog()
 	LOG->flush();
 
 }
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)
 //int _tmain(int argc, _TCHAR* argv[])
 {
-	InitSpdlog();
+	//InitSpdlog();
 
+	//INFO("nihao: ", 89);
+	//LogRapper::GetInstance().Info(45);
 	Test test;
 	bool ret = test.CheckAttrName("TestAttr");
 	auto attrValue = test.GetAttrValue("TestAttr");

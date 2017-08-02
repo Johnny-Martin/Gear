@@ -45,7 +45,7 @@ XMLERROR XmlAgent::CheckXmlElement(const XMLElement* pElement)
 }
 XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 {
-	LOG->trace("GetXmlRootElement wsFilePath:  ");
+	LOG->trace("GetXmlRootElement wsFilePath:  " + sFilePath);
 	LOG->trace(sFilePath.c_str());
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile(sFilePath.c_str());

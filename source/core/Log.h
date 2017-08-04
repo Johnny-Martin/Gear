@@ -9,20 +9,41 @@ Description:		°ü×°spdlog
 #include "stdafx.h"
 #include "spdlog.h"
 class LogRapper;
-#define INFO(...) LogRapper::GetInstance().Info(__VA_ARGS__)
+#define INFO(...) LogRapper::GetInstance().m_spLogger->info(__VA_ARGS__)
+#define INTERVAL(str) #str
+#define PARAM_INTERVAL(param) #param INTERVAL(]:)
+#define PARAM_INTERVAL_HEADER(param) INTERVAL([) PARAM_INTERVAL(param)
+
+#define INFO_1(param) INFO(PARAM_INTERVAL(param), param)
 
 class LogRapper
 {
 public:
 	static LogRapper& GetInstance();
 	template<typename T, typename... Args>
-	void Info(const T& info, const Args& ...rest);
+	void Info(const T& info, const Args& ...rest)
+	{
+		m_spLogger->info(info);
+		Info(rest...);
+		return;
+	}
 
 	template<typename T>
-	LogRapper& operator << (const T& info);
+	void Info(const T& info)
+	{
+		m_spLogger->info(info);
+		return;
+	}
+
+	template<typename T>
+	LogRapper& operator << (const T& info)
+	{
+		return this;
+	}
+public:
+	std::shared_ptr<spdlog::logger> m_spLogger;
 private:
 	LogRapper();
-	std::shared_ptr<spdlog::logger> m_spLogger;
 };
 
 

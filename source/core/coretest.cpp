@@ -337,15 +337,22 @@ void InitSpdlog()
 	LOG->flush();
 
 }
+//À©Õ¹ºê²ÎÊý
+#define TEST(...) 
+#define TEST_1(param) (#param, param)
+
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)
 //int _tmain(int argc, _TCHAR* argv[])
 {
 	//InitSpdlog();
 
-	//INFO("nihao: ", 89);
+	string filename = "C:\\log.log";
+	INFO("[%s %s]", filename, "haha");
+
 	//LogRapper::GetInstance().Info(45);
-	Test test;
+	/*Test test;
 	bool ret = test.CheckAttrName("TestAttr");
 	auto attrValue = test.GetAttrValue("TestAttr");
 	test.SetAttrValue("TestAttr", "newTest");
@@ -354,7 +361,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	auto newVal2 = test.GetAttrValue("WindowsPos");
 
 	Gear::Xml::XmlAgent& xmlAgent = Gear::Xml::XmlAgent::GetInstance();
-	xmlAgent.GetXmlRootElement("..\\..\\..\\docs\\SampleWnd.xml");
+	xmlAgent.GetXmlRootElement("..\\..\\..\\docs\\SampleWnd.xml");*/
 	//example_1();
 	//example_2();
 	//example_3();

@@ -28,15 +28,3 @@ LogRapper& LogRapper::GetInstance()
 	static LogRapper logger{};
 	return logger;
 }
-template<typename T, typename... Args>
-void LogRapper::Info(const T& info, const Args& ...rest)
-{
-	m_spLogger->info(info);
-	Info(rest);
-	return;
-}
-template<typename T>
-LogRapper& LogRapper::operator << (const T& info)
-{
-	return this;
-}

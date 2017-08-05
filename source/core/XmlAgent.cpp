@@ -3,6 +3,7 @@
 #include "tinyxml2.h"
 #include "UIFactory.h"
 #include "UIObject.h"
+#include "Log.h"
 
 using namespace std;
 using namespace Gear::Xml;
@@ -45,13 +46,12 @@ XMLERROR XmlAgent::CheckXmlElement(const XMLElement* pElement)
 }
 XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 {
-	LOG->trace("GetXmlRootElement wsFilePath:  " + sFilePath);
-	LOG->trace(sFilePath.c_str());
+	INFO("GetXmlRootElement wsFilePath:  {}", sFilePath);
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile(sFilePath.c_str());
 
 	if (doc.Error()) {
-		LOG->trace("Load XML file Error: ");
+		INFO("Load XML file Error: ");
 		return XML_TINYXML2_ERROR;
 	}
 	//强制使用无bom格式
@@ -63,8 +63,9 @@ XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 		//XMLERROR checkRet = CheckXmlElement(element);
 		//if (checkRet != XML_SUCCESS) return checkRet;
 		auto pObj = CREATE(UIBase, pElement);
-		if (pObj)
-			pObj->Init(pElement);
+		if (!pObj || !pObj->Init(pElement))
+			INFO("create/initicalize UI ojject error: pObj：{}", int(pObj));
+		
 		pElement = pElement->NextSiblingElement();
 	}
 

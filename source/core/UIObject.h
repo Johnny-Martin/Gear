@@ -60,24 +60,14 @@ public:
 	};
 };
 
-class LayoutObject
+class LayoutObject: public UIBase
 {
 public:
-											LayoutObject(){ InitAttrMap(); }
-	bool									SetAttr(string key, string value);
-	bool									GetAttr(string key, string* value);
-	bool									CheckAttrName(string strName);
-	bool									CheckEventName(string strName);
-private:
-	//static set<string> InitAttrNameSet();
-	static set<string> InitEventNameSet();
-	static set<string> m_eventNameSet;
+											LayoutObject();
 
-	bool InitAttrMap();
-	//bool InitEventMap();
-	map<string, string> m_attrMap;
-	map<string, string> m_eventMap;
-	vector<shared_ptr<LayoutObject>> m_children;
+protected:
+	void									InitAttrMap();
+	void									InitEventMap();
 };
 
 #endif

@@ -9,7 +9,12 @@ Description:		°ü×°spdlog
 #include "stdafx.h"
 #include "spdlog.h"
 class LogRapper;
+#define TRC(...) LogRapper::GetInstance().m_spLogger->trace(__VA_ARGS__)
+#define DBG(...) LogRapper::GetInstance().m_spLogger->debug(__VA_ARGS__)
 #define INFO(...) LogRapper::GetInstance().m_spLogger->info(__VA_ARGS__)
+#define WARN(...) LogRapper::GetInstance().m_spLogger->warn(__VA_ARGS__)
+#define ERR(...) LogRapper::GetInstance().m_spLogger->error(__VA_ARGS__)
+
 #define INTERVAL(str) #str
 #define PARAM_INTERVAL(param) #param INTERVAL(]:)
 #define PARAM_INTERVAL_HEADER(param) INTERVAL([) PARAM_INTERVAL(param)

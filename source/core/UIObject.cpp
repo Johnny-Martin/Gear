@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIObject.h"
 #include "UIFactory.h"
+#include "Log.h"
 
 UIBase::UIBase()
 {
@@ -11,31 +12,26 @@ bool UIBase::Init(const XMLElement* pElement)
 {
 	//保存element的属性
 	auto pAttr = pElement->FirstAttribute();
-	while (pAttr)
-	{
+	while (pAttr){
 		auto attrName = pAttr->Name();
-		if (CheckAttrName(attrName))
-		{
-			SetAttrValue(attrName, pAttr->Value());
-		}
+		SetAttrValue(attrName, pAttr->Value());
 		pAttr = pAttr->Next();
 	}
 
-	//为方便XML文件的编写，避免一个标签的属性列表过长/过多，
-	//事件是以子标签的形式写在一个lable下面
-	//保存element的事件，生成并初始化子控件
+	//为方便XML文件的编写，避免一个标签的属性列表过长
+	//、过多，事件是以子标签的形式写在一个lable下面
+	//保存element的事件、生成并初始化子控件
 	auto pChild = pElement->FirstChildElement();
-	while (pChild)
-	{
-		auto childName = pChild->Value();
-		if (childName == "event" || SetEventHandler(pChild))
-			continue;
-
-		auto pObj = CREATE(UIBase, childName);
-		if (pObj && pObj->Init(pChild))
-			continue;
-
-		//出错了，事件名错误，或者是pChild内的错误
+	while (pChild){
+		string childName = pChild->Value();
+		if (childName == "event"){
+			SetEventHandler(pChild);
+		}else {
+			auto pObj = CREATE(UIBase, childName);
+			if (pObj) {
+				pObj->Init(pChild);
+			}
+		}
 
 		pChild = pChild->NextSiblingElement();
 	}
@@ -90,10 +86,20 @@ bool UIBase::AddAttrName(const string& strName, const string& strDefaultValue /*
 bool UIBase::SetAttrValue(const string& strName, const string& strValue)
 {
 #ifdef DEBUG
-	if (!CheckAttrName(strName))
+	if (!CheckAttrName(strName)) {
+		ERR("SetAttrValue error: Unsupported attr name: {}, value: {}.", strName, strValue);
 		return false;
+	}
 #endif // DEBUG
+
 	m_attrMap[strName] = strValue;
+
+	//name 与 id 同等对待
+	if(strName == "name")
+		m_attrMap["id"] = strValue;
+	else if(strName == "id")
+		m_attrMap["name"] = strValue;
+
 	return true;
 }
 const string& UIBase::GetAttrValue(const string& strName)
@@ -108,82 +114,50 @@ bool UIBase::AddEventName(const string& strName, const string& strDefaultValue /
 bool UIBase::SetEventHandler(const string& strName, const string& strValue)
 {
 #ifdef DEBUG
-	if (!CheckEventName(strName))
+	if (!CheckEventName(strName)) {
+		ERR("SetEventHandler error: Unsupported event name: {}, handler: {}.", strName, strValue);
 		return false;
+	}
+		
 #endif // DEBUG
 	m_eventMap[strName] = strValue;
 	return true;
 }
 bool UIBase::SetEventHandler(const XMLElement* pEventElement)
 {
+	//name 与 id 同等对待
 	auto eventName = pEventElement->Attribute("name");
-	if (eventName && CheckEventName(eventName))
-	{
-		auto eventHandler = pEventElement->Attribute("func");
-		return SetEventHandler(eventName, eventHandler);
+	if(eventName == nullptr)
+		eventName = pEventElement->Attribute("id");
+
+	if (eventName == nullptr) {
+		ERR("SetEventHandler error: No event name specified");
+		return false;
 	}
 
-	return false;
+	auto eventHandler = pEventElement->Attribute("func");
+	if (eventHandler == nullptr) {
+		ERR("SetEventHandler error: No event handler specified");
+		return false;
+	}
+	return SetEventHandler(eventName, eventHandler);
 }
 const string& UIBase::GetEventHandler(const string& strName)
 {
 	return m_eventMap[strName];
 }
 
-set<string> LayoutObject::m_eventNameSet = LayoutObject::InitEventNameSet();
-
-bool LayoutObject::InitAttrMap()
+LayoutObject::LayoutObject()
 {
-	m_attrMap.insert(pair<string, string>("topmost", "0"));
-	m_attrMap.insert(pair<string, string>("layered", "1"));
-	m_attrMap.insert(pair<string, string>("appwnd", "1"));
-	m_attrMap.insert(pair<string, string>("blur", "0"));
-	m_attrMap.insert(pair<string, string>("minenable", "1"));
-	m_attrMap.insert(pair<string, string>("maxenable", "1"));
-	m_attrMap.insert(pair<string, string>("rootobjectid", ""));
-	return true;
-}
-set<string> LayoutObject::InitEventNameSet()
-{
-	set<string> eventNameSet;
-	eventNameSet.insert("OnCreate");
-	eventNameSet.insert("OnShowWnd");
-	eventNameSet.insert("OnShowWnd");
-	eventNameSet.insert("OnDestory");
-	eventNameSet.insert("OnStateChange");
-	eventNameSet.insert("OnMove");
-	eventNameSet.insert("OnSize");
-	eventNameSet.insert("OnVisibleChange");
-	eventNameSet.insert("OnEnableChange");
-	eventNameSet.insert("OnCreate");
-
-	return eventNameSet;
-}
-bool LayoutObject::SetAttr(string key, string value)
-{
-	if (CheckAttrName(key))
-	{
-		m_attrMap.insert(pair<string, string>(key, value));
-		return true;
-	}
-	return false;
-}
-bool LayoutObject::GetAttr(string key, string* value)
-{
-	map<string, string>::iterator iter = m_attrMap.find(key);
-	if (m_attrMap.end() != iter)
-	{
-		*value = iter->second;
-		return true;
-	}
-	return false;
-}
-bool LayoutObject::CheckAttrName(string strName)
-{ 
-	return (m_attrMap.end() != m_attrMap.find(strName)) ? true:false;
-}
-bool LayoutObject::CheckEventName(string strName)
-{ 
-	return (m_eventMap.end() != m_eventMap.find(strName)) ? true:false;
+	InitAttrMap();
+	InitEventMap();
 }
 
+void LayoutObject::InitAttrMap()
+{
+
+}
+void LayoutObject::InitEventMap()
+{
+
+}

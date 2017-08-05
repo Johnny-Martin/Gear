@@ -36,6 +36,5 @@
 #define WARNING_HWND_MSG(hWnd, WarningStr) \
 	::MessageBox(hWnd, WarningStr, _T("Error"), MB_OK | MB_ICONWARNING);
 
-extern std::shared_ptr<spdlog::logger> LOG;
 
 // TODO: reference additional headers your program requires here

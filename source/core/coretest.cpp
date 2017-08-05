@@ -319,37 +319,13 @@ void example_7()
 	}*/
 }
 
-void InitSpdlog()
-{
-	spdlog::set_level(spdlog::level::trace);
-	spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e][thread %t][%l] %v");
-	string filePath = "D:\\test_spdlog.log";
-	if (PathFileExistsA(filePath.c_str())) {
-		DeleteFileA(filePath.c_str());
-	}
-	ofstream outFile;
-	outFile.open(filePath, ios::out | ios::app | ios::binary);
-	outFile.close();
-
-	LOG = spdlog::basic_logger_mt("TestLog", filePath);
-	LOG->trace("Hello spdlog");
-
-	LOG->flush();
-
-}
-//扩展宏参数
-#define TEST(...) 
-#define TEST_1(param) (#param, param)
-
-
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)
 //int _tmain(int argc, _TCHAR* argv[])
 {
 	//InitSpdlog();
 
 	string filename = "C:\\log.log";
-	INFO("[%s %s]", filename, "haha");
+	INFO("文件名: {}, {}", filename, "haha");
 
 	//LogRapper::GetInstance().Info(45);
 	/*Test test;
@@ -358,10 +334,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	test.SetAttrValue("TestAttr", "newTest");
 	auto newVal = test.GetAttrValue("TestAttr");
 	test.AddAttrName("WindowsPos", "0");
-	auto newVal2 = test.GetAttrValue("WindowsPos");
+	auto newVal2 = test.GetAttrValue("WindowsPos");*/
 
 	Gear::Xml::XmlAgent& xmlAgent = Gear::Xml::XmlAgent::GetInstance();
-	xmlAgent.GetXmlRootElement("..\\..\\..\\docs\\SampleWnd.xml");*/
+	xmlAgent.GetXmlRootElement("..\\..\\..\\docs\\SampleWnd.xml");
 	//example_1();
 	//example_2();
 	//example_3();

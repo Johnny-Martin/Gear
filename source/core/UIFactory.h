@@ -52,6 +52,7 @@ private:
 
 	REFLECTION_DECLARE_BEGIN()
 		REGISTER_CLASS("window", CBaseWnd)
+		REGISTER_CLASS("layout", LayoutObject)
 	REFLECTION_DECLARE_END()
 };
 

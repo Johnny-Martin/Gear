@@ -15,3 +15,14 @@ source目录：工程源代码
 
 环境搭建：
 先编译project下_3rd结尾的工程，再编译主工程
+
+
+///////////////////////////////////////Ver0.1//////////////////////////////////////////
+1,UIBase及其后裔类的m_attrMap、m_eventMap初始化可以优化
+2,日志输出文件有待优化
+3,<event>标签使用map<string, string>存储，使用event的name做key，value只有一个，意味着
+  event除了name属性之外只能有一个额外属性：func，无法再放file属性。V0.1初步方案是:
+  使用如下格式的func="..\\script\\SampleWindow.lua=>OnCreate", SampleWindow.lua与XML同名
+  的话可略。例如SampleWnd.xml中有这样的event: <event name="OnCreate" func="OnCreateFunc"/>
+  则会解析成<event name="OnCreate" func="SampleWnd.xml.lua=>OnCreateFunc"/>
+4,id跟name是一回事

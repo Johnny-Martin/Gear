@@ -1,4 +1,4 @@
-// Caller.cpp : Defines the entry point for the console application.
+ï»¿// Caller.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
@@ -109,7 +109,7 @@ void example_2()
 }
 void example_4()
 {
-	ResManager resManager(L"E:\\A iss\\¿­×Ó»éÀñ¾«Ñ¡");
+	ResManager resManager(L"E:\\A iss\\å‡¯å­å©šç¤¼ç²¾é€‰");
 	RPicture *pic;
 	resManager.GetResPicHandle("texturelist.nine.customRectBkg.3", &pic);
 }
@@ -285,7 +285,7 @@ void example_5()//test for libpng
 
 	//delete picObj;
 	//RPicList picObj(L"E:\\code\\ComBase\\trunk\\UIEngine\\docs\\texturelist.png");
-	//picObj.ReadPngFile(L"E:\\code\\ComBase\\trunk\\UIEngine\\docs\\ÄãºÃhover.png");
+	//picObj.ReadPngFile(L"E:\\code\\ComBase\\trunk\\UIEngine\\docs\\ä½ å¥½hover.png");
 	//read_png_file("E:\\code\\ComBase\\trunk\\UIEngine\\docs\\texturelist.Nine.btnbkg.png");
 	//process_file();
 	//write_png_file("E:\\code\\ComBase\\trunk\\UIEngine\\docs\\texture_copy.png");
@@ -319,13 +319,18 @@ void example_7()
 	}*/
 }
 
+#define STR_H(s) #s
+#define STR(s) STR_H(s)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)
 //int _tmain(int argc, _TCHAR* argv[])
 {
 	//InitSpdlog();
 
 	string filename = "C:\\log.log";
-	INFO("ÎÄ¼şÃû: {}, {}", filename, "haha");
+	INFO("æ–‡ä»¶å: {}, {}", filename, "haha");
+
+	string test = STR("["__FILE__"]");
+	//INFO(filename);
 
 	//LogRapper::GetInstance().Info(45);
 	/*Test test;
@@ -354,29 +359,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 
-const wchar_t szAppName[] = L"ÒìĞÎ´°¿Ú2 MoreWindows-(http://blog.csdn.net/MoreWindows)";  
+const wchar_t szAppName[] = L"å¼‚å½¢çª—å£2 MoreWindows-(http://blog.csdn.net/MoreWindows)";  
 
 /* 
-* º¯ÊıÃû³Æ: GetWindowSize 
-* º¯Êı¹¦ÄÜ: µÃµ½´°¿ÚµÄ¿í¸ß 
-* hwnd      ´°¿Ú¾ä±ú 
-* pnWidth   ´°¿Ú¿í 
-* pnHeight  ´°¿Ú¸ß 
+* å‡½æ•°åç§°: GetWindowSize 
+* å‡½æ•°åŠŸèƒ½: å¾—åˆ°çª—å£çš„å®½é«˜ 
+* hwnd      çª—å£å¥æŸ„ 
+* pnWidth   çª—å£å®½ 
+* pnHeight  çª—å£é«˜ 
 */  
 void GetWindowSize(HWND hwnd, int *pnWidth, int *pnHeight);  
 
 
 /* 
-* º¯ÊıÃû³Æ: InitBitmapWindow 
-* º¯Êı¹¦ÄÜ: Î»Í¼´°¿Ú³õÊ¼»¯ 
-* hinstance ½ø³ÌÊµÀı 
-* nWidth    ´°¿Ú¿í 
-* nHeight   ´°¿Ú¸ß 
-* nCmdshow  ÏÔÊ¾·½Ê½-ÓëShowWindowº¯ÊıµÄµÚ¶ş¸ö²ÎÊıÏàÍ¬ 
+* å‡½æ•°åç§°: InitBitmapWindow 
+* å‡½æ•°åŠŸèƒ½: ä½å›¾çª—å£åˆå§‹åŒ– 
+* hinstance è¿›ç¨‹å®ä¾‹ 
+* nWidth    çª—å£å®½ 
+* nHeight   çª—å£é«˜ 
+* nCmdshow  æ˜¾ç¤ºæ–¹å¼-ä¸ShowWindowå‡½æ•°çš„ç¬¬äºŒä¸ªå‚æ•°ç›¸åŒ 
 */  
 BOOL InitBitmapWindow(HINSTANCE hinstance, int nWidth, int nHeight, int nCmdshow);  
 
-// Î»Í¼´°¿ÚÏûÏ¢´¦Àíº¯Êı  
+// ä½å›¾çª—å£æ¶ˆæ¯å¤„ç†å‡½æ•°  
 LRESULT CALLBACK BitmapWindowWndPrco(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParm);  
 
 
@@ -386,21 +391,21 @@ HBITMAP  g_hBitmap;
 					 LPSTR     lpCmdLine,  
 					 int       nCmdShow) 
 {  
-	//ÏÈ´´½¨Ò»¸öÎŞ±³Ó°»­Ë¢´°¿Ú£¬  
-	//È»ºóÔÚWM_CREATEÖĞ²¢Ö¸¶¨Í¸Ã÷ÑÕÉ«, Ëõ·ÅÎ»Í¼ºó¼ÓÔØÖÁs_hdcMemÖĞ.  
-	//×îºóÔÚWM_ERASEBKGNDÖĞÓÃs_hdcMemÌùÍ¼¼´¿É  
+	//å…ˆåˆ›å»ºä¸€ä¸ªæ— èƒŒå½±ç”»åˆ·çª—å£ï¼Œ  
+	//ç„¶ååœ¨WM_CREATEä¸­å¹¶æŒ‡å®šé€æ˜é¢œè‰², ç¼©æ”¾ä½å›¾ååŠ è½½è‡³s_hdcMemä¸­.  
+	//æœ€ååœ¨WM_ERASEBKGNDä¸­ç”¨s_hdcMemè´´å›¾å³å¯  
 	g_hBitmap = (HBITMAP)LoadImage(NULL, L"Kitty.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);  
 	if (g_hBitmap == NULL)  
 	{  
-		MessageBox(NULL, L"Î»Í¼¼ÓÔØÊ§°Ü", L"Error", MB_ICONERROR);  
+		MessageBox(NULL, L"ä½å›¾åŠ è½½å¤±è´¥", L"Error", MB_ICONERROR);  
 		return 0;  
 	}  
 
-	// ÉèÖÃÒìĞÎ´°¿Ú´óĞ¡  
+	// è®¾ç½®å¼‚å½¢çª—å£å¤§å°  
 	BITMAP bm;  
 	GetObject(g_hBitmap, sizeof(bm), &bm);  
 	int nWindowWidth = bm.bmWidth;  
-	int nWindowHeight = bm.bmHeight + 100; //À­¸ß100¸ß¶È  
+	int nWindowHeight = bm.bmHeight + 100; //æ‹‰é«˜100é«˜åº¦  
 
 	if (!InitBitmapWindow(hInstance, nWindowWidth, nWindowHeight, nCmdShow))  
 		return 0;  
@@ -429,7 +434,7 @@ BOOL InitBitmapWindow(HINSTANCE hinstance, int nWidth, int nHeight, int nCmdshow
 	wndclass.hInstance   = hinstance;     
 	wndclass.hIcon       = LoadIcon(NULL, IDI_APPLICATION);  
 	wndclass.hCursor     = LoadCursor(NULL, IDC_ARROW);  
-	wndclass.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);//´°¿Ú±³Ó°»­Ë¢Îª¿Õ  
+	wndclass.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);//çª—å£èƒŒå½±ç”»åˆ·ä¸ºç©º  
 	wndclass.lpszMenuName  = NULL;  
 	wndclass.lpszClassName = szAppName;  
 
@@ -462,31 +467,31 @@ BOOL InitBitmapWindow(HINSTANCE hinstance, int nWidth, int nHeight, int nCmdshow
 
 LRESULT CALLBACK BitmapWindowWndPrco(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParm)  
 {  
-	static HDC s_hdcMem; //·ÅÖÃËõ·ÅºóµÄÎ»Í¼  
+	static HDC s_hdcMem; //æ”¾ç½®ç¼©æ”¾åçš„ä½å›¾  
 
 	switch (message)  
 	{  
 	case WM_CREATE:  
 		{  
-			// ÉèÖÃ·Ö²ãÊôĞÔ  
+			// è®¾ç½®åˆ†å±‚å±æ€§  
 			SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);  
-			// ÉèÖÃÍ¸Ã÷É«   
+			// è®¾ç½®é€æ˜è‰²   
 			SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);   
 		}  
 		return 0;  
 	case WM_KEYDOWN:   
 		switch (wParam)  
 		{  
-		case VK_ESCAPE: //°´ÏÂEsc¼üÊ±ÍË³ö  
+		case VK_ESCAPE: //æŒ‰ä¸‹Escé”®æ—¶é€€å‡º  
 			SendMessage(hwnd, WM_DESTROY, 0, 0);  
 			return TRUE;  
 		}  
 		break;  
-	case WM_LBUTTONDOWN: //µ±Êó±ê×ó¼üµã»÷Ê±¿ÉÒÔÍÏÒ·´°¿Ú  
+	case WM_LBUTTONDOWN: //å½“é¼ æ ‡å·¦é”®ç‚¹å‡»æ—¶å¯ä»¥æ‹–æ›³çª—å£  
 		PostMessage(hwnd, WM_SYSCOMMAND, SC_MOVE | HTCAPTION, 0);   
 		return TRUE;  
 
-	case WM_ERASEBKGND: //ÔÚ´°¿Ú±³¾°ÖĞÖ±½ÓÌùÍ¼  
+	case WM_ERASEBKGND: //åœ¨çª—å£èƒŒæ™¯ä¸­ç›´æ¥è´´å›¾  
 		{  
 			HDC hdc = (HDC)wParam;  
 			int nWidth, nHeight;  

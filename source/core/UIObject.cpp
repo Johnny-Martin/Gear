@@ -69,7 +69,22 @@ void UIBase::InitEventMap()
 	ADD_EVENT("OnMouseLeave",		"")
 	ADD_EVENT("OnMouseMove",		"")
 }
+const string UIBase::GetObjectID()
+{
+	if (m_attrMap.empty()) {
+		ERR("GetObjectID error: m_attrMap has not been initicalized");
+		return nullptr;
+	}
+	string name = m_attrMap["id"];
+	if (name.empty())
+		name = m_attrMap["name"];
 
+	return name;
+}
+const string UIBase::GetObjectName()
+{
+	return GetObjectID();
+}
 bool UIBase::CheckAttrName(const string& strName)
 {
 	return (m_attrMap.end() != m_attrMap.find(strName)) ? true : false;
@@ -144,9 +159,47 @@ bool UIBase::SetEventHandler(const XMLElement* pEventElement)
 }
 const string& UIBase::GetEventHandler(const string& strName)
 {
+	map<string, string>::iterator itPos = m_eventMap.find(strName);
+	if (itPos == m_eventMap.end())
+		return "";
+
 	return m_eventMap[strName];
 }
+UIBase* UIBase::GetParent()
+{
+	return m_parentObj;
+}
+bool UIBase::SetParent(UIBase* pParent)
+{
+	if (m_parentObj != nullptr) {
+		ERR("SetParent error: already has parent");
+		return false;
+	}
+	m_parentObj = pParent;
+	return false;
+}
+bool UIBase::AddChild(UIBase* pChild)
+{
+	if (pChild == nullptr) {
+		WARN("AddChild warning: pChild is nullptr");
+		return true;
+	}
 
+	string childName = pChild->GetObjectName();
+	if (childName.empty() || childName.length() == 0) {
+		//匿名对象，不支持
+		ERR("AddChild error: anonymous object is not supported");
+		return false;
+	}
+
+	UIBase* pTemp = m_childrenMap[childName];
+	if (pTemp != nullptr) {
+		ERR("AddChild error: Homonymous object already exisit");
+		return false;
+	}
+
+	return true;
+}
 LayoutObject::LayoutObject()
 {
 	InitAttrMap();

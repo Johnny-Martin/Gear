@@ -29,6 +29,8 @@ public:
 											UIBase();
 	//使用XML节点初始化一个UI对象
 	virtual bool							Init(const XMLElement* pElement);
+	const string							GetObjectID();
+	const string							GetObjectName();
 	bool									CheckAttrName(const string& strName);
 	bool									CheckEventName(const string& strName);
 	bool									AddAttrName(const string& strName, const string& strDefaultValue = "");
@@ -38,11 +40,16 @@ public:
 	bool									SetEventHandler(const string& strName, const string& strValue);
 	bool									SetEventHandler(const XMLElement* pEventElement);
 	const string&							GetEventHandler(const string& strName);
+	UIBase*									GetParent();
+	bool									SetParent(UIBase* pParent);
+	bool									AddChild(UIBase* pChild);
+	UIBase*									GetChild(string name);
+	bool									RemoveChild(string name);
 protected:
 	map<string, string>						m_attrMap;
 	map<string, string>						m_eventMap;
 	UIBase*									m_parentObj;
-	vector<UIBase*>							m_childrenVec;
+	map<string, UIBase*>					m_childrenMap;
 	void									InitAttrMap();
 	void									InitEventMap();
 };

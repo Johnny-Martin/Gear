@@ -29,10 +29,12 @@ bool UIBase::Init(const XMLElement* pElement)
 		}else {
 			auto pObj = CREATE(UIBase, childName);
 			if (pObj) {
+				//先初始化，再加到父节点
 				pObj->Init(pChild);
+				AddChild(pObj);
 			}
 		}
-
+		m_childrenMap;
 		pChild = pChild->NextSiblingElement();
 	}
 	return true;
@@ -77,10 +79,10 @@ shared_ptr<const string> UIBase::GetObjectID()
 	}
 	//id 与 name这两个key是一定存在的，无须担心map的[]操作符意外插入陌生的key
 	if (!m_attrMap["id"].empty())
-		make_shared<const string>(m_attrMap["id"]);
+		return make_shared<const string>(m_attrMap["id"]);
 
 	if (!m_attrMap["name"].empty())
-		make_shared<const string>(m_attrMap["name"]);
+		return make_shared<const string>(m_attrMap["name"]);
 
 	return nullptr;
 }
@@ -195,7 +197,7 @@ bool UIBase::AddChild(UIBase* pChild)
 	}
 
 	shared_ptr<const string> childName = pChild->GetObjectName();
-	if (childName->empty() || (*childName).length() == 0) {
+	if (!childName || childName->empty()) {
 		//匿名对象，不支持
 		ERR("AddChild error: anonymous object is not supported");
 		return false;

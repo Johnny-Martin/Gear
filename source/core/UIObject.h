@@ -29,6 +29,7 @@ public:
 											UIBase();
 	//使用XML节点初始化一个UI对象
 	virtual bool							Init(const XMLElement* pElement);
+	virtual bool							ParseSpecialCmd();
 	shared_ptr<const string>				GetObjectID();
 	shared_ptr<const string>				GetObjectName();
 	bool									CheckAttrName(const string& sAttrName);

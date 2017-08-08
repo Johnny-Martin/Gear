@@ -42,6 +42,6 @@
 			<image id="wnd.content.icon" pos="0, 0, 15, 15" res="imagelist.frameBkg.3" />
 			<image id="wnd.content.icon2" pos="15, 15, 15, 15" res="imagelist.frameBkg.3" />
 		</layout>
-		<event id="OnCreate" funct="test.lua=>OnWindowCreate"/>
+		<event id="OnCreate" func="test.lua=>OnWindowCreate"/>
 		<event name="OnDestory" func="OnWindowCreateDestory" />
 	</window>

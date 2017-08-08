@@ -37,6 +37,7 @@ bool UIBase::Init(const XMLElement* pElement)
 		m_childrenMap;
 		pChild = pChild->NextSiblingElement();
 	}
+
 	return true;
 }
 void UIBase::InitAttrMap()
@@ -44,8 +45,8 @@ void UIBase::InitAttrMap()
 	
 	ADD_ATTR("left",		"0")
 	ADD_ATTR("top",			"0")
-	ADD_ATTR("right",		"0")
-	ADD_ATTR("bottom",		"0")
+	ADD_ATTR("width",		"0")
+	ADD_ATTR("height",		"0")
 	ADD_ATTR("visible",		"1")
 	ADD_ATTR("enable",		"1")
 
@@ -54,8 +55,8 @@ void UIBase::InitAttrMap()
 	ADD_ATTR("pos",			"")
 	ADD_ATTR("leftexp",		"")
 	ADD_ATTR("topexp",		"")
-	ADD_ATTR("rightexp",	"")
-	ADD_ATTR("bottomexp",	"")
+	ADD_ATTR("widthexp",	"")
+	ADD_ATTR("heightexp",	"")
 	ADD_ATTR("rightexp",	"")
 
 }
@@ -163,8 +164,9 @@ bool UIBase::SetEventHandler(const XMLElement* pEventElement)
 
 	auto eventHandler = pEventElement->Attribute("func");
 	if (eventHandler == nullptr) {
-		ERR("SetEventHandler error: No event handler specified");
-		return false;
+		ERR("SetEventHandler info: No event handler specified, use event name: {}", eventName);
+		//不指定func字段，则到同名lua下找eventName同名function
+		return SetEventHandler(eventName, eventName);
 	}
 	return SetEventHandler(eventName, eventHandler);
 }
@@ -229,6 +231,16 @@ bool UIBase::RemoveChild(const string& sChildName)
 		return false;
 	}
 	m_childrenMap.erase(it);
+	return true;
+}
+
+/********************************************
+解析带#的特殊命令，UIBase仅提供pos一个属性内
+种命令的解析(#mid #left #top #width #height)
+五个命令的解析，并将结果存入leftexp topexp...
+*********************************************/
+bool UIBase::ParseSpecialCmd()
+{
 	return true;
 }
 LayoutObject::LayoutObject()

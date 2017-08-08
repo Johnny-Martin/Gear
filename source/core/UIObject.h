@@ -29,22 +29,22 @@ public:
 											UIBase();
 	//使用XML节点初始化一个UI对象
 	virtual bool							Init(const XMLElement* pElement);
-	const string							GetObjectID();
-	const string							GetObjectName();
-	bool									CheckAttrName(const string& strName);
-	bool									CheckEventName(const string& strName);
-	bool									AddAttrName(const string& strName, const string& strDefaultValue = "");
-	bool									SetAttrValue(const string& strName, const string& strValue);
-	const string&							GetAttrValue(const string& strName);
-	bool									AddEventName(const string& strName, const string& strDefaultValue = "");
-	bool									SetEventHandler(const string& strName, const string& strValue);
+	shared_ptr<const string>				GetObjectID();
+	shared_ptr<const string>				GetObjectName();
+	bool									CheckAttrName(const string& sAttrName);
+	bool									CheckEventName(const string& sEventName);
+	bool									AddAttr(const string& sAttrName, const string& sAttrDefaultValue = "");
+	bool									SetAttrValue(const string& sAttrName, const string& sAttrValue);
+	shared_ptr<const string>				GetAttrValue(const string& sAttrName);
+	bool									AddEvent(const string& sEventName, const string& sEventDefaultValue = "");
+	bool									SetEventHandler(const string& sEventName, const string& sEventValue);
 	bool									SetEventHandler(const XMLElement* pEventElement);
-	const string&							GetEventHandler(const string& strName);
+	shared_ptr<const string>				GetEventHandler(const string& sEventName);
 	UIBase*									GetParent();
 	bool									SetParent(UIBase* pParent);
 	bool									AddChild(UIBase* pChild);
-	UIBase*									GetChild(string name);
-	bool									RemoveChild(string name);
+	UIBase*									GetChild(const string& sChildName);
+	bool									RemoveChild(const string& sChildName);
 protected:
 	map<string, string>						m_attrMap;
 	map<string, string>						m_eventMap;

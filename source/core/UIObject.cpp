@@ -69,73 +69,82 @@ void UIBase::InitEventMap()
 	ADD_EVENT("OnMouseLeave",		"")
 	ADD_EVENT("OnMouseMove",		"")
 }
-const string UIBase::GetObjectID()
+shared_ptr<const string> UIBase::GetObjectID()
 {
 	if (m_attrMap.empty()) {
 		ERR("GetObjectID error: m_attrMap has not been initicalized");
 		return nullptr;
 	}
-	string name = m_attrMap["id"];
-	if (name.empty())
-		name = m_attrMap["name"];
+	//id 与 name这两个key是一定存在的，无须担心map的[]操作符意外插入陌生的key
+	if (!m_attrMap["id"].empty())
+		make_shared<const string>(m_attrMap["id"]);
 
-	return name;
+	if (!m_attrMap["name"].empty())
+		make_shared<const string>(m_attrMap["name"]);
+
+	return nullptr;
 }
-const string UIBase::GetObjectName()
+shared_ptr<const string> UIBase::GetObjectName()
 {
 	return GetObjectID();
 }
-bool UIBase::CheckAttrName(const string& strName)
+bool UIBase::CheckAttrName(const string& sAttrName)
 {
-	return (m_attrMap.end() != m_attrMap.find(strName)) ? true : false;
+	return (m_attrMap.end() != m_attrMap.find(sAttrName)) ? true : false;
 }
-bool UIBase::CheckEventName(const string& strName)
+bool UIBase::CheckEventName(const string& sEventName)
 {
-	return (m_eventMap.end() != m_eventMap.find(strName)) ? true : false;
+	return (m_eventMap.end() != m_eventMap.find(sEventName)) ? true : false;
 }
-bool UIBase::AddAttrName(const string& strName, const string& strDefaultValue /* = "" */)
+bool UIBase::AddAttr(const string& sAttrName, const string& sAttrDefaultValue /* = "" */)
 {
-	ADD_ATTR(strName, strDefaultValue)
+	ADD_ATTR(sAttrName, sAttrDefaultValue)
 	return true;
 }
-bool UIBase::SetAttrValue(const string& strName, const string& strValue)
+bool UIBase::SetAttrValue(const string& sAttrName, const string& sAttrValue)
 {
 #ifdef DEBUG
-	if (!CheckAttrName(strName)) {
-		ERR("SetAttrValue error: Unsupported attr name: {}, value: {}.", strName, strValue);
+	if (!CheckAttrName(sAttrName)) {
+		ERR("SetAttrValue error: Unsupported attr name: {}, value: {}.", sAttrName, sAttrValue);
 		return false;
 	}
 #endif // DEBUG
 
-	m_attrMap[strName] = strValue;
+	m_attrMap[sAttrName] = sAttrValue;
 
 	//name 与 id 同等对待
-	if(strName == "name")
-		m_attrMap["id"] = strValue;
-	else if(strName == "id")
-		m_attrMap["name"] = strValue;
+	if(sAttrName == "name")
+		m_attrMap["id"] = sAttrValue;
+	else if(sAttrName == "id")
+		m_attrMap["name"] = sAttrValue;
 
 	return true;
 }
-const string& UIBase::GetAttrValue(const string& strName)
+shared_ptr<const string> UIBase::GetAttrValue(const string& sAttrName)
 {
-	return m_attrMap[strName];
+	//由于map的[]操作符在索引不存在的key的时候，会将key插入（此时的value调用默认构造生成，也就是""）
+	//造成key的污染，此处不得不使用find遍历map
+	if (!CheckAttrName(sAttrName)) {
+		WARN("GetAttrValue warning: attribute not found, key: {}", sAttrName);
+		return nullptr;
+	}
+	return make_shared<const string>(m_attrMap[sAttrName]);
 }
-bool UIBase::AddEventName(const string& strName, const string& strDefaultValue /* = "" */)
+bool UIBase::AddEvent(const string& sEventName, const string& sEventDefaultValue /* = "" */)
 {
-	ADD_EVENT(strName, strDefaultValue)
+	ADD_EVENT(sEventName, sEventDefaultValue)
 	return true;
 }
-bool UIBase::SetEventHandler(const string& strName, const string& strValue)
+bool UIBase::SetEventHandler(const string& sEventName, const string& sEventValue)
 {
 #ifdef DEBUG
-	if (!CheckEventName(strName)) {
-		ERR("SetEventHandler error: Unsupported event name: {}, handler: {}.", strName, strValue);
+	if (!CheckEventName(sEventName)) {
+		ERR("SetEventHandler error: Unsupported event name: {}, handler: {}.", sEventName, sEventValue);
 		return false;
 	}
 		
 #endif // DEBUG
-	m_eventMap[strName] = strValue;
+	m_eventMap[sEventName] = sEventValue;
 	return true;
 }
 bool UIBase::SetEventHandler(const XMLElement* pEventElement)
@@ -157,13 +166,13 @@ bool UIBase::SetEventHandler(const XMLElement* pEventElement)
 	}
 	return SetEventHandler(eventName, eventHandler);
 }
-const string& UIBase::GetEventHandler(const string& strName)
+shared_ptr<const string> UIBase::GetEventHandler(const string& sEventName)
 {
-	map<string, string>::iterator itPos = m_eventMap.find(strName);
-	if (itPos == m_eventMap.end())
-		return "";
-
-	return m_eventMap[strName];
+	if (!CheckEventName(sEventName)) {
+		WARN("GetAttrValue warning: attribute not found, key: {}", sEventName);
+		return nullptr;
+	}
+	return make_shared<const string>(m_eventMap[sEventName]);
 }
 UIBase* UIBase::GetParent()
 {
@@ -181,23 +190,43 @@ bool UIBase::SetParent(UIBase* pParent)
 bool UIBase::AddChild(UIBase* pChild)
 {
 	if (pChild == nullptr) {
-		WARN("AddChild warning: pChild is nullptr");
+		ERR("AddChild warning: pChild is nullptr");
 		return true;
 	}
 
-	string childName = pChild->GetObjectName();
-	if (childName.empty() || childName.length() == 0) {
+	shared_ptr<const string> childName = pChild->GetObjectName();
+	if (childName->empty() || (*childName).length() == 0) {
 		//匿名对象，不支持
 		ERR("AddChild error: anonymous object is not supported");
 		return false;
 	}
 
-	UIBase* pTemp = m_childrenMap[childName];
-	if (pTemp != nullptr) {
+	if (m_childrenMap.end() != m_childrenMap.find(*childName)) {
 		ERR("AddChild error: Homonymous object already exisit");
 		return false;
 	}
+	
+	m_childrenMap[*childName] = pChild;
+	return true;
+}
+UIBase*	UIBase::GetChild(const string& sChildName)
+{
+	if (m_childrenMap.end() != m_childrenMap.find(sChildName)) {
+		WARN("GetChild warning: child not found, name: {}", sChildName);
+		return nullptr;
+	}
+	ATLASSERT(m_childrenMap[sChildName]);
 
+	return m_childrenMap[sChildName];
+}
+bool UIBase::RemoveChild(const string& sChildName)
+{
+	map<string, UIBase*>::iterator it = m_childrenMap.find(sChildName);
+	if (m_childrenMap.end() == it) {
+		WARN("RemoveChild warning: child not found, name: {}", sChildName);
+		return false;
+	}
+	m_childrenMap.erase(it);
 	return true;
 }
 LayoutObject::LayoutObject()

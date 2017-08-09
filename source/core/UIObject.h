@@ -51,8 +51,10 @@ protected:
 	map<string, string>						m_eventMap;
 	UIBase*									m_parentObj;
 	map<string, UIBase*>					m_childrenMap;
+	map<string, string>						m_attrCmdPatternMap;
 	void									InitAttrMap();
 	void									InitEventMap();
+	void									InitAttrCmdParserMap();
 };
 
 class Test :public UIBase

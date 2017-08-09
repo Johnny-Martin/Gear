@@ -7,6 +7,7 @@ UIBase::UIBase()
 {
 	InitAttrMap();
 	InitEventMap();
+	InitAttrCmdParserMap();
 }
 bool UIBase::Init(const XMLElement* pElement)
 {
@@ -71,6 +72,10 @@ void UIBase::InitEventMap()
 	ADD_EVENT("OnMouseEnter",		"")
 	ADD_EVENT("OnMouseLeave",		"")
 	ADD_EVENT("OnMouseMove",		"")
+}
+void UIBase::InitAttrCmdParserMap()
+{
+
 }
 shared_ptr<const string> UIBase::GetObjectID()
 {
@@ -241,6 +246,8 @@ bool UIBase::RemoveChild(const string& sChildName)
 *********************************************/
 bool UIBase::ParseSpecialCmd()
 {
+	//Ω‚Œˆpos Ù–‘
+
 	return true;
 }
 LayoutObject::LayoutObject()

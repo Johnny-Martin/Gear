@@ -18,6 +18,35 @@ namespace Gear {
 #define ADD_EVENT(attrName, defaultValue)	\
 		m_eventMap.insert(pair<string, string>(attrName, defaultValue));
 
+#define ADD_ATTR_PATTERN(attrName, sPattern)	\
+		m_attrCmdPatternMap.insert(pair<string, string>(attrName, sPattern));
+
+/*******************************************************************************
+*以下 5 个宏用于粗略检查pos表达式的合法性
+*是否是4段
+*是否有错误的字符
+*pos表达式中，宽度、高度不支持#mid命令
+*******************************************************************************/
+#define R_ATTR_POS_LEFTEXP    "([0-9heigtwdm\\+\\-\\*\\(\\)/#]*)"
+#define R_ATTR_POS_TOPEXP     R_ATTR_POS_LEFTEXP
+#define R_ATTR_POS_WIDTHEXP   "([0-9heigtwd\\+\\-\\*\\(\\)/#]*)"
+#define R_ATTR_POS_HEIGHTEXP  R_ATTR_POS_WIDTHEXP
+							  
+#define R_CHECK_POS           "(" R_ATTR_POS_LEFTEXP "," R_ATTR_POS_TOPEXP "," R_ATTR_POS_WIDTHEXP "," R_ATTR_POS_HEIGHTEXP ")*"
+
+/*******************************************************************************
+*以下 7 个宏精用于确检查leftexp\topexp\widthexp\heightexp表达式的合法性
+*命令是否拼写错误
+*pos表达式中，宽度、高度不支持#mid命令
+*******************************************************************************/
+#define R_MATH_EXP            "[0-9\\+\\-\\*\\(\\)/]*" 
+#define R_ATTR_LEFTEXP_CMD    "((#mid)*(#height)*(#width)*)*"
+#define R_ATTR_WIDTHEXP_CMD   "((#height)*(#width)*)*"
+
+#define R_CHECK_LEFTEXP		  "(" R_MATH_EXP R_ATTR_LEFTEXP_CMD R_MATH_EXP ")*"
+#define R_CHECK_TOPEXP		  R_CHECK_LEFTEXP
+#define R_CHECK_WIDTHEXP	  "(" R_MATH_EXP R_ATTR_WIDTHEXP_CMD R_MATH_EXP ")*"
+#define R_CHECK_HEIGHTEXP     R_CHECK_WIDTHEXP
 /***************************************
 所有UI元素的基类
 ****************************************/

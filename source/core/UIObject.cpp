@@ -43,23 +43,18 @@ bool UIBase::Init(const XMLElement* pElement)
 }
 void UIBase::InitAttrMap()
 {
-	
-	ADD_ATTR("left",		"0")
-	ADD_ATTR("top",			"0")
-	ADD_ATTR("width",		"0")
-	ADD_ATTR("height",		"0")
-	ADD_ATTR("visible",		"1")
-	ADD_ATTR("enable",		"1")
-
 	ADD_ATTR("id",			"")
 	ADD_ATTR("name",		"")
 	ADD_ATTR("pos",			"")
-	ADD_ATTR("leftexp",		"")
-	ADD_ATTR("topexp",		"")
-	ADD_ATTR("widthexp",	"")
-	ADD_ATTR("heightexp",	"")
-	ADD_ATTR("rightexp",	"")
 
+	ADD_ATTR("visible",		"1")
+	ADD_ATTR("enable",		"1")
+
+	//以下属性不建议在xml中直接使用
+	ADD_ATTR("leftexp",		"")
+	ADD_ATTR("topexp", "")
+	ADD_ATTR("widthexp", "")
+	ADD_ATTR("heightexp",		"")
 }
 void UIBase::InitEventMap()
 {
@@ -75,7 +70,16 @@ void UIBase::InitEventMap()
 }
 void UIBase::InitAttrCmdParserMap()
 {
-
+	/*********************************************************************
+	*	pos="leftexp, topexp, widthexp, heightexp"
+	*	leftexp、topexp    :支持0-9、#mid、#width、#height、()、+、-、*、/
+	*	widthexp、heightexp:支持0-9、#width、#height、()、+、-、*、/
+	**********************************************************************/
+	ADD_ATTR_PATTERN("pos",			R_CHECK_POS);
+	ADD_ATTR_PATTERN("leftexp",		R_CHECK_LEFTEXP);
+	ADD_ATTR_PATTERN("topexp",		R_CHECK_TOPEXP);
+	ADD_ATTR_PATTERN("widthexp",	R_CHECK_WIDTHEXP);
+	ADD_ATTR_PATTERN("heightexp",	R_CHECK_HEIGHTEXP);
 }
 shared_ptr<const string> UIBase::GetObjectID()
 {

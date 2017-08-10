@@ -19,7 +19,10 @@ namespace Gear {
 		m_eventMap.insert(pair<string, string>(attrName, defaultValue));
 
 #define ADD_ATTR_PATTERN(attrName, sPattern)	\
-		m_attrCmdPatternMap.insert(pair<string, string>(attrName, sPattern));
+		m_attrValuePatternMap.insert(pair<string, string>(attrName, sPattern));
+
+#define ADD_ATTR_PARSER(attrName, sParser)	\
+		m_attrValueParserMap.insert(pair<string, function<bool(const string&)> >(attrName, sParser))
 
 /*******************************************************************************
 *以下 5 个宏用于粗略检查pos表达式的合法性
@@ -27,16 +30,16 @@ namespace Gear {
 *是否有错误的字符
 *pos表达式中，宽度、高度不支持#mid命令
 *******************************************************************************/
-#define R_ATTR_POS_LEFTEXP    "([0-9heigtwdm\\+\\-\\*\\(\\)/#]*)"
+#define R_ATTR_POS_LEFTEXP    "([0-9heigtwdm\\+\\-\\*\\(\\)/#\\\s*]*)"
 #define R_ATTR_POS_TOPEXP     R_ATTR_POS_LEFTEXP
-#define R_ATTR_POS_WIDTHEXP   "([0-9heigtwd\\+\\-\\*\\(\\)/#]*)"
+#define R_ATTR_POS_WIDTHEXP   "([0-9heigtwd\\+\\-\\*\\(\\)/#\\\s*]*)"
 #define R_ATTR_POS_HEIGHTEXP  R_ATTR_POS_WIDTHEXP
 							  
 #define R_CHECK_POS           "(" R_ATTR_POS_LEFTEXP "," R_ATTR_POS_TOPEXP "," R_ATTR_POS_WIDTHEXP "," R_ATTR_POS_HEIGHTEXP ")*"
 
 /*******************************************************************************
 *以下 7 个宏精用于确检查leftexp\topexp\widthexp\heightexp表达式的合法性
-*命令是否拼写错误
+*命令是否拼写错误、是否有空格/回车
 *pos表达式中，宽度、高度不支持#mid命令
 *******************************************************************************/
 #define R_MATH_EXP            "[0-9\\+\\-\\*\\(\\)/]*" 
@@ -47,6 +50,28 @@ namespace Gear {
 #define R_CHECK_TOPEXP		  R_CHECK_LEFTEXP
 #define R_CHECK_WIDTHEXP	  "(" R_MATH_EXP R_ATTR_WIDTHEXP_CMD R_MATH_EXP ")*"
 #define R_CHECK_HEIGHTEXP     R_CHECK_WIDTHEXP
+
+/*******************************************************************************
+*检查ID、布尔型、整形类的属性值
+*******************************************************************************/
+#define R_CHECK_ID			  "[1-9A-Za-z_\\.]+"
+#define R_CHECK_BOOL		  "[01]"
+#define R_CHECK_INT			  "[0-9]+"
+
+class UIEvent
+{
+public:
+	//UIEvent(const string& sLableAttr_Func_In_XML);
+	bool										SetEventHandlerFilePath(const string& sPath);
+	bool										SetEventHandlerName(const string& sName);
+	shared_ptr<const string>					GetEventHandlerFilePath();
+	shared_ptr<const string>					GetEventHandlerName();
+	bool										Fire();
+	bool										InvokeLuaHandler();
+private:
+	string m_filePath;							//处理该事件的lua的文件路径
+	string m_funcName;							//处理该事件的lua的函数名
+};
 /***************************************
 所有UI元素的基类
 ****************************************/
@@ -55,35 +80,40 @@ class UIBase
 public:
 	//UIBase的子类需要有一个无参构造，在里面初始化m_attrMap 和 m_eventMap
 	//(重写InitAttrMap、InitEventMap)此处应作编译时强制，但未想到好的方案
-											UIBase();
+												UIBase();
 	//使用XML节点初始化一个UI对象
-	virtual bool							Init(const XMLElement* pElement);
-	virtual bool							ParseSpecialCmd();
-	shared_ptr<const string>				GetObjectID();
-	shared_ptr<const string>				GetObjectName();
-	bool									CheckAttrName(const string& sAttrName);
-	bool									CheckEventName(const string& sEventName);
-	bool									AddAttr(const string& sAttrName, const string& sAttrDefaultValue = "");
-	bool									SetAttrValue(const string& sAttrName, const string& sAttrValue);
-	shared_ptr<const string>				GetAttrValue(const string& sAttrName);
-	bool									AddEvent(const string& sEventName, const string& sEventDefaultValue = "");
-	bool									SetEventHandler(const string& sEventName, const string& sEventValue);
-	bool									SetEventHandler(const XMLElement* pEventElement);
-	shared_ptr<const string>				GetEventHandler(const string& sEventName);
-	UIBase*									GetParent();
-	bool									SetParent(UIBase* pParent);
-	bool									AddChild(UIBase* pChild);
-	UIBase*									GetChild(const string& sChildName);
-	bool									RemoveChild(const string& sChildName);
+	virtual bool								Init(const XMLElement* pElement);
+	virtual bool								ParseSpecialCmd();
+	shared_ptr<const string>					GetObjectID();
+	shared_ptr<const string>					GetObjectName();
+	bool										CheckAttrName(const string& sAttrName);
+	bool										CheckAttrValue(const string& sAttrName, const string& sAttrValue);
+	bool										CheckEventName(const string& sEventName);
+	bool										AddAttr(const string& sAttrName, const string& sAttrDefaultValue = "");
+	bool										SetAttrValue(const string& sAttrName, const string& sAttrValue);
+	shared_ptr<const string>					GetAttrValue(const string& sAttrName);
+	bool										AddEvent(const string& sEventName, const string& sEventDefaultValue = "");
+	bool										SetEventHandler(const string& sEventName, const string& sEventValue);
+	bool										SetEventHandler(const XMLElement* pEventElement);
+	shared_ptr<const string>					GetEventHandler(const string& sEventName);
+	UIBase*										GetParent();
+	bool										SetParent(UIBase* pParent);
+	bool										AddChild(UIBase* pChild);
+	UIBase*										GetChild(const string& sChildName);
+	bool										RemoveChild(const string& sChildName);
 protected:
-	map<string, string>						m_attrMap;
-	map<string, string>						m_eventMap;
-	UIBase*									m_parentObj;
-	map<string, UIBase*>					m_childrenMap;
-	map<string, string>						m_attrCmdPatternMap;
-	void									InitAttrMap();
-	void									InitEventMap();
-	void									InitAttrCmdParserMap();
+	map<string, string>							m_attrMap;
+	map<string, string>							m_eventMap;
+	UIBase*										m_parentObj;
+	map<string, UIBase*>						m_childrenMap;
+	map<string, string>							m_attrValuePatternMap;
+	map<string, function<bool(const string&)> >	m_attrValueParserMap;
+	map<string, UIEvent*>						m_eventObjMap;
+
+	void										InitAttrMap();
+	void										InitEventMap();
+	void										InitAttrValuePatternMap();
+	void										InitAttrValueParserMap();
 };
 
 class Test :public UIBase

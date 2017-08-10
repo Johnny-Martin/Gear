@@ -2,12 +2,39 @@
 #include "UIObject.h"
 #include "UIFactory.h"
 #include "Log.h"
+#include <regex>
+
+//不可识别的字符转义序列（正则表达式中的\s）
+#pragma warning(disable:4129)
+
+bool UIEvent::SetEventHandlerFilePath(const string& sPath)
+{
+	m_filePath = sPath;
+	return true;
+}
+
+bool UIEvent::SetEventHandlerName(const string& sName)
+{
+	m_funcName = sName;
+	return true;
+}
+
+shared_ptr<const string> UIEvent::GetEventHandlerFilePath()
+{
+	return make_shared<const string>(m_filePath);
+}
+
+shared_ptr<const string> UIEvent::GetEventHandlerName()
+{
+	return make_shared<const string>(m_funcName);
+}
 
 UIBase::UIBase()
 {
 	InitAttrMap();
 	InitEventMap();
-	InitAttrCmdParserMap();
+	InitAttrValuePatternMap();
+	InitAttrValueParserMap();
 }
 bool UIBase::Init(const XMLElement* pElement)
 {
@@ -49,12 +76,14 @@ void UIBase::InitAttrMap()
 
 	ADD_ATTR("visible",		"1")
 	ADD_ATTR("enable",		"1")
+	ADD_ATTR("alpha",		"255")
+	ADD_ATTR("zorder",		"")
 
-	//以下属性不建议在xml中直接使用
+	//以下属性不建议在xml中直接使用(引入空格、Tab等字符，可能出异常)
 	ADD_ATTR("leftexp",		"")
-	ADD_ATTR("topexp", "")
-	ADD_ATTR("widthexp", "")
-	ADD_ATTR("heightexp",		"")
+	ADD_ATTR("topexp",		"")
+	ADD_ATTR("widthexp",	"")
+	ADD_ATTR("heightexp",	"")
 }
 void UIBase::InitEventMap()
 {
@@ -68,18 +97,83 @@ void UIBase::InitEventMap()
 	ADD_EVENT("OnMouseLeave",		"")
 	ADD_EVENT("OnMouseMove",		"")
 }
-void UIBase::InitAttrCmdParserMap()
+/*************************************************************************
+*检查属性值是否合法
+*	pos="leftexp, topexp, widthexp, heightexp"
+*	leftexp、topexp    :支持0-9、#mid、#width、#height、()、+、-、*、/
+*	widthexp、heightexp:支持0-9、#width、#height、()、+、-、*、/
+**************************************************************************/
+void UIBase::InitAttrValuePatternMap()
 {
-	/*********************************************************************
-	*	pos="leftexp, topexp, widthexp, heightexp"
-	*	leftexp、topexp    :支持0-9、#mid、#width、#height、()、+、-、*、/
-	*	widthexp、heightexp:支持0-9、#width、#height、()、+、-、*、/
-	**********************************************************************/
 	ADD_ATTR_PATTERN("pos",			R_CHECK_POS);
+	ADD_ATTR_PATTERN("visible",		R_CHECK_BOOL);
+	ADD_ATTR_PATTERN("enable",		R_CHECK_BOOL);
+	ADD_ATTR_PATTERN("alpha",		R_CHECK_INT);
+	ADD_ATTR_PATTERN("zorder",		R_CHECK_INT);
+
 	ADD_ATTR_PATTERN("leftexp",		R_CHECK_LEFTEXP);
 	ADD_ATTR_PATTERN("topexp",		R_CHECK_TOPEXP);
 	ADD_ATTR_PATTERN("widthexp",	R_CHECK_WIDTHEXP);
 	ADD_ATTR_PATTERN("heightexp",	R_CHECK_HEIGHTEXP);
+}
+/*************************************************************************
+*解析属性值
+**************************************************************************/
+void UIBase::InitAttrValueParserMap()
+{
+	//正则表达式的\s会匹配 tab、空格、回车
+	auto EraseSpace = [](string& str) {
+		for (string::iterator it = str.end(); it != str.begin();) {
+			--it;
+			if ((*it) == ' ' || (*it) == '\t') {
+				str.erase(it);
+			}
+		}
+	};
+
+	auto ParsePos = [&](const string& sAttrName="pos")->bool{
+		try {
+			auto sPattern = m_attrValuePatternMap[sAttrName];
+			auto posExp = m_attrMap[sAttrName];
+
+			regex pattern(sPattern.c_str());
+			string leftexp   = regex_replace(posExp, pattern, string("$2"));
+			string topexp    = regex_replace(posExp, pattern, string("$3"));
+			string widthexp  = regex_replace(posExp, pattern, string("$4"));
+			string heightexp = regex_replace(posExp, pattern, string("$5"));
+
+			//去除表达式中的空白符
+			EraseSpace(leftexp);
+			EraseSpace(topexp);
+			EraseSpace(widthexp);
+			EraseSpace(heightexp);
+
+			SetAttrValue("leftexp",	  leftexp);
+			SetAttrValue("topexp",	  topexp);
+			SetAttrValue("widthexp",  widthexp);
+			SetAttrValue("heightexp", heightexp);
+			return true;
+		}catch (...) {
+			ERR("ParsePos error: catch exception");
+			return false;
+		}
+	};
+
+	auto ParseLeftExp = [](const string& sAttrName = "leftexp")->bool {
+
+		return true;
+	};
+
+	auto ParseWidthExp = [](const string& sAttrName = "leftexp")->bool {
+
+		return true;
+	};
+
+	ADD_ATTR_PARSER("pos",			ParsePos);
+	ADD_ATTR_PARSER("leftexp",		ParseLeftExp);
+	ADD_ATTR_PARSER("topexp",		ParseLeftExp);
+	ADD_ATTR_PARSER("widthexp",		ParseWidthExp);
+	ADD_ATTR_PARSER("heightexp",	ParseWidthExp);
 }
 shared_ptr<const string> UIBase::GetObjectID()
 {
@@ -104,6 +198,21 @@ bool UIBase::CheckAttrName(const string& sAttrName)
 {
 	return (m_attrMap.end() != m_attrMap.find(sAttrName)) ? true : false;
 }
+bool UIBase::CheckAttrValue(const string& sAttrName, const string& sAttrValue)
+{
+	map<string, string>::iterator it = m_attrValuePatternMap.find(sAttrName);
+	if (it == m_attrValuePatternMap.end()) {
+		INFO("CheckAttrValue Info: attribute value pattern not found.(do not need check), name: {}", sAttrName);
+		return true;
+	}
+	regex pattern(it->second.c_str());
+	if (regex_match(sAttrValue, pattern)) {
+		return true;
+	}else {
+		ERR("CheckAttrValue error: ilegal attribute value, name: {}, value: {}", sAttrName, sAttrValue);
+		return false;
+	}
+}
 bool UIBase::CheckEventName(const string& sEventName)
 {
 	return (m_eventMap.end() != m_eventMap.find(sEventName)) ? true : false;
@@ -115,9 +224,14 @@ bool UIBase::AddAttr(const string& sAttrName, const string& sAttrDefaultValue /*
 }
 bool UIBase::SetAttrValue(const string& sAttrName, const string& sAttrValue)
 {
+	//标签所有的attr的值，都会被剔除空格符
 #ifdef DEBUG
 	if (!CheckAttrName(sAttrName)) {
-		ERR("SetAttrValue error: Unsupported attr name: {}, value: {}.", sAttrName, sAttrValue);
+		ERR("SetAttrValue error: Unsupported attribute, name: {}, value: {}.", sAttrName, sAttrValue);
+		return false;
+	}
+	if (!CheckAttrValue(sAttrName, sAttrValue)) {
+		ERR("SetAttrValue error: ilegal attribute value, name: {}, value: {}.", sAttrName, sAttrValue);
 		return false;
 	}
 #endif // DEBUG
@@ -130,6 +244,13 @@ bool UIBase::SetAttrValue(const string& sAttrName, const string& sAttrValue)
 	else if(sAttrName == "id")
 		m_attrMap["name"] = sAttrValue;
 
+	map<string, function<bool(const string&)> >::iterator it = m_attrValueParserMap.find(sAttrName);
+	if (it != m_attrValueParserMap.end()) {
+		if (!it->second(sAttrName)) {
+			ERR("SetAttrValue error: parse attribute value error, name: {}, value: {}", sAttrName, sAttrValue);
+			return false;
+		}
+	}
 	return true;
 }
 shared_ptr<const string> UIBase::GetAttrValue(const string& sAttrName)

@@ -103,7 +103,7 @@ public:
 	bool										RemoveChild(const string& sChildName);
 protected:
 	map<string, string>							m_attrMap;
-	map<string, string>							m_eventMap;
+	map<string, string>							m_eventMap;//second成员存的是event标签中的func的字符串值
 	UIBase*										m_parentObj;
 	map<string, UIBase*>						m_childrenMap;
 	map<string, string>							m_attrValuePatternMap;

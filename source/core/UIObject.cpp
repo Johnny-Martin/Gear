@@ -277,9 +277,21 @@ bool UIBase::SetEventHandler(const string& sEventName, const string& sEventValue
 		ERR("SetEventHandler error: Unsupported event name: {}, handler: {}.", sEventName, sEventValue);
 		return false;
 	}
-		
+	auto CheckEventHandlerValue = [&sEventName](const string& funcStr)->bool {
+		regex funcStrPattern("([^=>]*)(=>)*([^=>]*)");
+		if (!regex_match("OnWindowCreate", funcStrPattern)) {
+			ERR("CheckEventHandlerValue error: ilegal func value, event name: {}, func: {}", sEventName, funcStr);
+			return false;
+		}
+		return true;
+	};
+	if (!CheckEventHandlerValue(sEventValue))
+		return false;
 #endif // DEBUG
+
 	m_eventMap[sEventName] = sEventValue;
+
+	//解析 func字段，成一个eventObj;
 	return true;
 }
 bool UIBase::SetEventHandler(const XMLElement* pEventElement)

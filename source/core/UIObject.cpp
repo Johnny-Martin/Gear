@@ -105,6 +105,8 @@ void UIBase::InitEventMap()
 **************************************************************************/
 void UIBase::InitAttrValuePatternMap()
 {
+	ADD_ATTR_PATTERN("id",			R_CHECK_ID);
+	ADD_ATTR_PATTERN("name",		R_CHECK_ID);
 	ADD_ATTR_PATTERN("pos",			R_CHECK_POS);
 	ADD_ATTR_PATTERN("visible",		R_CHECK_BOOL);
 	ADD_ATTR_PATTERN("enable",		R_CHECK_BOOL);

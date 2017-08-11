@@ -37,7 +37,7 @@
 		<event name="OnCreate" />
 	</window>
 	-->
-	<window id="TestLayout" pos="#mid - 5, #mid + 5, 200, 500" title="测试布局对象">
+	<window id="TestLayout" pos="5, 5, 200, 500" title="测试布局对象">
 		<layout id="root" pos="(#width - 100)/2, (#height - 200), 100, 200">
 			<image id="wnd.content.icon" pos="0, 0, 15, 15" res="imagelist.frameBkg.3" />
 			<image id="wnd.content.icon2" pos="15, 15, 15, 15" res="imagelist.frameBkg.3" />

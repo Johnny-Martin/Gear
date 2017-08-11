@@ -59,6 +59,13 @@ namespace Gear {
 #define R_CHECK_BOOL		  "[01]"
 #define R_CHECK_INT			  "[0-9]+"
 
+struct UIPos
+{
+	int			 left;
+	int			 top;
+	unsigned int width;
+	unsigned int height;
+};
 class UIEvent
 {
 public:
@@ -102,6 +109,8 @@ public:
 	bool										AddChild(UIBase* pChild);
 	UIBase*										GetChild(const string& sChildName);
 	bool										RemoveChild(const string& sChildName);
+	bool										CalcPosFromExp();
+	const UIPos&								GetPosObject();
 protected:
 	map<string, string>							m_attrMap;
 	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象
@@ -109,6 +118,7 @@ protected:
 	map<string, UIBase*>						m_childrenMap;
 	map<string, string>							m_attrValuePatternMap;
 	map<string, function<bool(const string&)> >	m_attrValueParserMap;
+	UIPos										m_pos;
 
 	void										InitAttrMap();
 	void										InitEventMap();

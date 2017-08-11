@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIObject.h"
 #include "UIFactory.h"
+#include <sstream>
 #include "Log.h"
 #include <regex>
 
@@ -29,7 +30,7 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
-UIBase::UIBase()
+UIBase::UIBase():m_pos()
 {
 	InitAttrMap();
 	InitEventMap();
@@ -150,7 +151,8 @@ void UIBase::InitAttrValueParserMap()
 			EraseSpace(widthexp);
 			EraseSpace(heightexp);
 
-			SetAttrValue("widthexp", widthexp);
+			//先设置宽高，因为leftexp、topexp有可能含有#mid命令，需要用到宽高表达式
+			SetAttrValue("widthexp",  widthexp);
 			SetAttrValue("heightexp", heightexp);
 			SetAttrValue("leftexp",	  leftexp);
 			SetAttrValue("topexp",	  topexp);
@@ -165,7 +167,7 @@ void UIBase::InitAttrValueParserMap()
 	auto ParseLeftExp = [&](const string& sAttrName = "leftexp")->bool {
 		regex  midPattern("#mid");
 		string selfWidth	 = m_attrMap["widthexp"];
-		string replaceStr	 = "((#width-(" + selfWidth + "))/2)";
+		string replaceStr	 = "((#width-(" + selfWidth + "))/2)";//不能带进空格
 		auto   strRet		 = regex_replace(m_attrMap[sAttrName], midPattern, replaceStr);
 
 		m_attrMap["leftexp"] = strRet;
@@ -175,7 +177,7 @@ void UIBase::InitAttrValueParserMap()
 	auto ParseTopExp = [&](const string& sAttrName = "topexp")->bool {
 		regex  midPattern("#mid");
 		string selfHeight = m_attrMap["heightexp"];
-		string replaceStr = "((#height-(" + selfHeight + "))/2)";
+		string replaceStr = "((#height-(" + selfHeight + "))/2)";//不能带进空格
 		auto   strRet = regex_replace(m_attrMap[sAttrName], midPattern, replaceStr);
 
 		m_attrMap["topexp"] = strRet;
@@ -422,6 +424,71 @@ bool UIBase::RemoveChild(const string& sChildName)
 	}
 	m_childrenMap.erase(it);
 	return true;
+}
+bool UIBase::CalcPosFromExp()
+{
+	auto I2Str = [](auto param)->string{
+		stringstream strStream;
+		string ret;
+		strStream << param;
+		strStream >> ret;
+		return ret;
+	};
+
+	auto CalcMathExpression = [](const string& sExp)->int {
+		
+		return 0;
+	};
+
+	auto CalcLeftOrTopPos = [&](const string& leftOrTopExp)->int {
+		string strExp = m_attrMap[leftOrTopExp];
+		if (strExp.empty()) {
+			WARN("CalcLeftOrTopPos warning: {} expression not found, use default: 0", leftOrTopExp);
+			return (int)0;
+		}
+		//根对象不能使用#width等涉及到父对象属性值的命令
+		if (strExp.find("#") != string::npos) {
+			if (!m_parentObj) {
+				ERR("CalcLeftOrTopPos error: can not find parent object to get parent size");
+				return (int)0;
+			}
+			//将leftexp变为纯数学表达式
+			strExp = regex_replace(strExp, regex("#width"),  I2Str(m_parentObj->GetPosObject().width));
+			strExp = regex_replace(strExp, regex("#height"), I2Str(m_parentObj->GetPosObject().height));
+		}
+		return CalcMathExpression(strExp);
+	};
+
+	auto CalcWidthOrHeight = [&](const string& widthOrHightExp)->unsigned int {
+		string strExp = m_attrMap[widthOrHightExp];
+		if (strExp.empty()) {
+			WARN("CalcWidthOrHeight warning: {} expression not found, use default: 0", widthOrHightExp);
+			return (unsigned int)0;
+		}
+		//根对象不能使用#width等涉及到父对象属性值的命令
+		if (strExp.find("#") != string::npos) {
+			if (!m_parentObj) {
+				ERR("CalcLeftOrTopPos error: can not find parent object to get parent size");
+				return (unsigned int)0;
+			}
+			//将leftexp变为纯数学表达式
+			strExp = regex_replace(strExp, regex("#width"),  I2Str(m_parentObj->GetPosObject().width));
+			strExp = regex_replace(strExp, regex("#height"), I2Str(m_parentObj->GetPosObject().height));
+		}
+		int iValue = CalcMathExpression(strExp);
+		if (iValue < 0) {
+			ERR("CalcWidthOrHeight error: The calculation result of expression [{}] is less than 0。Original expression: [{}]", strExp, m_attrMap[widthOrHightExp]);
+			return (unsigned int)0;
+		}
+		return (unsigned int)iValue;
+	};
+
+
+	return true;
+}
+const UIPos& UIBase::GetPosObject()
+{
+	return m_pos;
 }
 
 /********************************************

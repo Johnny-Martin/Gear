@@ -16,7 +16,7 @@ namespace Gear {
 		m_attrMap.insert(pair<string, string>(attrName, defaultValue));
 
 #define ADD_EVENT(attrName, defaultValue)	\
-		m_eventMap.insert(pair<string, string>(attrName, defaultValue));
+		m_eventMap.insert(pair<string, UIEvent*>(attrName, defaultValue));
 
 #define ADD_ATTR_PATTERN(attrName, sPattern)	\
 		m_attrValuePatternMap.insert(pair<string, string>(attrName, sPattern));
@@ -50,6 +50,7 @@ namespace Gear {
 #define R_CHECK_TOPEXP		  R_CHECK_LEFTEXP
 #define R_CHECK_WIDTHEXP	  "(" R_MATH_EXP R_ATTR_WIDTHEXP_CMD R_MATH_EXP ")*"
 #define R_CHECK_HEIGHTEXP     R_CHECK_WIDTHEXP
+#define R_CHECK_EVENT_FUNC    "([^=>]*)(=>)?([^=>]*)"
 
 /*******************************************************************************
 *检查ID、布尔型、整形类的属性值
@@ -63,9 +64,9 @@ class UIEvent
 public:
 	//UIEvent(const string& sLableAttr_Func_In_XML);
 	bool										SetEventHandlerFilePath(const string& sPath);
-	bool										SetEventHandlerName(const string& sName);
+	bool										SetEventHandlerFuncName(const string& sName);
 	shared_ptr<const string>					GetEventHandlerFilePath();
-	shared_ptr<const string>					GetEventHandlerName();
+	shared_ptr<const string>					GetEventHandlerFuncName();
 	bool										Fire();
 	bool										InvokeLuaHandler();
 private:
@@ -92,10 +93,10 @@ public:
 	bool										AddAttr(const string& sAttrName, const string& sAttrDefaultValue = "");
 	bool										SetAttrValue(const string& sAttrName, const string& sAttrValue);
 	shared_ptr<const string>					GetAttrValue(const string& sAttrName);
-	bool										AddEvent(const string& sEventName, const string& sEventDefaultValue = "");
-	bool										SetEventHandler(const string& sEventName, const string& sEventValue);
+	bool										AddEvent(const string& sEventName, UIEvent* pEventObj = nullptr);
+	bool										SetEventHandler(const string& sEventName, const string& sFuncName, const string& sFilePath);
 	bool										SetEventHandler(const XMLElement* pEventElement);
-	shared_ptr<const string>					GetEventHandler(const string& sEventName);
+	shared_ptr<UIEvent*>						GetEventHandler(const string& sEventName);
 	UIBase*										GetParent();
 	bool										SetParent(UIBase* pParent);
 	bool										AddChild(UIBase* pChild);
@@ -103,12 +104,11 @@ public:
 	bool										RemoveChild(const string& sChildName);
 protected:
 	map<string, string>							m_attrMap;
-	map<string, string>							m_eventMap;//second成员存的是event标签中的func的字符串值
+	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象
 	UIBase*										m_parentObj;
 	map<string, UIBase*>						m_childrenMap;
 	map<string, string>							m_attrValuePatternMap;
 	map<string, function<bool(const string&)> >	m_attrValueParserMap;
-	map<string, UIEvent*>						m_eventObjMap;
 
 	void										InitAttrMap();
 	void										InitEventMap();

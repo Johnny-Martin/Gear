@@ -13,7 +13,7 @@ bool UIEvent::SetEventHandlerFilePath(const string& sPath)
 	return true;
 }
 
-bool UIEvent::SetEventHandlerName(const string& sName)
+bool UIEvent::SetEventHandlerFuncName(const string& sName)
 {
 	m_funcName = sName;
 	return true;
@@ -24,7 +24,7 @@ shared_ptr<const string> UIEvent::GetEventHandlerFilePath()
 	return make_shared<const string>(m_filePath);
 }
 
-shared_ptr<const string> UIEvent::GetEventHandlerName()
+shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 {
 	return make_shared<const string>(m_funcName);
 }
@@ -87,15 +87,15 @@ void UIBase::InitAttrMap()
 }
 void UIBase::InitEventMap()
 {
-	ADD_EVENT("OnCreate",			"")
-	ADD_EVENT("OnDestory",			"")
-	ADD_EVENT("OnVisibleChange",	"")
-	ADD_EVENT("OnEnableChange",		"")
-	ADD_EVENT("OnMove",				"")
-	ADD_EVENT("OnSize",				"")
-	ADD_EVENT("OnMouseEnter",		"")
-	ADD_EVENT("OnMouseLeave",		"")
-	ADD_EVENT("OnMouseMove",		"")
+	ADD_EVENT("OnCreate",			nullptr)
+	ADD_EVENT("OnDestory",			nullptr)
+	ADD_EVENT("OnVisibleChange",	nullptr)
+	ADD_EVENT("OnEnableChange",		nullptr)
+	ADD_EVENT("OnMove",				nullptr)
+	ADD_EVENT("OnSize",				nullptr)
+	ADD_EVENT("OnMouseEnter",		nullptr)
+	ADD_EVENT("OnMouseLeave",		nullptr)
+	ADD_EVENT("OnMouseMove",		nullptr)
 }
 /*************************************************************************
 *检查属性值是否合法
@@ -127,7 +127,7 @@ void UIBase::InitAttrValueParserMap()
 	auto EraseSpace = [](string& str) {
 		for (string::iterator it = str.end(); it != str.begin();) {
 			--it;
-			if ((*it) == ' ' || (*it) == '\t') {
+			if ((*it) == ' ' || (*it) == '\t' || (*it) == '\n' || (*it) == '\r') {
 				str.erase(it);
 			}
 		}
@@ -265,33 +265,45 @@ shared_ptr<const string> UIBase::GetAttrValue(const string& sAttrName)
 	}
 	return make_shared<const string>(m_attrMap[sAttrName]);
 }
-bool UIBase::AddEvent(const string& sEventName, const string& sEventDefaultValue /* = "" */)
+bool UIBase::AddEvent(const string& sEventName, UIEvent* pEventObj /* nullptr */)
 {
-	ADD_EVENT(sEventName, sEventDefaultValue)
+	ADD_EVENT(sEventName, pEventObj)
 	return true;
 }
-bool UIBase::SetEventHandler(const string& sEventName, const string& sEventValue)
+bool UIBase::SetEventHandler(const string& sEventName, const string& sFuncName, const string& sFilePath)
 {
+	
 #ifdef DEBUG
 	if (!CheckEventName(sEventName)) {
-		ERR("SetEventHandler error: Unsupported event name: {}, handler: {}.", sEventName, sEventValue);
+		ERR("SetEventHandler error: Unsupported event name: {}, handler: {}.", sEventName, sFuncName);
 		return false;
 	}
-	auto CheckEventHandlerValue = [&sEventName](const string& funcStr)->bool {
-		regex funcStrPattern("([^=>]*)(=>)*([^=>]*)");
-		if (!regex_match("OnWindowCreate", funcStrPattern)) {
-			ERR("CheckEventHandlerValue error: ilegal func value, event name: {}, func: {}", sEventName, funcStr);
+	auto CheckFuncName = [&sEventName, &sFuncName]()->bool {
+		regex funcNamePattern("[0-9A-Za-z_]+");
+		if (!regex_match(sFuncName, funcNamePattern)) {
+			ERR("SetEventHandler CheckFuncName error: ilegal function name, event name: {}, function name: {}", sEventName, sFuncName);
 			return false;
 		}
 		return true;
 	};
-	if (!CheckEventHandlerValue(sEventValue))
-		return false;
+
+	if (!CheckFuncName()) return false;
+
+	auto it = m_eventMap.find(sEventName);
+	if (it != m_eventMap.end() && it->second) {
+		WARN("SetEventHandler  warning: event handler already exisit, will be recoverd! event name: {}, old function name: {}, new function name: {}", sEventName, *(it->second->GetEventHandlerFuncName()), sFuncName);
+	}
 #endif // DEBUG
-
-	m_eventMap[sEventName] = sEventValue;
-
-	//解析 func字段，成一个eventObj;
+	
+	UIEvent* pEventObj = m_eventMap[sEventName] ? m_eventMap[sEventName] : (new UIEvent());
+	if (!pEventObj) {
+		ERR("SetEventHandler error: get event object failed, name: {}, function: {}", sEventName, sFuncName);
+		return false;
+	}
+	pEventObj->SetEventHandlerFilePath(sFilePath);
+	pEventObj->SetEventHandlerFuncName(sFuncName);
+	
+	m_eventMap[sEventName] = pEventObj;
 	return true;
 }
 bool UIBase::SetEventHandler(const XMLElement* pEventElement)
@@ -306,21 +318,47 @@ bool UIBase::SetEventHandler(const XMLElement* pEventElement)
 		return false;
 	}
 
-	auto eventHandler = pEventElement->Attribute("func");
-	if (eventHandler == nullptr) {
-		ERR("SetEventHandler info: No event handler specified, use event name: {}", eventName);
-		//不指定func字段，则到同名lua下找eventName同名function
-		return SetEventHandler(eventName, eventName);
-	}
-	return SetEventHandler(eventName, eventHandler);
+	auto szFuncName = pEventElement->Attribute("func");
+	auto szFilePath = pEventElement->Attribute("file");
+
+	string sFuncName = szFuncName ? szFuncName : eventName;
+	string sFilePath = szFilePath ? szFilePath : "";
+
+	//去掉路径、函数名两端的空白符
+	auto EraseEndsSpace = [](string& str) {
+		//去掉头部空白符
+		for (string::iterator it = str.begin(); it != str.end(); ) {
+			if ((*it) == ' ' || (*it) == '\t' || (*it) == '\n' || (*it) == '\r') {
+				str.erase(it);
+				it = str.begin();
+				continue;
+			}
+			break;
+		}
+		//去掉尾部空白符
+		for (string::iterator it = str.end(); it != str.begin();) {
+			--it;
+			if ((*it) == ' ' || (*it) == '\t' || (*it) == '\n' || (*it) == '\r') {
+				str.erase(it);
+				it = str.end();
+				continue;
+			}
+			break;
+		}
+	};
+
+	EraseEndsSpace(sFuncName);
+	EraseEndsSpace(sFilePath);
+
+	return SetEventHandler(eventName, sFuncName, sFilePath);
 }
-shared_ptr<const string> UIBase::GetEventHandler(const string& sEventName)
+shared_ptr<UIEvent*> UIBase::GetEventHandler(const string& sEventName)
 {
 	if (!CheckEventName(sEventName)) {
 		WARN("GetAttrValue warning: attribute not found, key: {}", sEventName);
 		return nullptr;
 	}
-	return make_shared<const string>(m_eventMap[sEventName]);
+	return make_shared<UIEvent*>(m_eventMap[sEventName]);
 }
 UIBase* UIBase::GetParent()
 {

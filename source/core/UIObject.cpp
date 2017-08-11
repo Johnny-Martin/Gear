@@ -150,10 +150,11 @@ void UIBase::InitAttrValueParserMap()
 			EraseSpace(widthexp);
 			EraseSpace(heightexp);
 
+			SetAttrValue("widthexp", widthexp);
+			SetAttrValue("heightexp", heightexp);
 			SetAttrValue("leftexp",	  leftexp);
 			SetAttrValue("topexp",	  topexp);
-			SetAttrValue("widthexp",  widthexp);
-			SetAttrValue("heightexp", heightexp);
+			
 			return true;
 		}catch (...) {
 			ERR("ParsePos error: catch exception");
@@ -162,20 +163,13 @@ void UIBase::InitAttrValueParserMap()
 	};
 
 	auto ParseLeftExp = [](const string& sAttrName = "leftexp")->bool {
-
-		return true;
-	};
-
-	auto ParseWidthExp = [](const string& sAttrName = "leftexp")->bool {
-
+		regex midPattern("#mid");
 		return true;
 	};
 
 	ADD_ATTR_PARSER("pos",			ParsePos);
 	ADD_ATTR_PARSER("leftexp",		ParseLeftExp);
 	ADD_ATTR_PARSER("topexp",		ParseLeftExp);
-	ADD_ATTR_PARSER("widthexp",		ParseWidthExp);
-	ADD_ATTR_PARSER("heightexp",	ParseWidthExp);
 }
 shared_ptr<const string> UIBase::GetObjectID()
 {
@@ -246,7 +240,7 @@ bool UIBase::SetAttrValue(const string& sAttrName, const string& sAttrValue)
 	else if(sAttrName == "id")
 		m_attrMap["name"] = sAttrValue;
 
-	map<string, function<bool(const string&)> >::iterator it = m_attrValueParserMap.find(sAttrName);
+	auto it = m_attrValueParserMap.find(sAttrName);
 	if (it != m_attrValueParserMap.end()) {
 		if (!it->second(sAttrName)) {
 			ERR("SetAttrValue error: parse attribute value error, name: {}, value: {}", sAttrName, sAttrValue);

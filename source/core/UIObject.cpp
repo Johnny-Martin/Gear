@@ -162,14 +162,28 @@ void UIBase::InitAttrValueParserMap()
 		}
 	};
 
-	auto ParseLeftExp = [](const string& sAttrName = "leftexp")->bool {
-		regex midPattern("#mid");
+	auto ParseLeftExp = [&](const string& sAttrName = "leftexp")->bool {
+		regex  midPattern("#mid");
+		string selfWidth	 = m_attrMap["widthexp"];
+		string replaceStr	 = "((#width-(" + selfWidth + "))/2)";
+		auto   strRet		 = regex_replace(m_attrMap[sAttrName], midPattern, replaceStr);
+
+		m_attrMap["leftexp"] = strRet;
 		return true;
 	};
 
+	auto ParseTopExp = [&](const string& sAttrName = "topexp")->bool {
+		regex  midPattern("#mid");
+		string selfHeight = m_attrMap["heightexp"];
+		string replaceStr = "((#height-(" + selfHeight + "))/2)";
+		auto   strRet = regex_replace(m_attrMap[sAttrName], midPattern, replaceStr);
+
+		m_attrMap["topexp"] = strRet;
+		return true;
+	};
 	ADD_ATTR_PARSER("pos",			ParsePos);
 	ADD_ATTR_PARSER("leftexp",		ParseLeftExp);
-	ADD_ATTR_PARSER("topexp",		ParseLeftExp);
+	ADD_ATTR_PARSER("topexp",		ParseTopExp);
 }
 shared_ptr<const string> UIBase::GetObjectID()
 {

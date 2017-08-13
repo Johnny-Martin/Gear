@@ -30,7 +30,7 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
-UIBase::UIBase():m_pos()
+UIBase::UIBase():m_pos(), m_parentObj(nullptr)
 {
 	InitAttrMap();
 	InitEventMap();
@@ -46,7 +46,8 @@ bool UIBase::Init(const XMLElement* pElement)
 		SetAttrValue(attrName, pAttr->Value());
 		pAttr = pAttr->Next();
 	}
-
+	//先计算自己的pos，后续的子节点才有法计算
+	CalcPosFromExp();
 	//为方便XML文件的编写，避免一个标签的属性列表过长
 	//、过多，事件是以子标签的形式写在一个lable下面
 	//保存element的事件、生成并初始化子控件
@@ -56,14 +57,14 @@ bool UIBase::Init(const XMLElement* pElement)
 		if (childName == "event"){
 			SetEventHandler(pChild);
 		}else {
-			auto pObj = CREATE(UIBase, childName);
-			if (pObj) {
-				//先初始化，再加到父节点
-				pObj->Init(pChild);
-				AddChild(pObj);
+			auto pChildObj = CREATE(UIBase, childName);
+			if (pChildObj) {
+				//先加到父节点，再初始化
+				AddChild(pChildObj);
+				pChildObj->SetParent(this);
+				pChildObj->Init(pChild);
 			}
 		}
-		m_childrenMap;
 		pChild = pChild->NextSiblingElement();
 	}
 
@@ -435,9 +436,106 @@ bool UIBase::CalcPosFromExp()
 		return ret;
 	};
 
-	auto CalcMathExpression = [](const string& sExp)->int {
-		
-		return 0;
+	auto D2I = [](const double& input) { return (int)(input + 0.5); };
+
+	//仅支持+-/*()六种操作符,sExp中除了数字之外就是六种操作符，不再有其他字符
+	//不支持负数(可以用0-正数代替)，不支持小数(可以用分数表示)。
+	auto CalcMathExpression = [](const string& sExp)->double {
+		if (sExp.empty()) return 0.0;
+		stack<double> outputStack;
+		stack<char> operatorStack;
+
+		auto IsNumber = [](const char& test) { return test >= '0' && test <= '9'; };
+
+		auto PushToOutputStack = [&IsNumber, &outputStack](const string& originalExp, string::size_type begin) {
+			string::size_type end = begin;
+			while (end < originalExp.size() && IsNumber(originalExp[end])) { ++end; };
+			--end;
+			string strOperand = originalExp.substr(begin, end - begin + 1);
+			_ASSERT(!strOperand.empty());
+			int iOperand = atoi(strOperand.c_str());
+			outputStack.push(iOperand);
+			//返回当前操作数的末尾在串中的位置
+			return end;
+		};
+
+		auto CalcOutputStack = [&outputStack](const char& op) {
+			if (outputStack.size() < 2) {
+				ERR("CalcOutputStack error: outputStack size: error.");
+				return false;
+			}
+			if (op != '+' && op != '-' && op != '*' && op != '/') { return false; }
+			
+			double rightOp = outputStack.top();
+			outputStack.pop();
+			double leftOp  = outputStack.top();
+			outputStack.pop();
+			switch (op) {
+			case '+':
+				outputStack.push(leftOp + rightOp);
+				break;
+			case '-':
+				outputStack.push(leftOp - rightOp);
+				break;
+			case '*':
+				outputStack.push(leftOp * rightOp);
+				break;
+			case '/':
+				//除0异常由外层捕获
+				outputStack.push(leftOp / rightOp);
+				break;
+			default:
+				ERR("CalcOutputStack error: unsupported operator: {}", op);
+				return false;
+			}
+			return true;
+		};
+
+		for (string::size_type i = 0; i < sExp.size(); ++i) {
+			//遇到操作数了，压入操作数栈
+			if (IsNumber(sExp[i])) {
+				i = PushToOutputStack(sExp, i);
+				continue;
+			}
+			char curOperator = sExp[i];
+			//如果是*/号，只要下一个字符是数字，就可以计算自己。否则入栈
+			if (curOperator == '*' || curOperator == '/') {
+				if (IsNumber(sExp[i + 1])) {
+					//将下一个操作数找出、入栈，然后计算
+					i = PushToOutputStack(sExp, i + 1);
+					CalcOutputStack(curOperator);
+					continue;
+				}
+				operatorStack.push(curOperator);
+			}
+			else if (curOperator == '+' || curOperator == '-') {
+				//如果是+-号，只要栈顶不空、不是'(', 则先计算栈顶符号，再将自己入栈
+				if (operatorStack.empty() || operatorStack.top() == '(') {
+					operatorStack.push(curOperator);
+					continue;
+				}
+				CalcOutputStack(operatorStack.top());
+				operatorStack.pop();
+				operatorStack.push(curOperator);
+			}
+			else if (curOperator == '(') {
+				//左括号,直接入栈
+				operatorStack.push(sExp[i]);
+			}
+			else if (curOperator == ')') {
+				//边处理边计算，则符号栈中的()之间最多只有一个操作符
+				if (CalcOutputStack(operatorStack.top())) {
+					operatorStack.pop();
+				}
+				_ASSERT(operatorStack.top() == '(');
+				operatorStack.pop();
+			}
+		}
+		if (!operatorStack.empty()) {
+			CalcOutputStack(operatorStack.top());
+			operatorStack.pop();
+		}
+		return outputStack.top();
 	};
 
 	auto CalcLeftOrTopPos = [&](const string& leftOrTopExp)->int {
@@ -456,7 +554,7 @@ bool UIBase::CalcPosFromExp()
 			strExp = regex_replace(strExp, regex("#width"),  I2Str(m_parentObj->GetPosObject().width));
 			strExp = regex_replace(strExp, regex("#height"), I2Str(m_parentObj->GetPosObject().height));
 		}
-		return CalcMathExpression(strExp);
+		return D2I(CalcMathExpression(strExp));
 	};
 
 	auto CalcWidthOrHeight = [&](const string& widthOrHightExp)->unsigned int {
@@ -475,18 +573,22 @@ bool UIBase::CalcPosFromExp()
 			strExp = regex_replace(strExp, regex("#width"),  I2Str(m_parentObj->GetPosObject().width));
 			strExp = regex_replace(strExp, regex("#height"), I2Str(m_parentObj->GetPosObject().height));
 		}
-		int iValue = CalcMathExpression(strExp);
+		int iValue = D2I(CalcMathExpression(strExp));
 		if (iValue < 0) {
+			//宽度、高度不能小于0
 			ERR("CalcWidthOrHeight error: The calculation result of expression [{}] is less than 0。Original expression: [{}]", strExp, m_attrMap[widthOrHightExp]);
 			return (unsigned int)0;
 		}
 		return (unsigned int)iValue;
 	};
 
-
+	m_pos.left	 = CalcLeftOrTopPos("leftexp");
+	m_pos.top	 = CalcLeftOrTopPos("topexp");
+	m_pos.width  = CalcWidthOrHeight("widthexp");
+	m_pos.height = CalcWidthOrHeight("heightexp");
 	return true;
 }
-const UIPos& UIBase::GetPosObject()
+const UIPos UIBase::GetPosObject()
 {
 	return m_pos;
 }

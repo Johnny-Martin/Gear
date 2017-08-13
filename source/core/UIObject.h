@@ -61,6 +61,7 @@ namespace Gear {
 
 struct UIPos
 {
+	UIPos() :left(0), top(0), width(0), height(0) {};
 	int			 left;
 	int			 top;
 	unsigned int width;
@@ -110,7 +111,7 @@ public:
 	UIBase*										GetChild(const string& sChildName);
 	bool										RemoveChild(const string& sChildName);
 	bool										CalcPosFromExp();
-	const UIPos&								GetPosObject();
+	const UIPos									GetPosObject();
 protected:
 	map<string, string>							m_attrMap;
 	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象

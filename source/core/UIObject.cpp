@@ -436,7 +436,7 @@ bool UIBase::CalcPosFromExp()
 		return ret;
 	};
 
-	auto D2I = [](const double& input) { return (int)(input + 0.5); };
+	auto D2I_Round = [](const double& input) { return (int)(input >= 0 ? (input + 0.5) : (input - 0.5)); };
 
 	//仅支持+-/*()六种操作符,sExp中除了数字之外就是六种操作符，不再有其他字符
 	//不支持负数(可以用0-正数代替)，不支持小数(可以用分数表示)。
@@ -554,7 +554,7 @@ bool UIBase::CalcPosFromExp()
 			strExp = regex_replace(strExp, regex("#width"),  I2Str(m_parentObj->GetPosObject().width));
 			strExp = regex_replace(strExp, regex("#height"), I2Str(m_parentObj->GetPosObject().height));
 		}
-		return D2I(CalcMathExpression(strExp));
+		return D2I_Round(CalcMathExpression(strExp));
 	};
 
 	auto CalcWidthOrHeight = [&](const string& widthOrHightExp)->unsigned int {
@@ -573,7 +573,7 @@ bool UIBase::CalcPosFromExp()
 			strExp = regex_replace(strExp, regex("#width"),  I2Str(m_parentObj->GetPosObject().width));
 			strExp = regex_replace(strExp, regex("#height"), I2Str(m_parentObj->GetPosObject().height));
 		}
-		int iValue = D2I(CalcMathExpression(strExp));
+		int iValue = D2I_Round(CalcMathExpression(strExp));
 		if (iValue < 0) {
 			//宽度、高度不能小于0
 			ERR("CalcWidthOrHeight error: The calculation result of expression [{}] is less than 0。Original expression: [{}]", strExp, m_attrMap[widthOrHightExp]);

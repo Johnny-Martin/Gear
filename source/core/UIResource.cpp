@@ -5,6 +5,35 @@
 
 using namespace Gear::Res;
 
+UIImage::UIImage()
+{
+	InitAttrMap();
+	InitEventMap();
+	InitAttrValuePatternMap();
+	InitAttrValueParserMap();
+}
+void UIImage::InitAttrMap()
+{
+	ADD_ATTR("res", "")
+}
+void UIImage::InitEventMap()
+{
+	//ADD_EVENT("OnCreate", nullptr)
+}
+/*************************************************************************
+*检查属性值是否合法
+*	pos="leftexp, topexp, widthexp, heightexp"
+*	leftexp、topexp    :支持0-9、#mid、#width、#height、()、+、-、*、/
+*	widthexp、heightexp:支持0-9、#width、#height、()、+、-、*、/
+**************************************************************************/
+void UIImage::InitAttrValuePatternMap()
+{
+	//ADD_ATTR_PATTERN("heightexp", R_CHECK_HEIGHTEXP);
+}
+void UIImage::InitAttrValueParserMap()
+{
+	//ADD_ATTR_PARSER("topexp", ParseTopExp);
+}
 RPicture::RPicture():m_hResHandle(NULL)
 					,m_szResID("")
 					,m_szResTypeInfo("")

@@ -8,6 +8,7 @@ Description:		实现一个简单的C++反射
 #pragma once
 #include "stdafx.h"
 #include "UIFrameWnd.h"
+#include "UIResource.h"
 #include "tinyxml2.h"
 
 using namespace std;
@@ -53,6 +54,7 @@ private:
 	REFLECTION_DECLARE_BEGIN()
 		REGISTER_CLASS("window", CBaseWnd)
 		REGISTER_CLASS("layout", LayoutObject)
+		REGISTER_CLASS("image", UIImage)
 	REFLECTION_DECLARE_END()
 };
 

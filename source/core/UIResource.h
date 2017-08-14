@@ -11,7 +11,18 @@ Description:		界面图片资源管理
 #include "stdafx.h"
 #include "png.h"
 #include "UIError.h"
+#include "UIObject.h"
 
+class UIImage :public UIBase
+{
+public:
+	UIImage();
+protected:
+	void										InitAttrMap();
+	void										InitEventMap();
+	void										InitAttrValuePatternMap();
+	void										InitAttrValueParserMap();
+};
 using namespace std;
 namespace Gear {
 	namespace Res {

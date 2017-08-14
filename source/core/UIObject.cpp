@@ -54,16 +54,22 @@ bool UIBase::Init(const XMLElement* pElement)
 	//保存element的事件、生成并初始化子控件
 	auto pChild = pElement->FirstChildElement();
 	while (pChild){
-		string childName = pChild->Value();
-		if (childName == "event"){
+		string childClassName = pChild->Value();
+		if (childClassName == "event"){
 			SetEventHandler(pChild);
 		}else {
-			auto pChildObj = CREATE(UIBase, childName);
+			const char* cszChildID = pChild->Attribute("id") ? pChild->Attribute("id") : pChild->Attribute("name");
+			cszChildID = cszChildID ? cszChildID : "";
+
+			auto pChildObj = CREATE(UIBase, childClassName);
 			if (pChildObj) {
 				//先加到父节点，再初始化
-				AddChild(pChildObj);
+				AddChild(pChildObj, cszChildID);
 				pChildObj->SetParent(this);
 				pChildObj->Init(pChild);
+			}else {
+				ERR("Init error: create object failed, childClassName: {}", childClassName);
+				return false;
 			}
 		}
 		pChild = pChild->NextSiblingElement();
@@ -386,14 +392,16 @@ bool UIBase::SetParent(UIBase* pParent)
 	m_parentObj = pParent;
 	return false;
 }
-bool UIBase::AddChild(UIBase* pChild)
+bool UIBase::AddChild(UIBase* pChild, const string& sChildID /* = ""*/)
 {
 	if (pChild == nullptr) {
 		ERR("AddChild warning: pChild is nullptr");
 		return true;
 	}
 
-	shared_ptr<const string> childName = pChild->GetObjectName();
+	shared_ptr<const string> childName = make_shared<const string>(sChildID);
+	if (!childName || childName->empty()) { childName = pChild->GetObjectName();}
+
 	if (!childName || childName->empty()) {
 		//匿名对象，不支持
 		ERR("AddChild error: anonymous object is not supported");

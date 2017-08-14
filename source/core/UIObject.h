@@ -107,7 +107,7 @@ public:
 	shared_ptr<UIEvent*>						GetEventHandler(const string& sEventName);
 	UIBase*										GetParent();
 	bool										SetParent(UIBase* pParent);
-	bool										AddChild(UIBase* pChild);
+	bool										AddChild(UIBase* pChild, const string& sChildID = "");
 	UIBase*										GetChild(const string& sChildName);
 	bool										RemoveChild(const string& sChildName);
 	bool										CalcPosFromExp();

@@ -186,6 +186,7 @@
     <ClInclude Include="..\..\..\source\core\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\UIRender.h" />
     <ClInclude Include="..\..\..\source\core\UIResource.h" />
+    <ClInclude Include="..\..\..\source\core\Util.h" />
     <ClInclude Include="..\..\..\source\core\XmlAgent.h" />
   </ItemGroup>
   <ItemGroup>

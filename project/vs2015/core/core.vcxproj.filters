@@ -74,6 +74,9 @@
     <ClInclude Include="..\..\..\source\core\Log.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\core\Util.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\source\core\ReadMe.txt" />

@@ -3,8 +3,10 @@
 
 #include "stdafx.h"
 #include "LuaBridge.h"
+#include "selene.h"
 #include <AccCtrl.h>
 #include <Aclapi.h>
+
 #pragma comment(lib, "Advapi32.lib")
 
 #include <Urlmon.h>
@@ -255,9 +257,35 @@ void ShareXmpMedia(const TCHAR* filePath)
 	else
 		printf("Error: %u\tparmerr=%u\n", res, parm_err);
 }
+
+int my_multiply(int a, int b) {
+	return (a*b);
+}
+
+class Button {
+public:
+	Button() :m_bEnable(true){}
+	int SetEnable(bool bEnable) {
+		m_bEnable = bEnable;
+		return bEnable?8987:1234;
+	}
+
+private:
+	bool m_bEnable;
+};
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-	example_1();
+	sel::State luaState{true};// creates a Lua context and loads standard Lua libraries
+	auto ret = luaState.Load("..\\..\\..\\example\\luacode\\test2.lua");
+
+	luaState["Button"].SetClass<Button>("SetEnable", &Button::SetEnable);
+
+	luaState["my_multiply"] = &my_multiply;
+	luaState["Func"]();
+	int retI = luaState["add"](1,8);
+
+	//example_1();
 	//ShareXmpMedia(NULL);
 	//test(NULL, _T("share2"));
 	//NetShareAddDacl(TEXT("share3"), TEXT("Everyone"), 2032127, true);

@@ -1,10 +1,16 @@
 #include "stdafx.h"
 #include "UIResource.h"
 #include "png.h"
+#include "Log.h"
 #include <sstream>
 
 using namespace Gear::Res;
 
+bool UIImage::Load()
+{
+	
+	return true;
+}
 UIImage::UIImage()
 {
 	InitAttrMap();
@@ -14,7 +20,8 @@ UIImage::UIImage()
 }
 void UIImage::InitAttrMap()
 {
-	ADD_ATTR("res", "")
+	ADD_ATTR("fit", "1")
+	ADD_ATTR("file", "")
 }
 void UIImage::InitEventMap()
 {
@@ -28,11 +35,22 @@ void UIImage::InitEventMap()
 **************************************************************************/
 void UIImage::InitAttrValuePatternMap()
 {
-	//ADD_ATTR_PATTERN("heightexp", R_CHECK_HEIGHTEXP);
+	ADD_ATTR_PATTERN("fit", R_CHECK_BOOL);
 }
 void UIImage::InitAttrValueParserMap()
 {
-	//ADD_ATTR_PARSER("topexp", ParseTopExp);
+	auto ParseFilePath = [&](const string& sAttrName="file") {
+		//还缺插件管理的设施：管理插件包、文件路径
+		//暂时file属性使用全路径
+		string strPath = m_attrMap[sAttrName];
+		if (!::PathFileExistsA(strPath.c_str())) {
+			ERR("ParseFilePath error: file not exisit, path: {}", strPath);
+			return false;
+		}
+		return true;
+	};
+
+	ADD_ATTR_PARSER("file", ParseFilePath);
 }
 RPicture::RPicture():m_hResHandle(NULL)
 					,m_szResID("")

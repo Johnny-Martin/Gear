@@ -19,7 +19,8 @@ int CFun4Lua(lua_State* luaState);
 int CCallLua();
 int SetGlobalObject(lua_State* pLuaState);
 int MsgBox(lua_State* luaState);
-int GetHttpContentCacheFile(lua_State* luaState);
+int GetHttpContentCacheFile(lua_State* luaState); 
+int DownloadHttpContentToFile(lua_State* luaState);
 int LuaShellExecute(lua_State* pLuaState);
 int ANSIToLuaString(lua_State* pLuaState);
 //Register function "SetGlobalObject"¡¢"GetGlobalObject" to lua EVN
@@ -82,6 +83,7 @@ public:
 		REGISTER_CFUNCTION(SetGlobalObject)
 		REGISTER_CFUNCTION(MsgBox)
 		REGISTER_CFUNCTION(GetHttpContentCacheFile)
+		REGISTER_CFUNCTION(DownloadHttpContentToFile)
 		REGISTER_CFUNCTION(LuaShellExecute)
 		REGISTER_CFUNCTION(ANSIToLuaString)
 	END_LUACFUNCTION_DECLARE()

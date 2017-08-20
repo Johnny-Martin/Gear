@@ -270,22 +270,25 @@ public:
 		return bEnable?8987:1234;
 	}
 
+	void ToLuaUserdata() {
+
+	}
 private:
 	bool m_bEnable;
 };
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	sel::State luaState{true};// creates a Lua context and loads standard Lua libraries
-	auto ret = luaState.Load("..\\..\\..\\example\\luacode\\test2.lua");
+	//sel::State luaState{true};// creates a Lua context and loads standard Lua libraries
+	//auto ret = luaState.Load("..\\..\\..\\example\\luacode\\test2.lua");
 
-	luaState["Button"].SetClass<Button>("SetEnable", &Button::SetEnable);
+	//luaState["Button"].SetClass<Button>("SetEnable", &Button::SetEnable);
 
-	luaState["my_multiply"] = &my_multiply;
-	luaState["Func"]();
-	int retI = luaState["add"](1,8);
+	//luaState["my_multiply"] = &my_multiply;
+	//luaState["Func"]();
+	//int retI = luaState["add"](1,8);
 
-	//example_1();
+	example_1();
 	//ShareXmpMedia(NULL);
 	//test(NULL, _T("share2"));
 	//NetShareAddDacl(TEXT("share3"), TEXT("Everyone"), 2032127, true);
@@ -468,6 +471,35 @@ int GetHttpContentCacheFile(lua_State* pLuaState)
 	return 0;
 }
 
+int DownloadHttpContentToFile(lua_State* pLuaState)
+{
+	::CoInitialize(NULL);
+
+	const char *pszUrlUTF8 = lua_tostring(pLuaState, 1);
+	const char* pszSavePath = lua_tostring(pLuaState, 2);
+	TCHAR* wstrUrl;
+	TCHAR* wstrPath;
+
+	LuaStringToWideChar(pszUrlUTF8, wstrUrl);
+	LuaStringToWideChar(pszSavePath, wstrPath);
+	
+	//TCHAR wszSavePath[MAX_PATH] = { 0 };
+	HRESULT hr = ::URLDownloadToFile(NULL, wstrUrl, wstrPath, 0, NULL);
+
+	if (SUCCEEDED(hr) && ::PathFileExists(wstrPath))
+	{
+		char* szSavePath = NULL;
+		if (WideCharToLuaString(wstrPath, szSavePath))
+		{
+			lua_pushstring(pLuaState, szSavePath);
+			::CoUninitialize();
+			return 1;
+		}
+	}
+
+	::CoUninitialize();
+	return 0;
+}
 long ShellExecHelper(HWND hWnd, const char* lpOperation, const char* lpFile, const char* lpParameters, const char* lpDirectory, const char* lpShowCmd, int iShowCmd)
 {
 	CComBSTR bstrOperation;

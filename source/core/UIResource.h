@@ -18,11 +18,13 @@ class UIImage :public UIBase
 public:
 	UIImage();
 protected:
+	bool										Load();
 	void										InitAttrMap();
 	void										InitEventMap();
 	void										InitAttrValuePatternMap();
 	void										InitAttrValueParserMap();
 };
+
 using namespace std;
 namespace Gear {
 	namespace Res {

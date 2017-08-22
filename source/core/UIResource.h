@@ -12,6 +12,25 @@ Description:		界面图片资源管理
 #include "png.h"
 #include "UIError.h"
 #include "UIObject.h"
+#include<gdiplus.h>
+using namespace Gdiplus;
+#pragma comment(lib, "GdiPlus.lib")
+
+
+#define USE_GDI_RENDERING
+//#define USE_D2D_RENDERING
+
+class PNG
+{
+public:
+	PNG(const string& filePath);
+	ID2D1Bitmap* GetD2D1Bitmap();
+	Gdiplus::Bitmap* GetGDIBitmap();
+private:
+	bool ReadPngFile();
+	bool DetectVerticalLine();
+	bool DetectHorizontalLine();
+};
 
 class UIImage :public UIBase
 {

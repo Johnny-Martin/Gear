@@ -157,7 +157,7 @@ HRESULT FrameWnd::CreateDeviceResources()
 			);*/
 
 		//ID2D1DCRenderTarget do not support the DXGI_FORMAT_R8G8B8A8_UNORM pixel format
-		D2D1_PIXEL_FORMAT pixelFormat =  PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
+		D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
 		D2D1_RENDER_TARGET_PROPERTIES renderTargetProperties = RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT,pixelFormat);
 		
 		hr = m_pD2DFactory->CreateDCRenderTarget(&renderTargetProperties, &m_pDCRenderTarget);
@@ -317,7 +317,7 @@ void FrameWnd::OnRender(const PAINTSTRUCT &ps)
 	//m_pDCRenderTarget->Clear(ColorF(ColorF::Black));
 	m_pDCRenderTarget->Clear(ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
-	D2D1_RECT_F rc = RectF(130.0f, 10.0f, 230.0f, 110.0f);
+	D2D1_RECT_F rc = D2D1::RectF(130.0f, 10.0f, 230.0f, 110.0f);
 	m_pSolidBrush->SetColor(ColorF(0.0f,0.7f,0.1f,0.5f));
 	m_pDCRenderTarget->DrawRectangle(&rc, m_pSolidBrush,6.0f);
 

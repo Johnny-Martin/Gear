@@ -6,6 +6,166 @@
 
 using namespace Gear::Res;
 
+UIRes::UIRes(const string& strFilePath):m_purpleLineColor(RGB(127, 0, 127))
+{
+	m_strFilePath = strFilePath;
+	ReadPngFile(strFilePath);
+}
+
+RESERROR UIRes::ReadPngFile(const string& strFilePath)
+{
+	//int multiByteLen = WideCharToMultiByte(CP_ACP, 0, wszFilePath, -1, NULL, 0, NULL, NULL);
+	//char* file_name = new char[multiByteLen + 1];
+	//WideCharToMultiByte(CP_ACP, 0, wszFilePath, -1, file_name, multiByteLen, NULL, NULL);
+
+	/* open file and test for it being a png */
+	FILE *fp = fopen(strFilePath.c_str(), "rb");
+	if (!fp)
+		return RES_ERROR_FILE_NOT_FOUND;
+
+	unsigned char header[8];    // 8 is the maximum size that can be checked
+	fread(header, 1, 8, fp);
+	if (png_sig_cmp(header, 0, 8))
+		return RES_ERROR_ILLEGAL_FILE_TYPE;
+
+
+	/* initialize stuff */
+	m_pngStructPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+	if (!m_pngStructPtr)
+		return RES_ERROR_PARSE_FILE_FALIED;
+
+	m_pngInfoPtr = png_create_info_struct(m_pngStructPtr);
+	if (!m_pngInfoPtr)
+		return RES_ERROR_PARSE_FILE_FALIED;
+
+	if (setjmp(png_jmpbuf(m_pngStructPtr)))
+		return RES_ERROR_PARSE_FILE_FALIED;
+
+	png_init_io(m_pngStructPtr, fp);
+	png_set_sig_bytes(m_pngStructPtr, 8);
+
+	png_read_info(m_pngStructPtr, m_pngInfoPtr);
+
+	if (png_get_color_type(m_pngStructPtr, m_pngInfoPtr) != PNG_COLOR_TYPE_RGB
+		&& png_get_color_type(m_pngStructPtr, m_pngInfoPtr) != PNG_COLOR_TYPE_RGBA)
+		return RES_ERROR_ILLEGAL_PNG_FILE;
+
+	m_pngWidth = png_get_image_width(m_pngStructPtr, m_pngInfoPtr);
+	m_pngHeight = png_get_image_height(m_pngStructPtr, m_pngInfoPtr);
+	m_colorType = png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
+	m_bitDepth = png_get_bit_depth(m_pngStructPtr, m_pngInfoPtr);
+	m_pixelDepth = m_pngInfoPtr->pixel_depth;
+
+	int number_of_passes = png_set_interlace_handling(m_pngStructPtr);
+	png_read_update_info(m_pngStructPtr, m_pngInfoPtr);
+
+
+	/* read file */
+	if (setjmp(png_jmpbuf(m_pngStructPtr)))
+		return RES_ERROR_PARSE_FILE_FALIED;
+
+	m_rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * m_pngHeight);
+	//m_rowPointers = new png_bytep[(sizeof(png_bytep) * m_pngHeight)];
+
+	//ID2D1HwndRenderTarget::CreateBitmap only support continuous png pixel data in memory
+	//allocate a continuous memory for m_rowPointers so that class "Image"  can return 
+	//m_rowPointers directly in GetPngPixelArray
+	png_uint_32 rowSize = png_get_rowbytes(m_pngStructPtr, m_pngInfoPtr);
+	png_byte* pngPixelData = (png_byte*)malloc(rowSize * m_pngHeight);
+	for (unsigned int rowIndex = 0; rowIndex<m_pngHeight; ++rowIndex)
+	{
+		png_byte *rowHead = (png_byte*)((int)pngPixelData + rowIndex * rowSize);
+		m_rowPointers[rowIndex] = (png_byte*)rowHead;
+	}
+
+	//Old memory allocation
+	//for (unsigned int rowIndex=0; rowIndex<m_pngHeight; ++rowIndex)
+	//{
+	//	png_uint_32 size = png_get_rowbytes(m_pngStructPtr,m_pngInfoPtr);
+	//	m_rowPointers[rowIndex] = (png_byte*) malloc(size);
+	//}
+	png_read_image(m_pngStructPtr, m_rowPointers);
+
+	fclose(fp);
+	return RES_SUCCESS;
+}
+
+bool UIRes::IsVerticalLine(unsigned int horizontalPos, const COLORREF lineColor)
+{
+	unsigned int bytesPerPixel = m_pixelDepth / 8;
+	for (unsigned int rowIndex = 0; rowIndex<m_pngHeight; ++rowIndex)
+	{
+		png_byte* row = m_rowPointers[rowIndex];
+		png_byte* ptr = &(row[horizontalPos*bytesPerPixel]);
+
+		COLORREF pixelColor = RGB(ptr[0], ptr[1], ptr[2]);
+		if (lineColor != pixelColor)
+			return false;
+	}
+	return true;
+}
+
+bool UIRes::IsHorizontalLine(unsigned int horizontalPos, const COLORREF lineColor)
+{
+	png_byte* row = m_rowPointers[horizontalPos];
+	unsigned int bytesPerPixel = m_pixelDepth / 8;
+	for (unsigned int columnIndex = 0; columnIndex<m_pngWidth; ++columnIndex)
+	{
+		png_byte* ptr = &(row[columnIndex*bytesPerPixel]);
+
+		COLORREF pixelColor = RGB(ptr[0], ptr[1], ptr[2]);
+		if (lineColor != pixelColor)
+			return false;
+	}
+	return true;
+}
+
+//detect the dividing line(RGB: 255,0,255)
+RESERROR UIRes::DetectVerticalLine()
+{
+	//before calling this function,make sure that
+	//png file must has been loaded to memory successfully.
+	png_byte* pixelDataPtr = NULL;
+	unsigned int bytesPerPixel = m_pixelDepth / 8;
+
+	for (unsigned int columnIndex = 0; columnIndex<m_pngWidth; ++columnIndex)
+	{
+		pixelDataPtr = &(m_rowPointers[0][columnIndex*bytesPerPixel]);
+		COLORREF pixelColor = RGB(pixelDataPtr[0], pixelDataPtr[1], pixelDataPtr[2]);
+		if (m_purpleLineColor == pixelColor)
+		{
+			if (IsVerticalLine(columnIndex, m_purpleLineColor))
+			{
+				m_arrVerticalLinePos.push_back(columnIndex);
+			}
+		}
+
+	}
+	return RES_SUCCESS;
+}
+RESERROR UIRes::DetectHorizontalLine()
+{
+	//before calling this function,make sure that
+	//png file must has been loaded to memory successfully.
+	png_byte* pixelDataPtr = NULL;
+	unsigned int bytesPerPixel = m_pixelDepth / 8;
+	for (unsigned int rowIndex = 0; rowIndex<m_pngHeight; ++rowIndex)
+	{
+		pixelDataPtr = &(m_rowPointers[rowIndex][0]);
+		COLORREF pixelColor = RGB(pixelDataPtr[0], pixelDataPtr[1], pixelDataPtr[2]);
+		if (m_purpleLineColor == pixelColor)
+		{
+			if (IsHorizontalLine(rowIndex, m_purpleLineColor))
+			{
+				m_arrHorizontalLinePos.push_back(rowIndex);
+			}
+		}
+
+	}
+	return RES_SUCCESS;
+}
+
 bool UIImage::Load()
 {
 	

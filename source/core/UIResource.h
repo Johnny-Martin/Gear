@@ -19,17 +19,47 @@ using namespace Gdiplus;
 
 #define USE_GDI_RENDERING
 //#define USE_D2D_RENDERING
+using namespace Gear::Res;
 
-class PNG
+enum UIResType {
+	RES_IMAGE			  = 0,
+	RES_TEXTURE_THREE_H   = 1,
+	RES_TEXTURE_THREE_V   = 2,
+	RES_TEXTURE_NINE      = 3,
+	RES_IMAGELIST_IMAGE	  = 4,
+	RES_IMAGELIST_THREE_H = 5,
+	RES_IMAGELIST_THREE_V = 6,
+	RES_IMAGELIST_NINE    = 7,
+};
+
+class UIRes
 {
 public:
-	PNG(const string& filePath);
-	ID2D1Bitmap* GetD2D1Bitmap();
-	Gdiplus::Bitmap* GetGDIBitmap();
-private:
-	bool ReadPngFile();
-	bool DetectVerticalLine();
-	bool DetectHorizontalLine();
+									UIRes(const string& strFilePath);
+	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height)	= 0;
+	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)	= 0;
+protected:
+	RESERROR						ReadPngFile(const string& strFilePath);
+	bool							IsVerticalLine(unsigned int horizontalPos, COLORREF lineColor);
+	bool							IsHorizontalLine(unsigned int verticalPos, COLORREF lineColor);
+	RESERROR						DetectVerticalLine();
+	RESERROR						DetectHorizontalLine();
+protected:
+	string							m_strFilePath;
+	png_uint_32						m_pngWidth;
+	png_uint_32						m_pngHeight;
+	png_byte						m_colorType;
+	png_byte						m_bitDepth;
+	png_byte						m_pixelDepth;
+	png_bytep*						m_rowPointers; //In fact, m_rowPointers is a two-dimensional array
+	png_structp						m_pngStructPtr;
+	png_infop						m_pngInfoPtr;
+
+	HBITMAP							m_hResHandle;//??????
+	RESERROR						m_resError;
+	vector<unsigned int>			m_arrVerticalLinePos; 
+	vector<unsigned int>			m_arrHorizontalLinePos;
+	const COLORREF					m_purpleLineColor;
 };
 
 class UIImage :public UIBase

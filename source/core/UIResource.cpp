@@ -5,7 +5,10 @@
 #include <sstream>
 
 using namespace Gear::Res;
+UIRes::UIRes() :m_purpleLineColor(RGB(127, 0, 127))
+{
 
+}
 UIRes::UIRes(const string& strFilePath):m_purpleLineColor(RGB(127, 0, 127))
 {
 	m_strFilePath = strFilePath;
@@ -166,11 +169,6 @@ RESERROR UIRes::DetectHorizontalLine()
 	return RES_SUCCESS;
 }
 
-bool UIImage::Load()
-{
-	
-	return true;
-}
 UIImage::UIImage()
 {
 	InitAttrMap();
@@ -186,6 +184,24 @@ void UIImage::InitAttrMap()
 void UIImage::InitEventMap()
 {
 	//ADD_EVENT("OnCreate", nullptr)
+}
+bool UIImage::Init(const XMLElement* pElement)
+{
+	auto ret = UIBase::Init(pElement);
+	if (ret) {
+		//加载file属性中的路径对应的png
+
+	}
+	return true;
+}
+ID2D1Bitmap* UIImage::GetD2D1Bitmap(unsigned int width, unsigned int height)
+{
+	return nullptr;
+}
+
+Gdiplus::Bitmap* UIImage::GetGDIBitmap(unsigned int width, unsigned int height)
+{
+	return nullptr;
 }
 /*************************************************************************
 *检查属性值是否合法

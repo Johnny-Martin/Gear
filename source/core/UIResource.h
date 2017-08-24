@@ -35,6 +35,7 @@ enum UIResType {
 class UIRes
 {
 public:
+									UIRes();
 									UIRes(const string& strFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height)	= 0;
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)	= 0;
@@ -62,16 +63,18 @@ protected:
 	const COLORREF					m_purpleLineColor;
 };
 
-class UIImage :public UIBase
+class UIImage :public UIBase, public UIRes
 {
 public:
 	UIImage();
+	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
+	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
+	bool							Init(const XMLElement* pElement);
 protected:
-	bool										Load();
-	void										InitAttrMap();
-	void										InitEventMap();
-	void										InitAttrValuePatternMap();
-	void										InitAttrValueParserMap();
+	void							InitAttrMap();
+	void							InitEventMap();
+	void							InitAttrValuePatternMap();
+	void							InitAttrValueParserMap();
 };
 
 using namespace std;

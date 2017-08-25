@@ -32,51 +32,6 @@ enum UIResType {
 	RES_IMAGELIST_NINE    = 7,
 };
 
-class UIRes
-{
-public:
-									UIRes();
-									UIRes(const string& strFilePath);
-	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height)	= 0;
-	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)	= 0;
-protected:
-	RESERROR						ReadPngFile(const string& strFilePath);
-	bool							IsVerticalLine(unsigned int horizontalPos, COLORREF lineColor);
-	bool							IsHorizontalLine(unsigned int verticalPos, COLORREF lineColor);
-	RESERROR						DetectVerticalLine();
-	RESERROR						DetectHorizontalLine();
-protected:
-	string							m_strFilePath;
-	png_uint_32						m_pngWidth;
-	png_uint_32						m_pngHeight;
-	png_byte						m_colorType;
-	png_byte						m_bitDepth;
-	png_byte						m_pixelDepth;
-	png_bytep*						m_rowPointers; //In fact, m_rowPointers is a two-dimensional array
-	png_structp						m_pngStructPtr;
-	png_infop						m_pngInfoPtr;
-
-	HBITMAP							m_hResHandle;//??????
-	RESERROR						m_resError;
-	vector<unsigned int>			m_arrVerticalLinePos; 
-	vector<unsigned int>			m_arrHorizontalLinePos;
-	const COLORREF					m_purpleLineColor;
-};
-
-class UIImage :public UIBase, public UIRes
-{
-public:
-	UIImage();
-	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
-	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
-	bool							Init(const XMLElement* pElement);
-protected:
-	void							InitAttrMap();
-	void							InitEventMap();
-	void							InitAttrValuePatternMap();
-	void							InitAttrValueParserMap();
-};
-
 using namespace std;
 namespace Gear {
 	namespace Res {
@@ -233,23 +188,6 @@ private:
 	vector<RPicture*>				m_picListVector;
 	PICLIST_TYPE					m_picListType;
 	
-};
-
-class ResManager
-{
-public:
-									ResManager(){};
-									ResManager(LPWSTR szResPath);
-									~ResManager();
-	RESERROR						SetResPath(LPWSTR wszResPath);
-	static bool						CheckPngFileHead(LPWSTR wszFilePath);
-	RESERROR						GetResPicHandle(LPCSTR szResID, RPicture** hRes);
-private:
-	unsigned int					GetIndexFromPicListId(LPCSTR szPicListID);
-	string							GetRealIdFromPicListId(LPCSTR szPicListID);
-	wstring							GetPicPathByID(LPCSTR szResID);
-	wstring							m_wszResPath;
-	map<string, RPicture*>			m_resID2HandleMap;
 };
 
 	}// namespace Res

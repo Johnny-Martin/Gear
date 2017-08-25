@@ -31,14 +31,14 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
-UIBase::UIBase():m_pos(), m_parentObj(nullptr)
+UIObject::UIObject():m_pos(), m_parentObj(nullptr)
 {
 	InitAttrMap();
 	InitEventMap();
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
-bool UIBase::Init(const XMLElement* pElement)
+bool UIObject::Init(const XMLElement* pElement)
 {
 	//保存element的属性
 	auto pAttr = pElement->FirstAttribute();
@@ -61,7 +61,7 @@ bool UIBase::Init(const XMLElement* pElement)
 			const char* cszChildID = pChild->Attribute("id") ? pChild->Attribute("id") : pChild->Attribute("name");
 			cszChildID = cszChildID ? cszChildID : "";
 
-			auto pChildObj = CREATE(UIBase, childClassName);
+			auto pChildObj = CREATE(UIObject, childClassName);
 			if (pChildObj) {
 				//先加到父节点，再初始化
 				AddChild(pChildObj, cszChildID);
@@ -77,7 +77,7 @@ bool UIBase::Init(const XMLElement* pElement)
 
 	return true;
 }
-void UIBase::InitAttrMap()
+void UIObject::InitAttrMap()
 {
 	ADD_ATTR("id",			"")
 	ADD_ATTR("name",		"")
@@ -94,7 +94,7 @@ void UIBase::InitAttrMap()
 	ADD_ATTR("widthexp",	"")
 	ADD_ATTR("heightexp",	"")
 }
-void UIBase::InitEventMap()
+void UIObject::InitEventMap()
 {
 	ADD_EVENT("OnCreate",			nullptr)
 	ADD_EVENT("OnDestory",			nullptr)
@@ -112,7 +112,7 @@ void UIBase::InitEventMap()
 *	leftexp、topexp    :支持0-9、#mid、#width、#height、()、+、-、*、/
 *	widthexp、heightexp:支持0-9、#width、#height、()、+、-、*、/
 **************************************************************************/
-void UIBase::InitAttrValuePatternMap()
+void UIObject::InitAttrValuePatternMap()
 {
 	ADD_ATTR_PATTERN("id",			R_CHECK_ID);
 	ADD_ATTR_PATTERN("name",		R_CHECK_ID);
@@ -130,7 +130,7 @@ void UIBase::InitAttrValuePatternMap()
 /*************************************************************************
 *解析属性值
 **************************************************************************/
-void UIBase::InitAttrValueParserMap()
+void UIObject::InitAttrValueParserMap()
 {
 	//正则表达式的\s会匹配 tab、空格、回车
 	auto EraseSpace = [](string& str) {
@@ -196,7 +196,7 @@ void UIBase::InitAttrValueParserMap()
 	ADD_ATTR_PARSER("leftexp",		ParseLeftExp);
 	ADD_ATTR_PARSER("topexp",		ParseTopExp);
 }
-shared_ptr<const string> UIBase::GetObjectID()
+shared_ptr<const string> UIObject::GetObjectID()
 {
 	if (m_attrMap.empty()) {
 		ERR("GetObjectID error: m_attrMap has not been initicalized");
@@ -211,15 +211,15 @@ shared_ptr<const string> UIBase::GetObjectID()
 
 	return nullptr;
 }
-shared_ptr<const string> UIBase::GetObjectName()
+shared_ptr<const string> UIObject::GetObjectName()
 {
 	return GetObjectID();
 }
-bool UIBase::CheckAttrName(const string& sAttrName)
+bool UIObject::CheckAttrName(const string& sAttrName)
 {
 	return (m_attrMap.end() != m_attrMap.find(sAttrName)) ? true : false;
 }
-bool UIBase::CheckAttrValue(const string& sAttrName, const string& sAttrValue)
+bool UIObject::CheckAttrValue(const string& sAttrName, const string& sAttrValue)
 {
 	map<string, string>::iterator it = m_attrValuePatternMap.find(sAttrName);
 	if (it == m_attrValuePatternMap.end()) {
@@ -234,16 +234,16 @@ bool UIBase::CheckAttrValue(const string& sAttrName, const string& sAttrValue)
 		return false;
 	}
 }
-bool UIBase::CheckEventName(const string& sEventName)
+bool UIObject::CheckEventName(const string& sEventName)
 {
 	return (m_eventMap.end() != m_eventMap.find(sEventName)) ? true : false;
 }
-bool UIBase::AddAttr(const string& sAttrName, const string& sAttrDefaultValue /* = "" */)
+bool UIObject::AddAttr(const string& sAttrName, const string& sAttrDefaultValue /* = "" */)
 {
 	ADD_ATTR(sAttrName, sAttrDefaultValue)
 	return true;
 }
-bool UIBase::SetAttrValue(const string& sAttrName, const string& sAttrValue)
+bool UIObject::SetAttrValue(const string& sAttrName, const string& sAttrValue)
 {
 	//标签所有的attr的值，都会被剔除空格符
 #ifdef DEBUG
@@ -274,7 +274,7 @@ bool UIBase::SetAttrValue(const string& sAttrName, const string& sAttrValue)
 	}
 	return true;
 }
-shared_ptr<const string> UIBase::GetAttrValue(const string& sAttrName)
+shared_ptr<const string> UIObject::GetAttrValue(const string& sAttrName)
 {
 	//由于map的[]操作符在索引不存在的key的时候，会将key插入（此时的value调用默认构造生成，也就是""）
 	//造成key的污染，此处不得不使用find遍历map
@@ -284,12 +284,12 @@ shared_ptr<const string> UIBase::GetAttrValue(const string& sAttrName)
 	}
 	return make_shared<const string>(m_attrMap[sAttrName]);
 }
-bool UIBase::AddEvent(const string& sEventName, UIEvent* pEventObj /* nullptr */)
+bool UIObject::AddEvent(const string& sEventName, UIEvent* pEventObj /* nullptr */)
 {
 	ADD_EVENT(sEventName, pEventObj)
 	return true;
 }
-bool UIBase::SetEventHandler(const string& sEventName, const string& sFuncName, const string& sFilePath)
+bool UIObject::SetEventHandler(const string& sEventName, const string& sFuncName, const string& sFilePath)
 {
 	
 #ifdef DEBUG
@@ -325,7 +325,7 @@ bool UIBase::SetEventHandler(const string& sEventName, const string& sFuncName, 
 	m_eventMap[sEventName] = pEventObj;
 	return true;
 }
-bool UIBase::SetEventHandler(const XMLElement* pEventElement)
+bool UIObject::SetEventHandler(const XMLElement* pEventElement)
 {
 	//name 与 id 同等对待
 	auto eventName = pEventElement->Attribute("name");
@@ -371,7 +371,7 @@ bool UIBase::SetEventHandler(const XMLElement* pEventElement)
 
 	return SetEventHandler(eventName, sFuncName, sFilePath);
 }
-shared_ptr<UIEvent*> UIBase::GetEventHandler(const string& sEventName)
+shared_ptr<UIEvent*> UIObject::GetEventHandler(const string& sEventName)
 {
 	if (!CheckEventName(sEventName)) {
 		WARN("GetAttrValue warning: attribute not found, key: {}", sEventName);
@@ -379,11 +379,11 @@ shared_ptr<UIEvent*> UIBase::GetEventHandler(const string& sEventName)
 	}
 	return make_shared<UIEvent*>(m_eventMap[sEventName]);
 }
-UIBase* UIBase::GetParent()
+UIObject* UIObject::GetParent()
 {
 	return m_parentObj;
 }
-bool UIBase::SetParent(UIBase* pParent)
+bool UIObject::SetParent(UIObject* pParent)
 {
 	if (m_parentObj != nullptr) {
 		ERR("SetParent error: already has parent");
@@ -392,7 +392,7 @@ bool UIBase::SetParent(UIBase* pParent)
 	m_parentObj = pParent;
 	return false;
 }
-bool UIBase::AddChild(UIBase* pChild, const string& sChildID /* = ""*/)
+bool UIObject::AddChild(UIObject* pChild, const string& sChildID /* = ""*/)
 {
 	if (pChild == nullptr) {
 		ERR("AddChild warning: pChild is nullptr");
@@ -416,7 +416,7 @@ bool UIBase::AddChild(UIBase* pChild, const string& sChildID /* = ""*/)
 	m_childrenMap[*childName] = pChild;
 	return true;
 }
-UIBase*	UIBase::GetChild(const string& sChildName)
+UIObject*	UIObject::GetChild(const string& sChildName)
 {
 	if (m_childrenMap.end() != m_childrenMap.find(sChildName)) {
 		WARN("GetChild warning: child not found, name: {}", sChildName);
@@ -426,9 +426,9 @@ UIBase*	UIBase::GetChild(const string& sChildName)
 
 	return m_childrenMap[sChildName];
 }
-bool UIBase::RemoveChild(const string& sChildName)
+bool UIObject::RemoveChild(const string& sChildName)
 {
-	map<string, UIBase*>::iterator it = m_childrenMap.find(sChildName);
+	map<string, UIObject*>::iterator it = m_childrenMap.find(sChildName);
 	if (m_childrenMap.end() == it) {
 		WARN("RemoveChild warning: child not found, name: {}", sChildName);
 		return false;
@@ -436,7 +436,7 @@ bool UIBase::RemoveChild(const string& sChildName)
 	m_childrenMap.erase(it);
 	return true;
 }
-bool UIBase::CalcPosFromExp()
+bool UIObject::CalcPosFromExp()
 {
 	auto I2Str = [](auto param)->string{
 		stringstream strStream;
@@ -513,7 +513,7 @@ bool UIBase::CalcPosFromExp()
 	INFO("CalcPosFromExp info: left: {}, top: {}, width: {}, height: {}", m_pos.left, m_pos.top, m_pos.width, m_pos.height);
 	return true;
 }
-const UIPos UIBase::GetPosObject()
+const UIPos UIObject::GetPosObject()
 {
 	return m_pos;
 }
@@ -523,7 +523,7 @@ const UIPos UIBase::GetPosObject()
 种命令的解析(#mid #left #top #width #height)
 五个命令的解析，并将结果存入leftexp topexp...
 *********************************************/
-bool UIBase::ParseSpecialCmd()
+bool UIObject::ParseSpecialCmd()
 {
 	//解析pos属性
 

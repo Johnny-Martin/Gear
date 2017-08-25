@@ -17,17 +17,17 @@ XMLERROR XmlAgent::CreateObject(const XMLElement* pElement)
 {
 	return XML_SUCCESS;
 }
-UIBase*	XmlAgent::CreateUIObject(const XMLElement* pElement)
+UIObject*	XmlAgent::CreateUIObject(const XMLElement* pElement)
 {
 	string sClassName = pElement->Value();
 	CObjectFactory& factory = CObjectFactory::GetInstance();
-	return (UIBase*)factory.CreateObject(sClassName);
+	return (UIObject*)factory.CreateObject(sClassName);
 }
 XMLERROR XmlAgent::CheckXmlElement(const XMLElement* pElement)
 {
 #ifdef DEBUG
 	if (pElement == nullptr) return XML_SUCCESS;
-	UIBase* pObj = CreateUIObject(pElement);
+	UIObject* pObj = CreateUIObject(pElement);
 	if (pObj == nullptr)
 		return XML_ERROR_ILLEGAL_LABLE;
 
@@ -62,7 +62,7 @@ XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 	while (pElement) {
 		//XMLERROR checkRet = CheckXmlElement(element);
 		//if (checkRet != XML_SUCCESS) return checkRet;
-		auto pObj = CREATE(UIBase, pElement);
+		auto pObj = CREATE(UIObject, pElement);
 		if (!pObj || !pObj->Init(pElement))
 			INFO("create/initicalize UI ojject error: pObj£º{}", int(pObj));
 		

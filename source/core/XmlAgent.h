@@ -26,7 +26,7 @@ public:
 	virtual XMLERROR					GetXmlRootElement(const string& sFilePath);
 protected:
 	virtual XMLERROR					CheckXmlElement(const XMLElement* pElement);
-	UIBase*								CreateUIObject(const XMLElement* pElement);
+	UIObject*							CreateUIObject(const XMLElement* pElement);
 
 	//InitUIObject(UIBase* obj, XMLElement* element)
 	//CreateUiObject

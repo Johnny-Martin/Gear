@@ -9,6 +9,7 @@
 #include <assert.h>
 
 #include "UIResource.h"
+#include "ResManager.h"
 #include "UIFrameWnd.h"
 //#include "..\luabridge\LuaBridge.h"
 //#include "zlib.h"
@@ -111,7 +112,7 @@ void example_4()
 {
 	ResManager resManager(L"E:\\A iss\\凯子婚礼精选");
 	RPicture *pic;
-	resManager.GetResPicHandle("texturelist.nine.customRectBkg.3", &pic);
+	//resManager.GetResPicHandle("texturelist.nine.customRectBkg.3", &pic);
 }
 
 void abort_(const char * s, ...)
@@ -279,7 +280,7 @@ void example_5()//test for libpng
 	RPicture* picObj;
 	//the first pic's index in piclist is '1' rather than '0'
 	//is illegal to pass an piclist id without a index section at the end
-	RESERROR resErr = resMgr.GetResPicHandle("texturelist.Nine.btnbkg.4", &picObj);
+	//RESERROR resErr = resMgr.GetResPicHandle("texturelist.Nine.btnbkg.4", &picObj);
 	
 	picObj->WritePngFile(L"E:\\code\\ComBase\\trunk\\UIEngine\\docs\\testout.png");
 

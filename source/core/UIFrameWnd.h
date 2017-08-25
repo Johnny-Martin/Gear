@@ -29,7 +29,7 @@ inline void SafeRelease(Type& pObjToRelease)
 // topmost, layered, appwnd, blur, maxenable, minenable
 // rootobjectid, 
 //
-class CBaseWnd:public UIBase
+class CBaseWnd:public UIObject
 {
 public:
 											CBaseWnd(){ InitAttrMap(); }

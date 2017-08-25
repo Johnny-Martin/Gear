@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
     <ClCompile Include="..\..\..\source\core\Log.cpp" />
+    <ClCompile Include="..\..\..\source\core\ResManage.cpp" />
     <ClCompile Include="..\..\..\source\core\stdafx.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
@@ -178,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\Log.h" />
+    <ClInclude Include="..\..\..\source\core\ResManager.h" />
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />
     <ClInclude Include="..\..\..\source\core\UIError.h" />

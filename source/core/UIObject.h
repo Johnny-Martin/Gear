@@ -84,12 +84,12 @@ private:
 /***************************************
 所有UI元素的基类
 ****************************************/
-class UIBase
+class UIObject
 {
 public:
 	//UIBase的子类需要有一个无参构造，在里面初始化m_attrMap 和 m_eventMap
 	//(重写InitAttrMap、InitEventMap)此处应作编译时强制，但未想到好的方案
-												UIBase();
+	UIObject();
 	//使用XML节点初始化一个UI对象
 	virtual bool								Init(const XMLElement* pElement);
 	virtual bool								ParseSpecialCmd();
@@ -105,18 +105,18 @@ public:
 	bool										SetEventHandler(const string& sEventName, const string& sFuncName, const string& sFilePath);
 	bool										SetEventHandler(const XMLElement* pEventElement);
 	shared_ptr<UIEvent*>						GetEventHandler(const string& sEventName);
-	UIBase*										GetParent();
-	bool										SetParent(UIBase* pParent);
-	bool										AddChild(UIBase* pChild, const string& sChildID = "");
-	UIBase*										GetChild(const string& sChildName);
+	UIObject*										GetParent();
+	bool										SetParent(UIObject* pParent);
+	bool										AddChild(UIObject* pChild, const string& sChildID = "");
+	UIObject*										GetChild(const string& sChildName);
 	bool										RemoveChild(const string& sChildName);
 	bool										CalcPosFromExp();
 	const UIPos									GetPosObject();
 protected:
 	map<string, string>							m_attrMap;
 	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象
-	UIBase*										m_parentObj;
-	map<string, UIBase*>						m_childrenMap;
+	UIObject*									m_parentObj;
+	map<string, UIObject*>						m_childrenMap;
 	map<string, string>							m_attrValuePatternMap;
 	map<string, function<bool(const string&)> >	m_attrValueParserMap;
 	UIPos										m_pos;
@@ -127,7 +127,7 @@ protected:
 	void										InitAttrValueParserMap();
 };
 
-class Test :public UIBase
+class Test :public UIObject
 {
 public:
 	Test() {
@@ -140,7 +140,7 @@ public:
 	};
 };
 
-class LayoutObject: public UIBase
+class LayoutObject: public UIObject
 {
 public:
 											LayoutObject();

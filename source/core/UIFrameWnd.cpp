@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIFrameWnd.h"
 #include "UIResource.h"
+#include "ResManager.h"
 #include "Wincodec.h"
 
 using namespace Gear::Res;

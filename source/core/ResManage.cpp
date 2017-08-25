@@ -3,17 +3,33 @@
 
 using namespace Gear::Res;
 
-UIPicture::UIPicture() :m_purpleLineColor(RGB(127, 0, 127))
+ResPicture::ResPicture() :m_purpleLineColor(RGB(127, 0, 127))
 {
 
 }
-UIPicture::UIPicture(const string& strFilePath) : m_purpleLineColor(RGB(127, 0, 127))
+
+ResPicture::~ResPicture()
+{
+	//m_rowPointers is allocated by malloc() in function png_create_read_struct(),
+	//thus release with free()
+	if (m_rowPointers)
+	{
+		//for (unsigned int rowIndex=0; rowIndex<m_pngHeight; ++rowIndex)
+		//free(m_rowPointers[rowIndex]);
+
+		free(m_rowPointers[0]);
+	}
+
+	if (m_pngStructPtr && m_pngInfoPtr)
+		png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, NULL);
+}
+ResPicture::ResPicture(const string& strFilePath) : m_purpleLineColor(RGB(127, 0, 127))
 {
 	m_strFilePath = strFilePath;
 	ReadPngFile(strFilePath);
 }
 
-RESERROR UIPicture::ReadPngFile(const string& strFilePath)
+RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 {
 	//int multiByteLen = WideCharToMultiByte(CP_ACP, 0, wszFilePath, -1, NULL, 0, NULL, NULL);
 	//char* file_name = new char[multiByteLen + 1];
@@ -92,7 +108,7 @@ RESERROR UIPicture::ReadPngFile(const string& strFilePath)
 	return RES_SUCCESS;
 }
 
-bool UIPicture::IsVerticalLine(unsigned int horizontalPos, const COLORREF lineColor)
+bool ResPicture::IsVerticalLine(unsigned int horizontalPos, const COLORREF lineColor)
 {
 	unsigned int bytesPerPixel = m_pixelDepth / 8;
 	for (unsigned int rowIndex = 0; rowIndex<m_pngHeight; ++rowIndex)
@@ -107,7 +123,7 @@ bool UIPicture::IsVerticalLine(unsigned int horizontalPos, const COLORREF lineCo
 	return true;
 }
 
-bool UIPicture::IsHorizontalLine(unsigned int horizontalPos, const COLORREF lineColor)
+bool ResPicture::IsHorizontalLine(unsigned int horizontalPos, const COLORREF lineColor)
 {
 	png_byte* row = m_rowPointers[horizontalPos];
 	unsigned int bytesPerPixel = m_pixelDepth / 8;
@@ -123,7 +139,7 @@ bool UIPicture::IsHorizontalLine(unsigned int horizontalPos, const COLORREF line
 }
 
 //detect the dividing line(RGB: 255,0,255)
-RESERROR UIPicture::DetectVerticalLine()
+RESERROR ResPicture::DetectVerticalLine()
 {
 	//before calling this function,make sure that
 	//png file must has been loaded to memory successfully.
@@ -145,7 +161,7 @@ RESERROR UIPicture::DetectVerticalLine()
 	}
 	return RES_SUCCESS;
 }
-RESERROR UIPicture::DetectHorizontalLine()
+RESERROR ResPicture::DetectHorizontalLine()
 {
 	//before calling this function,make sure that
 	//png file must has been loaded to memory successfully.
@@ -230,7 +246,7 @@ void UIBitmap::InitAttrValueParserMap()
 
 ResManager::ResManager(LPWSTR szResPath)
 {
-	SetResPath(szResPath);
+	AddResPath(szResPath);
 }
 ResManager::~ResManager()
 {
@@ -243,13 +259,28 @@ ResManager::~ResManager()
 	//*/
 }
 
-RESERROR ResManager::SetResPath(LPWSTR wszResPath)
+//可以是相对路径(相对于exe),也可以是绝对路径.
+RESERROR ResManager::AddResPath(wstring wstrPath)
 {
-	m_wszResPath = wszResPath;
-	if (::PathFileExists(wszResPath))
+	if (std::find(m_resPathVec.begin(), m_resPathVec.end(), wstrPath) != m_resPathVec.end()) {
+		WARN("AddResPath warning: resource path already exists");
 		return RES_SUCCESS;
+	}
 
-	return RES_ERROR_FILE_NOT_FOUND;
+	//传的是相对路径
+	if (wstrPath.find(L":") != wstring::npos) {
+		TCHAR szFilePath[MAX_PATH + 1] = { 0 };
+		GetModuleFileName(NULL, szFilePath, MAX_PATH);
+		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; //从文件名出截断，只获得路径字串
+		
+		wstrPath = wstring(szFilePath) + szFilePath;
+	}
+	if (!::PathFileExists(wstrPath.c_str())) {
+		ERR("AddResPath error: path file not exisit, wstrPath: {}", string(wstrPath.begin(), wstrPath.end()));
+		return RES_ERROR_FILE_NOT_FOUND;
+	}
+	
+	return RES_SUCCESS;
 }
 wstring ResManager::GetPicPathByID(LPCSTR szResID)
 {

@@ -19,30 +19,34 @@ using namespace Gdiplus;
 namespace Gear {
 	namespace Res{
 
-class UIRes;
+class UIPicture;
 class ResManager
 {
 public:
 	ResManager() {};
 	ResManager(LPWSTR szResPath);
 	~ResManager();
-	RESERROR						SetResPath(LPWSTR wszResPath);
+	RESERROR						AddResPath(wstring wstrPath);
 	ResManager*						GetInstance();
-	UIRes*							GetResource(const string& strResID);
+	UIPicture*						GetResByID(const string& strResID);
+	bool							IsResFileExisit(const string& strResID);
 private:
+	wstring							GetFilePathByResID(const string& strResID);
 	unsigned int					GetIndexFromPicListId(LPCSTR szPicListID);
 	string							GetRealIdFromPicListId(LPCSTR szPicListID);
 	wstring							GetPicPathByID(LPCSTR szResID);
 	wstring							m_wszResPath;
 	//map<string, RPicture*>			m_resID2HandleMap;
-
+	vector<wstring>					m_resPathVec;
+	map<const string, UIPicture*>   m_resMap;
 };
 
-class UIPicture
+class ResPicture
 {
 public:
-	UIPicture();
-	UIPicture(const string& strFilePath);
+	ResPicture();
+	~ResPicture();
+	ResPicture(const string& strFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) = 0;
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) = 0;
 protected:
@@ -70,7 +74,7 @@ protected:
 };
 
 //class UIImage
-class UIBitmap :public UIObject, public UIPicture
+class UIBitmap :public UIObject, public ResPicture
 {
 public:
 	UIBitmap();

@@ -111,7 +111,7 @@ void example_2()
 void example_4()
 {
 	ResManager resManager(L"E:\\A iss\\凯子婚礼精选");
-	RPicture *pic;
+	//RPicture *pic;
 	//resManager.GetResPicHandle("texturelist.nine.customRectBkg.3", &pic);
 }
 
@@ -277,12 +277,12 @@ void example_5()//test for libpng
 {
 	//set resource folder,every plugin has it's own unique ResManager object
 	ResManager resMgr(L"E:\\code\\ComBase\\trunk\\UIEngine\\docs");
-	RPicture* picObj;
+	//RPicture* picObj;
 	//the first pic's index in piclist is '1' rather than '0'
 	//is illegal to pass an piclist id without a index section at the end
 	//RESERROR resErr = resMgr.GetResPicHandle("texturelist.Nine.btnbkg.4", &picObj);
 	
-	picObj->WritePngFile(L"E:\\code\\ComBase\\trunk\\UIEngine\\docs\\testout.png");
+	//picObj->WritePngFile(L"E:\\code\\ComBase\\trunk\\UIEngine\\docs\\testout.png");
 
 	//delete picObj;
 	//RPicList picObj(L"E:\\code\\ComBase\\trunk\\UIEngine\\docs\\texturelist.png");

@@ -19,26 +19,27 @@ using namespace Gdiplus;
 namespace Gear {
 	namespace Res{
 
-class UIPicture;
+class ResPicture;
 class ResManager
 {
 public:
 	ResManager() {};
 	ResManager(LPWSTR szResPath);
 	~ResManager();
-	RESERROR						AddResPath(wstring wstrPath);
-	ResManager*						GetInstance();
-	UIPicture*						GetResByID(const string& strResID);
-	bool							IsResFileExisit(const string& strResID);
+	RESERROR						AddResPath(const wstring& cwstrPath);
+	static ResManager&				GetInstance();
+	ResPicture*						GetResObject(const string& strResID);
+	bool							LoadResource(const string& strResID);
+	bool							LoadResFromFile(const wstring& wstrFilePath);
 private:
-	wstring							GetFilePathByResID(const string& strResID);
+	
 	unsigned int					GetIndexFromPicListId(LPCSTR szPicListID);
 	string							GetRealIdFromPicListId(LPCSTR szPicListID);
-	wstring							GetPicPathByID(LPCSTR szResID);
+	wstring							GetResFilePath(LPCSTR szResID);
 	wstring							m_wszResPath;
-	//map<string, RPicture*>			m_resID2HandleMap;
+	//map<string, RPicture*>		m_resID2HandleMap;
 	vector<wstring>					m_resPathVec;
-	map<const string, UIPicture*>   m_resMap;
+	map<const string, ResPicture*>  m_resMap;
 };
 
 class ResPicture
@@ -51,11 +52,13 @@ public:
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) = 0;
 protected:
 	RESERROR						ReadPngFile(const string& strFilePath);
+	bool							ReadPngFile(const wstring& wstrFilePath);
 	bool							IsVerticalLine(unsigned int horizontalPos, COLORREF lineColor);
 	bool							IsHorizontalLine(unsigned int verticalPos, COLORREF lineColor);
 	RESERROR						DetectVerticalLine();
 	RESERROR						DetectHorizontalLine();
 protected:
+	bool							m_bPngFileLoaded;
 	string							m_strFilePath;
 	png_uint_32						m_pngWidth;
 	png_uint_32						m_pngHeight;
@@ -73,6 +76,12 @@ protected:
 	const COLORREF					m_purpleLineColor;
 };
 
+class ResImage:public ResPicture
+{
+public:
+	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
+	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
+};
 //class UIImage
 class UIBitmap :public UIObject, public ResPicture
 {

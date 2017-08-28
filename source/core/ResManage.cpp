@@ -1,9 +1,21 @@
 #include "stdafx.h"
 #include "ResManager.h"
+#include "Util.h"
 
 using namespace Gear::Res;
 
-ResPicture::ResPicture() :m_purpleLineColor(RGB(127, 0, 127))
+ResPicture::ResPicture() :
+	m_purpleLineColor(RGB(127, 0, 127)),
+	m_bPngFileLoaded(false),
+	m_strFilePath(""),
+	m_pngWidth(0),
+	m_pngHeight(0),
+	m_colorType(0),
+	m_bitDepth(0),
+	m_pixelDepth(0),
+	m_rowPointers(nullptr),
+	m_pngStructPtr(nullptr),
+	m_pngInfoPtr(nullptr)
 {
 
 }
@@ -23,10 +35,34 @@ ResPicture::~ResPicture()
 	if (m_pngStructPtr && m_pngInfoPtr)
 		png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, NULL);
 }
-ResPicture::ResPicture(const string& strFilePath) : m_purpleLineColor(RGB(127, 0, 127))
+ResPicture::ResPicture(const string& strFilePath) :
+	m_purpleLineColor(RGB(127, 0, 127)),
+	m_bPngFileLoaded(false),
+	m_strFilePath(""),
+	m_pngWidth(0),
+	m_pngHeight(0),
+	m_colorType(0),
+	m_bitDepth(0),
+	m_pixelDepth(0),
+	m_rowPointers(nullptr),
+	m_pngStructPtr(nullptr),
+	m_pngInfoPtr(nullptr)
 {
 	m_strFilePath = strFilePath;
 	ReadPngFile(strFilePath);
+}
+bool ResPicture::ReadPngFile(const wstring& wstrFilePath)
+{
+	string strFilePath;
+	if(WStr2Str(wstrFilePath, strFilePath)){
+		auto ret = ReadPngFile(strFilePath);
+		if (ret == RES_SUCCESS) { return true; }
+
+		ERR("ReadPngFile error: Load png file error");
+		return false;
+	}
+	ERR("ReadPngFile error: convert file path error");
+	return false;
 }
 
 RESERROR ResPicture::ReadPngFile(const string& strFilePath)
@@ -259,30 +295,92 @@ ResManager::~ResManager()
 	//*/
 }
 
-//可以是相对路径(相对于exe),也可以是绝对路径.
-RESERROR ResManager::AddResPath(wstring wstrPath)
+//设置资源文件夹，可以是相对路径(相对于exe),也可以是绝对路径.
+//以后考虑支持zip
+RESERROR ResManager::AddResPath(const wstring& cwstrPath)
 {
+	wstring wstrPath = cwstrPath;
 	if (std::find(m_resPathVec.begin(), m_resPathVec.end(), wstrPath) != m_resPathVec.end()) {
 		WARN("AddResPath warning: resource path already exists");
 		return RES_SUCCESS;
 	}
 
-	//传的是相对路径
-	if (wstrPath.find(L":") != wstring::npos) {
+	//传的是相对路径，则要将相对路径做处理，以exe目录为基础，转成绝对路径
+	if (wstrPath.find(L":") == wstring::npos) {
 		TCHAR szFilePath[MAX_PATH + 1] = { 0 };
 		GetModuleFileName(NULL, szFilePath, MAX_PATH);
-		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; //从文件名出截断，只获得路径字串
+		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; //从文件名处截断，只获得路径字串
 		
 		wstrPath = wstring(szFilePath) + szFilePath;
 	}
-	if (!::PathFileExists(wstrPath.c_str())) {
-		ERR("AddResPath error: path file not exisit, wstrPath: {}", string(wstrPath.begin(), wstrPath.end()));
-		return RES_ERROR_FILE_NOT_FOUND;
-	}
+	//if (!::PathFileExists(wstrPath.c_str())) {
+	//	ERR("AddResPath error: path file not exisit, wstrPath: {}", string(wstrPath.begin(), wstrPath.end()));
+	//	return RES_ERROR_FILE_NOT_FOUND;
+	//}
 	
+	/*文件夹路径的末尾一定要有\,方便以后拼路径使用 */
+	if (wstrPath.find_last_of(L"\\") != wstrPath.length() - 1) {
+		wstrPath += L"\\";
+	}
+	m_resPathVec.push_back(wstrPath);
 	return RES_SUCCESS;
 }
-wstring ResManager::GetPicPathByID(LPCSTR szResID)
+
+ResManager& ResManager::GetInstance()
+{
+	static ResManager resMgr{};
+	return resMgr;
+}
+
+ResPicture*	ResManager::GetResObject(const string& strResID)
+{
+	auto pRes = m_resMap[strResID];
+	if (pRes) { return pRes; }
+	//map里不存在，就尝试从m_resPathVec里的目录里加载、解析
+	
+}
+
+bool ResManager::LoadResource(const string& strResID)
+{
+	auto GetResFileName = [](const string& resID)->string {
+		string fileName;
+		if (resID.find("image.") == 0 || resID.find("texture.") == 0) {
+			fileName = resID + ".png";
+		}
+		else if (resID.find("imagelist.") == 0 || resID.find("texturelist.") == 0) {
+			auto pos = resID.find_last_of(".");
+			if (pos != string::npos) {
+				fileName = resID.substr(0, pos) + ".png";
+			}
+		}
+		return fileName;
+	};
+
+	auto fileName = GetResFileName(strResID);
+	if (fileName.empty()) { 
+		ERR("LoadResource error: Get resource file name failed, resID: {}", strResID);
+		return false; 
+	}
+	///////////2017.8.26下午，敲到这里偶然转了一下头，一切都变了。
+
+	wstring wstrFileName(fileName.begin(), fileName.end());
+	for (auto it = m_resPathVec.begin(); it != m_resPathVec.end(); ++it) {
+		wstring wstrCurPath = *it + wstrFileName;
+		if (::PathFileExists(wstrCurPath.c_str())){
+			return LoadResFromFile(wstrCurPath);
+		}
+	}
+	ERR("LoadResource error: Resource file not found in all resource folder");
+	return false;
+}
+
+bool ResManager::LoadResFromFile(const wstring& wstrFilePath)
+{
+
+	return true;
+}
+
+wstring ResManager::GetResFilePath(LPCSTR szResID)
 {
 	LPWSTR wszPath = new WCHAR[MAX_PATH];
 

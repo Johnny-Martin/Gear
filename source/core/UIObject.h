@@ -1,3 +1,4 @@
+#pragma once
 #ifndef UIOBJECT_H
 #define UIOBJECT_H
 #include "stdafx.h"

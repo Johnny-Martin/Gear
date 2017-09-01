@@ -20,6 +20,15 @@ namespace Gear {
 	namespace Res{
 
 class ResPicture;
+enum ResType
+{
+	RES_INVALIDE_TYPE = 0,
+	RES_IMAGE = 1,
+	RES_TEXTURE = 2,
+	RES_IMAGELIST = 3,
+	RES_TEXTURELIST = 4,
+};
+
 class ResManager
 {
 public:
@@ -28,9 +37,10 @@ public:
 	~ResManager();
 	RESERROR						AddResPath(const wstring& cwstrPath);
 	static ResManager&				GetInstance();
+	//主要接口
 	ResPicture*						GetResObject(const string& strResID);
 	bool							LoadResource(const string& strResID);
-	bool							LoadResFromFile(const wstring& wstrFilePath);
+	bool							LoadResFromFile(const wstring& wstrFilePath, ResType resType);
 private:
 	
 	unsigned int					GetIndexFromPicListId(LPCSTR szPicListID);
@@ -47,7 +57,7 @@ class ResPicture
 public:
 	ResPicture();
 	~ResPicture();
-	ResPicture(const string& strFilePath);
+	ResPicture(const wstring& wstrFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) = 0;
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) = 0;
 protected:
@@ -59,7 +69,7 @@ protected:
 	RESERROR						DetectHorizontalLine();
 protected:
 	bool							m_bPngFileLoaded;
-	string							m_strFilePath;
+	wstring							m_wstrFilePath;
 	png_uint_32						m_pngWidth;
 	png_uint_32						m_pngHeight;
 	png_byte						m_colorType;
@@ -79,6 +89,15 @@ protected:
 class ResImage:public ResPicture
 {
 public:
+	ResImage(const wstring& wstrFilePath);
+	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
+	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
+};
+
+class ResTexture :public ResPicture
+{
+public:
+	ResTexture(const wstring& wstrFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
 };

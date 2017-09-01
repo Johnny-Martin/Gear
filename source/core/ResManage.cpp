@@ -35,10 +35,10 @@ ResPicture::~ResPicture()
 	if (m_pngStructPtr && m_pngInfoPtr)
 		png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, NULL);
 }
-ResPicture::ResPicture(const string& strFilePath) :
+ResPicture::ResPicture(const wstring& wstrFilePath) :
 	m_purpleLineColor(RGB(127, 0, 127)),
 	m_bPngFileLoaded(false),
-	m_strFilePath(""),
+	m_wstrFilePath(L""),
 	m_pngWidth(0),
 	m_pngHeight(0),
 	m_colorType(0),
@@ -48,13 +48,13 @@ ResPicture::ResPicture(const string& strFilePath) :
 	m_pngStructPtr(nullptr),
 	m_pngInfoPtr(nullptr)
 {
-	m_strFilePath = strFilePath;
-	ReadPngFile(strFilePath);
+	m_wstrFilePath = wstrFilePath;
+	ReadPngFile(wstrFilePath);
 }
 bool ResPicture::ReadPngFile(const wstring& wstrFilePath)
 {
-	string strFilePath;
-	if(WStr2Str(wstrFilePath, strFilePath)){
+	string strFilePath = WStringToString(wstrFilePath);
+	if(!strFilePath.empty()){
 		auto ret = ReadPngFile(strFilePath);
 		if (ret == RES_SUCCESS) { return true; }
 
@@ -197,6 +197,7 @@ RESERROR ResPicture::DetectVerticalLine()
 	}
 	return RES_SUCCESS;
 }
+
 RESERROR ResPicture::DetectHorizontalLine()
 {
 	//before calling this function,make sure that
@@ -226,15 +227,18 @@ UIBitmap::UIBitmap()
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
+
 void UIBitmap::InitAttrMap()
 {
 	ADD_ATTR("fit", "1")
 	ADD_ATTR("file", "")
 }
+
 void UIBitmap::InitEventMap()
 {
 	//ADD_EVENT("OnCreate", nullptr)
 }
+
 bool UIBitmap::Init(const XMLElement* pElement)
 {
 	auto ret = UIObject::Init(pElement);
@@ -244,6 +248,7 @@ bool UIBitmap::Init(const XMLElement* pElement)
 	}
 	return true;
 }
+
 ID2D1Bitmap* UIBitmap::GetD2D1Bitmap(unsigned int width, unsigned int height)
 {
 	return nullptr;
@@ -338,10 +343,25 @@ ResPicture*	ResManager::GetResObject(const string& strResID)
 	if (pRes) { return pRes; }
 	//map里不存在，就尝试从m_resPathVec里的目录里加载、解析
 	
+	
+	return nullptr;
 }
 
 bool ResManager::LoadResource(const string& strResID)
 {
+	auto GetResType = [](const string& resID)->ResType {
+		if (resID.find("image.") == 0) {
+			return RES_IMAGE;
+		} else if (resID.find("texture.") == 0) {
+			return RES_TEXTURE;
+		} else if (resID.find("imagelist.") == 0) {
+			return RES_IMAGELIST;
+		} else if (resID.find("texturelist.") == 0) {
+			return RES_TEXTURELIST;
+		}
+		return RES_INVALIDE_TYPE;
+	};
+
 	auto GetResFileName = [](const string& resID)->string {
 		string fileName;
 		if (resID.find("image.") == 0 || resID.find("texture.") == 0) {
@@ -361,22 +381,38 @@ bool ResManager::LoadResource(const string& strResID)
 		ERR("LoadResource error: Get resource file name failed, resID: {}", strResID);
 		return false; 
 	}
+
 	///////////2017.8.26下午，敲到这里偶然转了一下头，一切都变了。
 
-	wstring wstrFileName(fileName.begin(), fileName.end());
+	wstring wstrFileName = StringToWString(fileName);
 	for (auto it = m_resPathVec.begin(); it != m_resPathVec.end(); ++it) {
 		wstring wstrCurPath = *it + wstrFileName;
 		if (::PathFileExists(wstrCurPath.c_str())){
-			return LoadResFromFile(wstrCurPath);
+			return LoadResFromFile(wstrCurPath, GetResType(fileName));
 		}
 	}
 	ERR("LoadResource error: Resource file not found in all resource folder");
 	return false;
 }
 
-bool ResManager::LoadResFromFile(const wstring& wstrFilePath)
+bool ResManager::LoadResFromFile(const wstring& wstrFilePath, ResType resType)
 {
+	if (resType == RES_INVALIDE_TYPE) {
+		ERR("LoadResFromFile error: RES_INVALIDE_TYPE");
+		return false;
+	}
 
+	ResPicture* pResPic = nullptr;
+
+	if (resType == RES_IMAGE) {
+		pResPic = new ResImage(wstrFilePath);
+	} else if (resType == RES_TEXTURE) {
+		pResPic = new ResTexture(wstrFilePath);
+	} else if (resType == RES_IMAGELIST) {
+
+	} else if (resType == RES_TEXTURELIST) {
+
+	}
 	return true;
 }
 
@@ -445,6 +481,37 @@ string ResManager::GetRealIdFromPicListId(LPCSTR szPicListID)
 		strRealResId.append(sizeof(char), szPicListID[i]);
 
 	return strRealResId;
+}
+ResImage::ResImage(const wstring& wstrFilePath)
+{
+	m_wstrFilePath = wstrFilePath;
+	ReadPngFile(wstrFilePath);
+}
+ID2D1Bitmap* ResImage::GetD2D1Bitmap(unsigned int width, unsigned int height)
+{
+
+	return nullptr;
+}
+Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height)
+{
+
+	return nullptr;
+}
+
+ResTexture::ResTexture(const wstring& wstrFilePath)
+{
+	m_wstrFilePath = wstrFilePath;
+	ReadPngFile(wstrFilePath);
+}
+ID2D1Bitmap* ResTexture::GetD2D1Bitmap(unsigned int width, unsigned int height)
+{
+
+	return nullptr;
+}
+Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int height)
+{
+
+	return nullptr;
 }
 /*RESERROR ResManager::GetResPicHandle(LPCSTR szResID, RPicture** hRes)
 {

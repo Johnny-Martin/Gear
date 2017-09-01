@@ -266,7 +266,7 @@ Gdiplus::Bitmap* UIBitmap::GetGDIBitmap(unsigned int width, unsigned int height)
 **************************************************************************/
 void UIBitmap::InitAttrValuePatternMap()
 {
-	ADD_ATTR_PATTERN("fit", R_CHECK_BOOL);
+	ADD_ATTR_PATTERN("fill", R_CHECK_BOOL);
 }
 void UIBitmap::InitAttrValueParserMap()
 {
@@ -343,7 +343,11 @@ ResPicture*	ResManager::GetResObject(const string& strResID)
 	if (pRes) { return pRes; }
 	//map里不存在，就尝试从m_resPathVec里的目录里加载、解析
 	
-	
+	if (LoadResource(strResID) && m_resMap[strResID] != nullptr) {
+		return m_resMap[strResID];
+	}
+
+	ERR("GetResObject error: can not find ResObject, strResID: {}", strResID);
 	return nullptr;
 }
 
@@ -388,30 +392,42 @@ bool ResManager::LoadResource(const string& strResID)
 	for (auto it = m_resPathVec.begin(); it != m_resPathVec.end(); ++it) {
 		wstring wstrCurPath = *it + wstrFileName;
 		if (::PathFileExists(wstrCurPath.c_str())){
-			return LoadResFromFile(wstrCurPath, GetResType(fileName));
+			return LoadResFromFile(wstrCurPath, strResID, GetResType(fileName));
 		}
 	}
 	ERR("LoadResource error: Resource file not found in all resource folder");
 	return false;
 }
 
-bool ResManager::LoadResFromFile(const wstring& wstrFilePath, ResType resType)
+bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strResID, ResType resType)
 {
 	if (resType == RES_INVALIDE_TYPE) {
 		ERR("LoadResFromFile error: RES_INVALIDE_TYPE");
 		return false;
 	}
 
-	ResPicture* pResPic = nullptr;
-
 	if (resType == RES_IMAGE) {
-		pResPic = new ResImage(wstrFilePath);
+		ResPicture* pResPic = new ResImage(wstrFilePath);
+		m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_TEXTURE) {
-		pResPic = new ResTexture(wstrFilePath);
+		ResPicture* pResPic = new ResTexture(wstrFilePath);
+		m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_IMAGELIST) {
+		PicListDivider divider(wstrFilePath);
+		vector<ResPicture*> vec = divider.DividePic();
+		for (auto it = vec.begin(); it != vec.end(); ++it) {
+			//初始化资源
 
+			//将资源存入m_resMap
+		}
 	} else if (resType == RES_TEXTURELIST) {
+		PicListDivider divider(wstrFilePath);
+		vector<ResPicture*> vec = divider.DividePic();
+		for (auto it = vec.begin(); it != vec.end(); ++it) {
+			//初始化资源
 
+			//将资源存入m_resMap
+		}
 	}
 	return true;
 }
@@ -512,6 +528,16 @@ Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int heigh
 {
 
 	return nullptr;
+}
+PicListDivider::PicListDivider(const wstring& wstrFilePath)
+{
+	
+}
+vector<ResPicture*>	PicListDivider::DividePic() 
+{
+	vector<ResPicture*> vec;
+
+	return vec;
 }
 /*RESERROR ResManager::GetResPicHandle(LPCSTR szResID, RPicture** hRes)
 {

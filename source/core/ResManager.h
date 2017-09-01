@@ -40,7 +40,7 @@ public:
 	//主要接口
 	ResPicture*						GetResObject(const string& strResID);
 	bool							LoadResource(const string& strResID);
-	bool							LoadResFromFile(const wstring& wstrFilePath, ResType resType);
+	bool							LoadResFromFile(const wstring& wstrFilePath, const string& strResID, ResType resType);
 private:
 	
 	unsigned int					GetIndexFromPicListId(LPCSTR szPicListID);
@@ -101,6 +101,16 @@ public:
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
 };
+
+class PicListDivider :public ResPicture
+{
+public:
+	PicListDivider(const wstring& wstrFilePath);
+	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) { return nullptr; }
+	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) { return nullptr; }
+	vector<ResPicture*>				DividePic();
+};
+
 //class UIImage
 class UIBitmap :public UIObject, public ResPicture
 {

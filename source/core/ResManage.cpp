@@ -7,7 +7,7 @@ using namespace Gear::Res;
 ResPicture::ResPicture() :
 	m_purpleLineColor(RGB(127, 0, 127)),
 	m_bPngFileLoaded(false),
-	m_strFilePath(""),
+	m_wstrFilePath(L""),
 	m_pngWidth(0),
 	m_pngHeight(0),
 	m_colorType(0),

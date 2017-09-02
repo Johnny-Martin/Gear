@@ -342,6 +342,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	test.AddAttrName("WindowsPos", "0");
 	auto newVal2 = test.GetAttrValue("WindowsPos");*/
 
+	ResManager::GetInstance().AddResPath(L"..\\..\\..\\..\\docs\\");
 	Gear::Xml::XmlAgent& xmlAgent = Gear::Xml::XmlAgent::GetInstance();
 	xmlAgent.GetXmlRootElement("..\\..\\..\\docs\\SampleWnd.xml");
 	//example_1();

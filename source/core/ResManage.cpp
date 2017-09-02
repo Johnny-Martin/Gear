@@ -58,7 +58,7 @@ bool ResPicture::ReadPngFile(const wstring& wstrFilePath)
 		auto ret = ReadPngFile(strFilePath);
 		if (ret == RES_SUCCESS) { return true; }
 
-		ERR("ReadPngFile error: Load png file error");
+		ERR("ReadPngFile error: Load png file error, code: {}", ret);
 		return false;
 	}
 	ERR("ReadPngFile error: convert file path error");
@@ -220,18 +220,25 @@ RESERROR ResPicture::DetectHorizontalLine()
 	return RES_SUCCESS;
 }
 
-UIBitmap::UIBitmap()
+UIBitmap::UIBitmap():m_picObject(nullptr)
 {
 	InitAttrMap();
 	InitEventMap();
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
-
+ID2D1Bitmap* UIBitmap::GetD2D1Bitmap(unsigned int width, unsigned int height)
+{
+	return nullptr;
+}
+Gdiplus::Bitmap* UIBitmap::GetGDIBitmap(unsigned int width, unsigned int height)
+{
+	return nullptr;
+}
 void UIBitmap::InitAttrMap()
 {
-	ADD_ATTR("fit", "1")
-	ADD_ATTR("file", "")
+	ADD_ATTR("fill", "1")
+	ADD_ATTR("res",  "")
 }
 
 void UIBitmap::InitEventMap()
@@ -242,22 +249,14 @@ void UIBitmap::InitEventMap()
 bool UIBitmap::Init(const XMLElement* pElement)
 {
 	auto ret = UIObject::Init(pElement);
-	if (ret) {
-		//加载file属性中的路径对应的png
-
+	if (ret && !m_attrMap["res"].empty()) {
+		//加载res属性对应的png
+		auto resID = m_attrMap["res"];
+		m_picObject = ResManager::GetInstance().GetResObject(resID);
 	}
 	return true;
 }
 
-ID2D1Bitmap* UIBitmap::GetD2D1Bitmap(unsigned int width, unsigned int height)
-{
-	return nullptr;
-}
-
-Gdiplus::Bitmap* UIBitmap::GetGDIBitmap(unsigned int width, unsigned int height)
-{
-	return nullptr;
-}
 /*************************************************************************
 *检查属性值是否合法
 *	pos="leftexp, topexp, widthexp, heightexp"
@@ -270,18 +269,7 @@ void UIBitmap::InitAttrValuePatternMap()
 }
 void UIBitmap::InitAttrValueParserMap()
 {
-	auto ParseFilePath = [&](const string& sAttrName = "file") {
-		//还缺插件管理的设施：管理插件包、文件路径
-		//暂时file属性使用全路径
-		string strPath = m_attrMap[sAttrName];
-		if (!::PathFileExistsA(strPath.c_str())) {
-			ERR("ParseFilePath error: file not exisit, path: {}", strPath);
-			return false;
-		}
-		return true;
-	};
 
-	ADD_ATTR_PARSER("file", ParseFilePath);
 }
 
 
@@ -316,7 +304,8 @@ RESERROR ResManager::AddResPath(const wstring& cwstrPath)
 		GetModuleFileName(NULL, szFilePath, MAX_PATH);
 		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; //从文件名处截断，只获得路径字串
 		
-		wstrPath = wstring(szFilePath) + szFilePath;
+		::PathAppend(szFilePath, wstrPath.c_str());
+		wstrPath = wstring(szFilePath);
 	}
 	//if (!::PathFileExists(wstrPath.c_str())) {
 	//	ERR("AddResPath error: path file not exisit, wstrPath: {}", string(wstrPath.begin(), wstrPath.end()));
@@ -414,20 +403,20 @@ bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strR
 		m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_IMAGELIST) {
 		PicListDivider divider(wstrFilePath);
-		vector<ResPicture*> vec = divider.DividePic();
-		for (auto it = vec.begin(); it != vec.end(); ++it) {
+		//vector<ResPicture*> vec = divider.DividePic();
+		//for (auto it = vec.begin(); it != vec.end(); ++it) {
 			//初始化资源
 
 			//将资源存入m_resMap
-		}
+		//}
 	} else if (resType == RES_TEXTURELIST) {
 		PicListDivider divider(wstrFilePath);
-		vector<ResPicture*> vec = divider.DividePic();
-		for (auto it = vec.begin(); it != vec.end(); ++it) {
+		//vector<ResPicture*> vec = divider.DividePic();
+		///for (auto it = vec.begin(); it != vec.end(); ++it) {
 			//初始化资源
 
 			//将资源存入m_resMap
-		}
+		//}
 	}
 	return true;
 }
@@ -517,7 +506,10 @@ Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height)
 ResTexture::ResTexture(const wstring& wstrFilePath)
 {
 	m_wstrFilePath = wstrFilePath;
-	ReadPngFile(wstrFilePath);
+	if (ReadPngFile(wstrFilePath)) {
+		DetectHorizontalLine();
+		DetectVerticalLine();
+	}
 }
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(unsigned int width, unsigned int height)
 {
@@ -529,15 +521,27 @@ Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int heigh
 
 	return nullptr;
 }
+
+unsigned int PicListDivider::GetPicCount()
+{
+	return m_arrVerticalLinePos.empty() ? 0 : m_arrVerticalLinePos.size() + 1;
+}
+
+//imagelist、texturelist都是水平排布的——用竖线分割
 PicListDivider::PicListDivider(const wstring& wstrFilePath)
 {
-	
+	m_wstrFilePath = wstrFilePath;
+	if (ReadPngFile(wstrFilePath)) {
+		DetectVerticalLine();
+	}
 }
-vector<ResPicture*>	PicListDivider::DividePic() 
+ResPicture*	PicListDivider::GetPicByIndex()
 {
-	vector<ResPicture*> vec;
+	if(GetPicCount() == 0){ return nullptr; }
 
-	return vec;
+	//根据index创建新的image、texture
+
+	return nullptr;
 }
 /*RESERROR ResManager::GetResPicHandle(LPCSTR szResID, RPicture** hRes)
 {

@@ -55,7 +55,7 @@ private:
 	REFLECTION_DECLARE_BEGIN()
 		REGISTER_CLASS("window", CBaseWnd)
 		REGISTER_CLASS("layout", LayoutObject)
-		REGISTER_CLASS("image", UIBitmap)
+		REGISTER_CLASS("bitmap", UIBitmap)
 	REFLECTION_DECLARE_END()
 };
 

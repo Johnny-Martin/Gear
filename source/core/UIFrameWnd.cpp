@@ -296,7 +296,7 @@ void FrameWnd::OnResize(UINT uWidth, UINT uHeight)
 	}
 }
 
-ResManager resManager(L"I:\\UIEngine\\docs");
+//ResManager resManager(L"I:\\UIEngine\\docs");
 RPicture* pic = NULL;
 void FrameWnd::OnRender(const PAINTSTRUCT &ps)
 {

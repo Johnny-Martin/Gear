@@ -59,7 +59,7 @@ public:
 	~ResPicture();
 	ResPicture(const wstring& wstrFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) = 0;
-	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) = 0;
+	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)  = 0;
 protected:
 	RESERROR						ReadPngFile(const string& strFilePath);
 	bool							ReadPngFile(const wstring& wstrFilePath);
@@ -107,8 +107,9 @@ class PicListDivider :public ResPicture
 public:
 	PicListDivider(const wstring& wstrFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) { return nullptr; }
-	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) { return nullptr; }
-	vector<ResPicture*>				DividePic();
+	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)  { return nullptr; }
+	unsigned int					GetPicCount();
+	ResPicture*						GetPicByIndex();
 };
 
 //class UIImage
@@ -124,6 +125,8 @@ protected:
 	void							InitEventMap();
 	void							InitAttrValuePatternMap();
 	void							InitAttrValueParserMap();
+private:
+	ResPicture*						m_picObject;
 };
 
 	}//end of namespace Res

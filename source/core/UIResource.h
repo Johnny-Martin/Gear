@@ -73,7 +73,7 @@ protected:
 	png_uint_32						m_pngHeight;
 	png_byte						m_colorType;
 	png_byte						m_bitDepth;
-	png_byte						m_pixelDepth;
+	png_byte						m_colorChannels;
 	png_bytep*						m_rowPointers; //In fact, m_rowPointers is a two-dimensional array
 	png_structp						m_pngStructPtr;
 	png_infop						m_pngInfoPtr;

@@ -6,6 +6,7 @@ Description:		界面图片资源管理器
 *****************************************************/
 #pragma once
 #include "stdafx.h"
+//#include "pnginfo.h"
 #include "png.h"
 #include "Log.h"
 #include "UIError.h"
@@ -74,7 +75,7 @@ protected:
 	png_uint_32						m_pngHeight;
 	png_byte						m_colorType;
 	png_byte						m_bitDepth;
-	png_byte						m_pixelDepth;
+	png_byte						m_colorChannels;
 	png_bytep*						m_rowPointers; //In fact, m_rowPointers is a two-dimensional array
 	png_structp						m_pngStructPtr;
 	png_infop						m_pngInfoPtr;

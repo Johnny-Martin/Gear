@@ -12,7 +12,7 @@ ResPicture::ResPicture() :
 	m_pngHeight(0),
 	m_colorType(0),
 	m_bitDepth(0),
-	m_pixelDepth(0),
+	m_colorChannels(0),
 	m_rowPointers(nullptr),
 	m_pngStructPtr(nullptr),
 	m_pngInfoPtr(nullptr)
@@ -43,7 +43,6 @@ ResPicture::ResPicture(const wstring& wstrFilePath) :
 	m_pngHeight(0),
 	m_colorType(0),
 	m_bitDepth(0),
-	m_pixelDepth(0),
 	m_rowPointers(nullptr),
 	m_pngStructPtr(nullptr),
 	m_pngInfoPtr(nullptr)
@@ -108,8 +107,8 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 	m_pngHeight = png_get_image_height(m_pngStructPtr, m_pngInfoPtr);
 	m_colorType = png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
 	m_bitDepth = png_get_bit_depth(m_pngStructPtr, m_pngInfoPtr);
-	m_pixelDepth = m_pngInfoPtr->pixel_depth;
-
+	m_colorChannels = png_get_channels(m_pngStructPtr, m_pngInfoPtr);
+	
 	int number_of_passes = png_set_interlace_handling(m_pngStructPtr);
 	png_read_update_info(m_pngStructPtr, m_pngInfoPtr);
 
@@ -146,11 +145,10 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 
 bool ResPicture::IsVerticalLine(unsigned int horizontalPos, const COLORREF lineColor)
 {
-	unsigned int bytesPerPixel = m_pixelDepth / 8;
 	for (unsigned int rowIndex = 0; rowIndex<m_pngHeight; ++rowIndex)
 	{
 		png_byte* row = m_rowPointers[rowIndex];
-		png_byte* ptr = &(row[horizontalPos*bytesPerPixel]);
+		png_byte* ptr = &(row[horizontalPos*m_colorChannels]);
 
 		COLORREF pixelColor = RGB(ptr[0], ptr[1], ptr[2]);
 		if (lineColor != pixelColor)
@@ -162,10 +160,9 @@ bool ResPicture::IsVerticalLine(unsigned int horizontalPos, const COLORREF lineC
 bool ResPicture::IsHorizontalLine(unsigned int horizontalPos, const COLORREF lineColor)
 {
 	png_byte* row = m_rowPointers[horizontalPos];
-	unsigned int bytesPerPixel = m_pixelDepth / 8;
 	for (unsigned int columnIndex = 0; columnIndex<m_pngWidth; ++columnIndex)
 	{
-		png_byte* ptr = &(row[columnIndex*bytesPerPixel]);
+		png_byte* ptr = &(row[columnIndex*m_colorChannels]);
 
 		COLORREF pixelColor = RGB(ptr[0], ptr[1], ptr[2]);
 		if (lineColor != pixelColor)
@@ -180,11 +177,10 @@ RESERROR ResPicture::DetectVerticalLine()
 	//before calling this function,make sure that
 	//png file must has been loaded to memory successfully.
 	png_byte* pixelDataPtr = NULL;
-	unsigned int bytesPerPixel = m_pixelDepth / 8;
 
 	for (unsigned int columnIndex = 0; columnIndex<m_pngWidth; ++columnIndex)
 	{
-		pixelDataPtr = &(m_rowPointers[0][columnIndex*bytesPerPixel]);
+		pixelDataPtr = &(m_rowPointers[0][columnIndex*m_colorChannels]);
 		COLORREF pixelColor = RGB(pixelDataPtr[0], pixelDataPtr[1], pixelDataPtr[2]);
 		if (m_purpleLineColor == pixelColor)
 		{
@@ -203,7 +199,7 @@ RESERROR ResPicture::DetectHorizontalLine()
 	//before calling this function,make sure that
 	//png file must has been loaded to memory successfully.
 	png_byte* pixelDataPtr = NULL;
-	unsigned int bytesPerPixel = m_pixelDepth / 8;
+	
 	for (unsigned int rowIndex = 0; rowIndex<m_pngHeight; ++rowIndex)
 	{
 		pixelDataPtr = &(m_rowPointers[rowIndex][0]);

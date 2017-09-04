@@ -103,10 +103,10 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 		&& png_get_color_type(m_pngStructPtr, m_pngInfoPtr) != PNG_COLOR_TYPE_RGBA)
 		return RES_ERROR_ILLEGAL_PNG_FILE;
 
-	m_pngWidth = png_get_image_width(m_pngStructPtr, m_pngInfoPtr);
-	m_pngHeight = png_get_image_height(m_pngStructPtr, m_pngInfoPtr);
-	m_colorType = png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
-	m_bitDepth = png_get_bit_depth(m_pngStructPtr, m_pngInfoPtr);
+	m_pngWidth		= png_get_image_width(m_pngStructPtr, m_pngInfoPtr);
+	m_pngHeight		= png_get_image_height(m_pngStructPtr, m_pngInfoPtr);
+	m_colorType		= png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
+	m_bitDepth		= png_get_bit_depth(m_pngStructPtr, m_pngInfoPtr);
 	m_colorChannels = png_get_channels(m_pngStructPtr, m_pngInfoPtr);
 	
 	int number_of_passes = png_set_interlace_handling(m_pngStructPtr);

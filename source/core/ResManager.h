@@ -33,9 +33,9 @@ enum ResType
 class ResManager
 {
 public:
-	ResManager() {};
-	ResManager(LPWSTR szResPath);
-	~ResManager();
+									ResManager() {};
+									ResManager(LPWSTR szResPath);
+									~ResManager();
 	RESERROR						AddResPath(const wstring& cwstrPath);
 	static ResManager&				GetInstance();
 	//主要接口
@@ -56,9 +56,9 @@ private:
 class ResPicture
 {
 public:
-	ResPicture();
-	~ResPicture();
-	ResPicture(const wstring& wstrFilePath);
+									ResPicture();
+									~ResPicture();
+									ResPicture(const wstring& wstrFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) = 0;
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)  = 0;
 protected:
@@ -90,7 +90,7 @@ protected:
 class ResImage:public ResPicture
 {
 public:
-	ResImage(const wstring& wstrFilePath);
+									ResImage(const wstring& wstrFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
 };
@@ -98,7 +98,7 @@ public:
 class ResTexture :public ResPicture
 {
 public:
-	ResTexture(const wstring& wstrFilePath);
+									ResTexture(const wstring& wstrFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
 };
@@ -106,7 +106,7 @@ public:
 class PicListDivider :public ResPicture
 {
 public:
-	PicListDivider(const wstring& wstrFilePath);
+									PicListDivider(const wstring& wstrFilePath);
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) { return nullptr; }
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)  { return nullptr; }
 	unsigned int					GetPicCount();
@@ -117,7 +117,7 @@ public:
 class UIBitmap :public UIObject, public ResPicture
 {
 public:
-	UIBitmap();
+									UIBitmap();
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
 	bool							Init(const XMLElement* pElement);

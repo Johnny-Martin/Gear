@@ -11,6 +11,23 @@ Description:		UI´°¿Ú£¬ÖØ¹¹UIFrameWnd
 #include <list>
 #include <xstring>
 
+class WndBase
+{
+public:
+	WndBase();
+	~WndBase();
+	virtual	LRESULT					OnCreate(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual	LRESULT					OnPaint(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual	LRESULT					OnMove(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual	LRESULT					OnSize(UINT message, WPARAM wParam, LPARAM lParam);
+	HWND							GetWndHandle();
+protected:
+	HRESULT							Initialize();
+	void							RunMessageLoop();
+	static LRESULT CALLBACK			WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+protected:
+	HWND							m_hWnd;
+};
 
 class UIWindow:public UIObject
 {

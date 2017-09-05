@@ -106,10 +106,10 @@ public:
 	bool										SetEventHandler(const string& sEventName, const string& sFuncName, const string& sFilePath);
 	bool										SetEventHandler(const XMLElement* pEventElement);
 	shared_ptr<UIEvent*>						GetEventHandler(const string& sEventName);
-	UIObject*										GetParent();
+	UIObject*									GetParent();
 	bool										SetParent(UIObject* pParent);
 	bool										AddChild(UIObject* pChild, const string& sChildID = "");
-	UIObject*										GetChild(const string& sChildName);
+	UIObject*									GetChild(const string& sChildName);
 	bool										RemoveChild(const string& sChildName);
 	bool										CalcPosFromExp();
 	const UIPos									GetPosObject();

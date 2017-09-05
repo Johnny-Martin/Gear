@@ -175,6 +175,7 @@
     <ClCompile Include="..\..\..\source\core\UIObject.cpp" />
     <ClCompile Include="..\..\..\source\core\UIRender.cpp" />
     <ClCompile Include="..\..\..\source\core\UIResource.cpp" />
+    <ClCompile Include="..\..\..\source\core\UIWindow.cpp" />
     <ClCompile Include="..\..\..\source\core\Util.cpp" />
     <ClCompile Include="..\..\..\source\core\XmlAgent.cpp" />
   </ItemGroup>
@@ -189,6 +190,7 @@
     <ClInclude Include="..\..\..\source\core\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\UIRender.h" />
     <ClInclude Include="..\..\..\source\core\UIResource.h" />
+    <ClInclude Include="..\..\..\source\core\UIWindow.h" />
     <ClInclude Include="..\..\..\source\core\Util.h" />
     <ClInclude Include="..\..\..\source\core\XmlAgent.h" />
   </ItemGroup>

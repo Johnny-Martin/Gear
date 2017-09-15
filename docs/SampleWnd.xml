@@ -36,6 +36,12 @@
 		<event name="OnClose" />
 		<event name="OnCreate" />
 	</window>
+	<rectangle id="button.bkg" pos="0,0,#width,#height" corner="3" color="A0FF00" border="1" bordercolor="FF00FF" >
+		<string id="button.text" pos="#mid, #mid, 200, 20" font="微软雅黑.14.normal.1" text="测试字体" color="00FF00" halign="left" valign="top" />
+		<string id="button.text2" pos="#mid, #mid, 200, 20" font="#button.text.fontA" text="#button.text.content.chinese" color="00FF00" halign="left" valign="top" />
+		<bitmap id="wnd.content.icon" pos="0, 0, 150, 150" res="#image.settingIcon" />
+	</rectangle>
+	<window id="TestLayout" pos="5, 5, 200, 500" title="测试布局对象" shadow="5,0,5,5" caption="0,0,200,30" border="4,4,4,4"/>
 	-->
 	<window id="TestLayout" pos="5, 5, 200, 500" title="测试布局对象">
 		<layout id="root" pos="#mid, (#height - 200), 100, 200">

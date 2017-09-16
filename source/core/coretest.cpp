@@ -27,6 +27,9 @@ using namespace std;
 using namespace tinyxml2;
 using namespace Gear::Res;
 
+
+CAppModule _Module;
+
 //extern "C" int CCallLua ();
 
 /**/

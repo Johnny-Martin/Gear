@@ -51,7 +51,7 @@ XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 	doc.LoadFile(sFilePath.c_str());
 
 	if (doc.Error()) {
-		INFO("Load XML file Error: ");
+		ERR("Load XML file Error: ");
 		return XML_TINYXML2_ERROR;
 	}
 	//强制使用无bom格式
@@ -64,7 +64,7 @@ XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 		//if (checkRet != XML_SUCCESS) return checkRet;
 		auto pObj = CREATE(UIObject, pElement);
 		if (!pObj || !pObj->Init(pElement))
-			INFO("create/initicalize UI ojject error: pObj：{}", int(pObj));
+			ERR("create/initicalize UI ojject error: pObj：{}", int(pObj));
 		
 		pElement = pElement->NextSiblingElement();
 	}

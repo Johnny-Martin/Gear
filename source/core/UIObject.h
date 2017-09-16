@@ -23,7 +23,7 @@ namespace Gear {
 		m_attrValuePatternMap.insert(pair<string, string>(attrName, sPattern));
 
 #define ADD_ATTR_PARSER(attrName, sParser)	\
-		m_attrValueParserMap.insert(pair<string, function<bool(const string&)> >(attrName, sParser))
+		m_attrValueParserMap.insert(pair<string, function<bool(const string&)> >(attrName, sParser));
 
 /*******************************************************************************
 *以下 5 个宏用于粗略检查pos表达式的合法性
@@ -60,6 +60,10 @@ namespace Gear {
 #define R_CHECK_BOOL		  "[01]"
 #define R_CHECK_INT			  "[0-9]+"
 
+/*******************************************************************************
+*检查窗口的shadow、border、resize等四段类的属性
+*******************************************************************************/
+#define R_CHECK_WINDOW_ATTR	  "(([0-9\\s*]*),([0-9\\s*]*),([0-9\\s*]*),([0-9\\s*]*))"
 struct UIPos
 {
 	UIPos() :left(0), top(0), width(0), height(0) {};

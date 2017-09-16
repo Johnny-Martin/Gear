@@ -2,8 +2,6 @@
 #include "UIObject.h"
 #include "UIFactory.h"
 #include <sstream>
-#include "Log.h"
-#include <regex>
 #include "Util.h"
 
 //不可识别的字符转义序列（正则表达式中的\s）
@@ -192,9 +190,9 @@ void UIObject::InitAttrValueParserMap()
 		return true;
 	};
 	
-	ADD_ATTR_PARSER("pos",			ParsePos);
-	ADD_ATTR_PARSER("leftexp",		ParseLeftExp);
-	ADD_ATTR_PARSER("topexp",		ParseTopExp);
+	ADD_ATTR_PARSER("pos",			ParsePos)
+	ADD_ATTR_PARSER("leftexp",		ParseLeftExp)
+	ADD_ATTR_PARSER("topexp",		ParseTopExp)
 }
 shared_ptr<const string> UIObject::GetObjectID()
 {

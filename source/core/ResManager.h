@@ -11,7 +11,7 @@ Description:		界面图片资源管理器
 #include "Log.h"
 #include "UIError.h"
 #include "UIObject.h"
-#include "UIRender.h"
+#include "RenderManager.h"
 using namespace std;
 
 namespace Gear {

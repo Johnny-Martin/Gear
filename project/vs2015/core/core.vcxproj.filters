@@ -30,9 +30,6 @@
     <ClCompile Include="..\..\..\source\core\UIObject.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\UIRender.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\UIResource.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -54,6 +51,9 @@
     <ClCompile Include="..\..\..\source\core\UIRectangle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\RenderManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -69,9 +69,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\UIObject.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\core\UIRender.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\UIResource.h">
@@ -96,6 +93,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\UIRectangle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\RenderManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

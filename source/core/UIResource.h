@@ -12,10 +12,6 @@ Description:		界面图片资源管理
 #include "png.h"
 #include "UIError.h"
 #include "UIObject.h"
-#include<gdiplus.h>
-using namespace Gdiplus;
-#pragma comment(lib, "GdiPlus.lib")
-
 
 #define USE_GDI_RENDERING
 //#define USE_D2D_RENDERING
@@ -189,7 +185,6 @@ private:
 	PICLIST_TYPE					m_picListType;
 	
 };
-
 	}// namespace Res
 }// namespace Gear
 #endif

@@ -25,12 +25,7 @@
 #include <stack>
 #include <map>
 #include <regex>
-
-#include <d2d1.h>
-#include <dwrite.h>
 #include "spdlog.h"
-#pragma comment(lib, "d2d1.lib")
-#pragma comment(lib, "dwrite.lib")
 
 #include "Log.h"
 #include "Util.h"
@@ -46,4 +41,20 @@
 #include <atlwin.h>
 
 extern CAppModule _Module;
-// TODO: reference additional headers your program requires here
+
+#define USE_D2D_RENDER_MODE
+
+#ifdef USE_D2D_RENDER_MODE
+	#include <d2d1.h>
+	#include <d2d1helper.h>
+	#include <dwrite.h>
+	#include <wincodec.h>
+
+	#pragma comment(lib, "d2d1.lib")
+	#pragma comment(lib, "dwrite.lib")
+	using namespace D2D1;
+#else
+	#include<gdiplus.h>
+	using namespace Gdiplus;
+	#pragma comment(lib, "GdiPlus.lib")
+#endif // USE_D2D_RENDER_MODE

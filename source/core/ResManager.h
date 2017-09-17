@@ -30,6 +30,13 @@ enum ResType
 	RES_TEXTURELIST = 4,
 };
 
+class IRenderable
+{
+public:
+	virtual bool					Draw(ID2D1RenderTarget* pRenderTarget) = 0;
+	virtual bool					Draw(HDC* pHdc) = 0;
+};
+
 class ResManager
 {
 public:
@@ -129,6 +136,20 @@ protected:
 private:
 	ResPicture*						m_picObject;
 };
+
+class UIRectangle :public UIObject, public IRenderable
+{
+public:
+									UIRectangle();
+	virtual bool					Draw(ID2D1RenderTarget* pRenderTarget);
+	virtual bool					Draw(HDC* pHdc);
+protected:
+	void							InitAttrMap();
+	void							InitEventMap();
+	void							InitAttrValuePatternMap();
+	void							InitAttrValueParserMap();
+};
+
 
 	}//end of namespace Res
 }//end of namespace Gear

@@ -611,3 +611,40 @@ ResPicture*	PicListDivider::GetPicByIndex()
 	
 	return RES_ERROR_UNKNOWN;
 }//*/
+
+UIRectangle::UIRectangle(){
+	InitAttrMap();
+	InitEventMap();
+	InitAttrValuePatternMap();
+	InitAttrValueParserMap();
+}
+bool UIRectangle::Draw(ID2D1RenderTarget* pRenderTarget)
+{
+
+	return true;
+}
+bool UIRectangle::Draw(HDC* pHdc)
+{
+	return true;
+}
+
+void UIRectangle::InitAttrMap()
+{
+	ADD_ATTR("corner",		"1")
+	ADD_ATTR("color",		"000000")
+	ADD_ATTR("border",		"0")
+	ADD_ATTR("bordercolor", "")
+}
+void UIRectangle::InitEventMap()
+{
+
+}
+void UIRectangle::InitAttrValuePatternMap()
+{
+	ADD_ATTR_PATTERN("corner", R_CHECK_INT);
+	ADD_ATTR_PATTERN("border", R_CHECK_INT);
+}
+void UIRectangle::InitAttrValueParserMap()
+{
+
+}

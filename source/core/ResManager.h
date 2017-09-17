@@ -11,11 +11,8 @@ Description:		界面图片资源管理器
 #include "Log.h"
 #include "UIError.h"
 #include "UIObject.h"
-#include<gdiplus.h>
-#pragma comment(lib, "GdiPlus.lib")
-
+#include "UIRender.h"
 using namespace std;
-using namespace Gdiplus;
 
 namespace Gear {
 	namespace Res{
@@ -28,13 +25,6 @@ enum ResType
 	RES_TEXTURE = 2,
 	RES_IMAGELIST = 3,
 	RES_TEXTURELIST = 4,
-};
-
-class IRenderable
-{
-public:
-	virtual bool					Draw(ID2D1RenderTarget* pRenderTarget) = 0;
-	virtual bool					Draw(HDC* pHdc) = 0;
 };
 
 class ResManager
@@ -66,8 +56,11 @@ public:
 									ResPicture();
 									~ResPicture();
 									ResPicture(const wstring& wstrFilePath);
+#ifdef USE_D2D_RENDER_MODE
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) = 0;
+#else
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)  = 0;
+#endif
 protected:
 	RESERROR						ReadPngFile(const string& strFilePath);
 	bool							ReadPngFile(const wstring& wstrFilePath);
@@ -98,24 +91,33 @@ class ResImage:public ResPicture
 {
 public:
 									ResImage(const wstring& wstrFilePath);
+#ifdef USE_D2D_RENDER_MODE
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
+#else
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
+#endif
 };
 
 class ResTexture :public ResPicture
 {
 public:
 									ResTexture(const wstring& wstrFilePath);
+#ifdef USE_D2D_RENDER_MODE
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
+#else
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
+#endif
 };
 
 class PicListDivider :public ResPicture
 {
 public:
 									PicListDivider(const wstring& wstrFilePath);
+#ifdef USE_D2D_RENDER_MODE
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) { return nullptr; }
+#else
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)  { return nullptr; }
+#endif
 	unsigned int					GetPicCount();
 	ResPicture*						GetPicByIndex();
 };
@@ -125,8 +127,11 @@ class UIBitmap :public UIObject, public ResPicture
 {
 public:
 									UIBitmap();
+#ifdef USE_D2D_RENDER_MODE
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
+#else
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
+#endif
 	bool							Init(const XMLElement* pElement);
 protected:
 	void							InitAttrMap();
@@ -136,20 +141,6 @@ protected:
 private:
 	ResPicture*						m_picObject;
 };
-
-class UIRectangle :public UIObject, public IRenderable
-{
-public:
-									UIRectangle();
-	virtual bool					Draw(ID2D1RenderTarget* pRenderTarget);
-	virtual bool					Draw(HDC* pHdc);
-protected:
-	void							InitAttrMap();
-	void							InitEventMap();
-	void							InitAttrValuePatternMap();
-	void							InitAttrValueParserMap();
-};
-
 
 	}//end of namespace Res
 }//end of namespace Gear

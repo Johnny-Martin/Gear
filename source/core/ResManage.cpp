@@ -223,14 +223,19 @@ UIBitmap::UIBitmap():m_picObject(nullptr)
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
+#ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* UIBitmap::GetD2D1Bitmap(unsigned int width, unsigned int height)
 {
 	return nullptr;
 }
+#endif
+
+#ifndef USE_D2D_RENDER_MODE
 Gdiplus::Bitmap* UIBitmap::GetGDIBitmap(unsigned int width, unsigned int height)
 {
 	return nullptr;
 }
+#endif
 void UIBitmap::InitAttrMap()
 {
 	ADD_ATTR("fill", "1")
@@ -488,17 +493,21 @@ ResImage::ResImage(const wstring& wstrFilePath)
 	m_wstrFilePath = wstrFilePath;
 	ReadPngFile(wstrFilePath);
 }
+#ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResImage::GetD2D1Bitmap(unsigned int width, unsigned int height)
 {
 
 	return nullptr;
 }
+#endif
+
+#ifndef USE_D2D_RENDER_MODE
 Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height)
 {
 
 	return nullptr;
 }
-
+#endif
 ResTexture::ResTexture(const wstring& wstrFilePath)
 {
 	m_wstrFilePath = wstrFilePath;
@@ -507,17 +516,20 @@ ResTexture::ResTexture(const wstring& wstrFilePath)
 		DetectVerticalLine();
 	}
 }
+#ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(unsigned int width, unsigned int height)
 {
 
 	return nullptr;
 }
+#endif
+#ifndef USE_D2D_RENDER_MODE
 Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int height)
 {
 
 	return nullptr;
 }
-
+#endif
 unsigned int PicListDivider::GetPicCount()
 {
 	return m_arrVerticalLinePos.empty() ? 0 : m_arrVerticalLinePos.size() + 1;
@@ -611,40 +623,3 @@ ResPicture*	PicListDivider::GetPicByIndex()
 	
 	return RES_ERROR_UNKNOWN;
 }//*/
-
-UIRectangle::UIRectangle(){
-	InitAttrMap();
-	InitEventMap();
-	InitAttrValuePatternMap();
-	InitAttrValueParserMap();
-}
-bool UIRectangle::Draw(ID2D1RenderTarget* pRenderTarget)
-{
-
-	return true;
-}
-bool UIRectangle::Draw(HDC* pHdc)
-{
-	return true;
-}
-
-void UIRectangle::InitAttrMap()
-{
-	ADD_ATTR("corner",		"1")
-	ADD_ATTR("color",		"000000")
-	ADD_ATTR("border",		"0")
-	ADD_ATTR("bordercolor", "")
-}
-void UIRectangle::InitEventMap()
-{
-
-}
-void UIRectangle::InitAttrValuePatternMap()
-{
-	ADD_ATTR_PATTERN("corner", R_CHECK_INT);
-	ADD_ATTR_PATTERN("border", R_CHECK_INT);
-}
-void UIRectangle::InitAttrValueParserMap()
-{
-
-}

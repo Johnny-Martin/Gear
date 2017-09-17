@@ -9,6 +9,7 @@ Description:		实现一个简单的C++反射
 #include "stdafx.h"
 #include "UIFrameWnd.h"
 #include "UIResource.h"
+#include "UIWindow.h"
 #include "tinyxml2.h"
 #include "ResManager.h"
 
@@ -53,7 +54,7 @@ private:
 	static unsigned int							m_initialClassInfoArraySize;
 
 	REFLECTION_DECLARE_BEGIN()
-		REGISTER_CLASS("window", CBaseWnd)
+		REGISTER_CLASS("window", UIWindow)
 		REGISTER_CLASS("layout", LayoutObject)
 		REGISTER_CLASS("bitmap", UIBitmap)
 	REFLECTION_DECLARE_END()

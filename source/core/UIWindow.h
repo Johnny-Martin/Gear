@@ -11,7 +11,19 @@ Description:		UI´°¿Ú£¬ÖØ¹¹UIFrameWnd
 #include <list>
 #include <xstring>
 
-
+class UIWindow;
+class WndManager
+{
+public:
+	static								WndManager& GetInstance();
+	static void 						AddWindow(HWND hWnd);
+	static void 						RemoveWindow(HWND hWnd);
+	static void 						OnTryExit();
+										~WndManager();
+private:
+										WndManager();
+	static vector<HWND>					m_allWndVec;
+};
 class UIWindow:public UIObject, public CWindowImpl<UIWindow>, public CMessageFilter
 {
 public:

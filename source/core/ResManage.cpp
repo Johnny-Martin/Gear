@@ -380,7 +380,7 @@ bool ResManager::LoadResource(const string& strResID)
 			return LoadResFromFile(wstrCurPath, strResID, GetResType(fileName));
 		}
 	}
-	ERR("LoadResource error: Resource file not found in all resource folder");
+	ERR("LoadResource error: Resource file not found in all resource folder, strResID: {}, fileName: {}", strResID, fileName);
 	return false;
 }
 

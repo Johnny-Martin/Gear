@@ -1,6 +1,55 @@
 #include "stdafx.h"
 #include "UIWindow.h"
 
+vector<HWND> WndManager::m_allWndVec;
+WndManager::WndManager() {}
+
+WndManager& WndManager::GetInstance()
+{
+	static WndManager wndMgr{};
+	return wndMgr;
+}
+void WndManager::AddWindow(HWND hWnd)
+{
+	auto it = std::find(m_allWndVec.begin(), m_allWndVec.end(), hWnd);
+	if (it != m_allWndVec.end()) {
+		WARN("AddWindow warning: window handle already exisits in WndManager, hWnd: {}", (int)hWnd);
+		return;
+	}
+	m_allWndVec.push_back(hWnd);
+}
+void WndManager::RemoveWindow(HWND hWnd)
+{
+	auto it = std::find(m_allWndVec.begin(), m_allWndVec.end(), hWnd);
+	if (it == m_allWndVec.end()) {
+		WARN("RemoveWindow warning: window handle not found in WndManager, hWnd: {}", (int)hWnd);
+		return;
+	}
+	m_allWndVec.erase(it);
+}
+void WndManager::OnTryExit()
+{
+	if (m_allWndVec.size() == 0)
+		return;
+
+	auto it = m_allWndVec.begin();
+	while (it != m_allWndVec.end()) {
+		::DestroyWindow(*it);
+#ifdef DEBUG
+		auto next = m_allWndVec.begin();
+		if (next != m_allWndVec.end()) {
+			//必须在OnDestroy中Remove调自己的窗口
+			ATLASSERT(next != it && *next != *it);
+		}
+#endif // DEBUG
+
+		it = m_allWndVec.begin();
+	}
+}
+WndManager::~WndManager()
+{
+	OnTryExit();
+}
 UIWindow::UIWindow():m_hWndParent(0)
 {
 	InitAttrMap();
@@ -15,10 +64,10 @@ bool UIWindow::Init(const XMLElement* pElement)
 	}
 
 	//额外校验、处理一些属性值
-	auto minwidth	= atoi(m_attrMap["minwidth"].c_str());
-	auto minheight	= atoi(m_attrMap["minheight"].c_str());
-	auto maxwidth	= atoi(m_attrMap["minwidth"].c_str());
-	auto maxheight	= atoi(m_attrMap["minwidth"].c_str());
+	unsigned int minwidth	= atoi(m_attrMap["minwidth"].c_str());
+	unsigned int minheight	= atoi(m_attrMap["minheight"].c_str());
+	unsigned int maxwidth	= atoi(m_attrMap["minwidth"].c_str());
+	unsigned int maxheight	= atoi(m_attrMap["minwidth"].c_str());
 
 	if (m_pos.width < minwidth){
 		WARN("UIWindow Init warning: window width:{} is less than minwidth: {}", m_pos.width, minwidth);
@@ -36,7 +85,8 @@ bool UIWindow::Init(const XMLElement* pElement)
 		WARN("UIWindow Init warning: window width:{} is larger than maxheight: {}", m_pos.height, maxheight);
 		m_pos.height = maxheight;
 	}
-	return true;
+	//return true;
+	return CreateUIWindow();
 }
 void UIWindow::InitAttrMap()
 {
@@ -150,12 +200,15 @@ void UIWindow::InitAttrValueParserMap()
 bool UIWindow::CreateUIWindow()
 {
 	auto GetWndStyle = [&]() {
-		DWORD dWndStyle = WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+		DWORD dWndStyle = WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_SYSMENU;
 		if (m_attrMap["min"] != "0") {
 			dWndStyle = dWndStyle | WS_MINIMIZEBOX;
 		}
 		if (m_attrMap["max"] != "0") {
 			dWndStyle = dWndStyle | WS_MAXIMIZEBOX;
+		}
+		if (m_attrMap["visible"] != "0") {
+			dWndStyle = dWndStyle | WS_VISIBLE;
 		}
 		return dWndStyle;
 	};
@@ -185,8 +238,8 @@ bool UIWindow::CreateUIWindow()
 	ATLASSERT(m_hWnd);
 	ShowWindow(atoi(m_attrMap["show"].c_str()));
 	
+	WndManager::GetInstance().AddWindow(m_hWnd);
 	//::SetWindowPos(m_hWnd, HWND_TOP, 100, 100, 1000, 600, SWP_SHOWWINDOW);
-
 	return m_hWnd != NULL;
 }
 BOOL UIWindow::PreTranslateMessage(MSG* pMsg)
@@ -242,12 +295,18 @@ LRESULT UIWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	ATLASSERT(pLoop != NULL);
 	pLoop->RemoveMessageFilter(this);
 
+	WndManager::GetInstance().RemoveWindow(m_hWnd);
 	//FireLuaEvent()
+	//模仿脚本中退出
+	//WndManager::GetInstance().OnTryExit();
+
 	auto filterCount = pLoop->m_aMsgFilter.GetSize();
 	if (filterCount == 0)
 	{
 		PostQuitMessage(0);
 	}
+
+	
 	bHandled = FALSE;
 	return 0;
 }

@@ -44,7 +44,7 @@
 	</rectangle>
 	<window id="TestLayout" pos="5, 5, 200, 500" title="测试布局对象" shadow="5,0,5,5" caption="30" border="4,4,4,4" resize="120,200,2000,2000"/>
 	-->
-	<window id="TestLayout" pos="5, 5, 200, 500" title="测试布局对象">
+	<window id="TestLayout" pos="500, 100, 200, 200" title="测试布局对象">
 		<layout id="root" pos="#mid, (#height - 200), 100, 200">
 			<bitmap id="wnd.content.icon" pos="0, 0, 150, 150" res="image.settingIcon" />
 			<bitmap id="wnd.content.icon2" pos="15, 15, 15, 15" res="imagelist.frameBkg.3" />
@@ -52,4 +52,7 @@
 		<event id="OnCreate" func="..\\Program File\\test.lua"/>
 		<event name="OnDestory" func="OnWindowCreateDestory" />
 		<event name="OnDestory" func="OnWindowCreateDestory2" />
+	</window>
+	<window id="TestLayout2" pos="500, 400, 200, 200" title="测试布局对象">
+
 	</window>

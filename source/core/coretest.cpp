@@ -322,6 +322,11 @@ void example_7()
 		}
 	}*/
 }
+int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
+{
+	
+	return 0;
+}
 
 #define STR_H(s) #s
 #define STR(s) STR_H(s)
@@ -329,6 +334,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 //int _tmain(int argc, _TCHAR* argv[])
 {
 	//InitSpdlog();
+	HRESULT hRes = ::CoInitialize(NULL);
+	AtlInitCommonControls(ICC_BAR_CLASSES);	// add flags to support other controls
+	hRes = _Module.Init(NULL, hInstance);
+	ATLASSERT(SUCCEEDED(hRes));
+	CMessageLoop theLoop;
+	_Module.AddMessageLoop(&theLoop);
 
 	string filename = "C:\\log.log";
 	INFO("文件名: {}, {}", filename, "haha");
@@ -359,7 +370,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//CCallLua ();
 
 	//example_7();
-	return 0;
+	
+	int nRet = theLoop.Run();
+	_Module.RemoveMessageLoop();
+	_Module.Term();
+	::CoUninitialize();
+
+	return nRet;
 }
 
 

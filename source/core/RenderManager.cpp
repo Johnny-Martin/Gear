@@ -40,18 +40,15 @@ HRESULT RenderManager::UnInit()
 HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
 {
 	HRESULT hr = S_OK;
-	hr = CreateDeviceDependentResources();
+	hr = CreateDeviceDependentResources(pRenderTarget);
 	if (FAILED(hr)){
 		ERR("Fatal error in RenderTarget::Draw， CreateDeviceDependentResources failed! hr: {}", hr);
 		return hr;
 	}
-	hr = OnDrawImpl(pRenderTarget, rcInvalid);
-	if (hr == D2DERR_RECREATE_TARGET)
-	{
-		hr = S_OK;
-		DiscardDeviceDependentResources();
-	}
-	return hr;
+	return OnDrawImpl(pRenderTarget, rcInvalid);
+
+	//	窗口内在OnPaint中hr = m_pRenderTarget->EndDraw();后，需要判断是否丢弃设备相关资源
+	//	DiscardDeviceDependentResources();
 }
 #endif
 

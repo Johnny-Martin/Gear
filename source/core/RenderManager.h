@@ -30,7 +30,7 @@ public:
 	virtual HRESULT					OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid) = 0;
 	
 protected:
-	virtual HRESULT					CreateDeviceDependentResources() = 0;
+	virtual HRESULT					CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget) = 0;
 	virtual HRESULT					DiscardDeviceDependentResources() = 0;
 #else
 public:

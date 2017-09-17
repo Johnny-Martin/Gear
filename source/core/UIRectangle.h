@@ -17,8 +17,11 @@ public:
 public:
 	virtual HRESULT					OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid);
 protected:
-	virtual HRESULT					CreateDeviceDependentResources();
+	virtual HRESULT					CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
 	virtual HRESULT					DiscardDeviceDependentResources();
+private:
+	ID2D1SolidColorBrush*			m_pColorBrush;
+	ID2D1SolidColorBrush*			m_pBorderColorBrush;
 #else
 public:
 	virtual HRESULT					OnDrawImpl(HDC* pHdc, const RECT& rcInvalid);

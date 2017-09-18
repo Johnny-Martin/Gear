@@ -2,6 +2,7 @@
 #ifndef UIOBJECT_H
 #define UIOBJECT_H
 #include "stdafx.h"
+#include "RenderManager.h"
 #include "tinyxml2.h"
 #include <memory>
 using namespace std;
@@ -89,7 +90,7 @@ private:
 /***************************************
 所有UI元素的基类
 ****************************************/
-class UIObject
+class UIObject:public RenderTarget
 {
 public:
 	//UIBase的子类需要有一个无参构造，在里面初始化m_attrMap 和 m_eventMap
@@ -117,6 +118,17 @@ public:
 	bool										RemoveChild(const string& sChildName);
 	bool										CalcPosFromExp();
 	const UIPos									GetPosObject();
+
+#ifdef USE_D2D_RENDER_MODE
+public:
+	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid) = 0;
+protected:
+	virtual HRESULT								CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget) = 0;
+	virtual HRESULT								DiscardDeviceDependentResources() = 0;
+#else
+public:
+	virtual HRESULT								OnDrawImpl(HDC* pHdc, const RECT& rcInvalid) = 0;
+#endif
 protected:
 	map<string, string>							m_attrMap;
 	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象
@@ -148,11 +160,19 @@ public:
 class LayoutObject: public UIObject
 {
 public:
-											LayoutObject();
-
+												LayoutObject();
+#ifdef USE_D2D_RENDER_MODE
+public:
+	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid);
 protected:
-	void									InitAttrMap();
-	void									InitEventMap();
+	virtual HRESULT								CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
+	virtual HRESULT								DiscardDeviceDependentResources();
+#else
+	virtual HRESULT								OnDrawImpl(HDC* pHdc, const RECT& rcInvalid);
+#endif
+protected:
+	void										InitAttrMap();
+	void										InitEventMap();
 };
 
 

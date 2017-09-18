@@ -541,3 +541,28 @@ void LayoutObject::InitEventMap()
 {
 
 }
+///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
+#ifdef USE_D2D_RENDER_MODE
+HRESULT	LayoutObject::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
+{
+	return S_OK;
+}
+HRESULT	LayoutObject::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
+{
+
+	return S_OK;
+}
+HRESULT	LayoutObject::DiscardDeviceDependentResources()
+{
+	return S_OK;
+}
+/////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
+#else
+HRESULT	LayoutObject::OnDrawImpl(HDC* pHdc, const RECT& rcInvalid)
+{
+	HRESULT hr = S_OK;
+
+	return hr;
+}
+
+#endif

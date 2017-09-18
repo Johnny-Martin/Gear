@@ -56,6 +56,10 @@ UIWindow::UIWindow():m_hWndParent(0)
 	InitEventMap();
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
+
+#ifdef USE_D2D_RENDER_MODE
+	m_pHwndRenderTarget = nullptr;
+#endif
 }
 bool UIWindow::Init(const XMLElement* pElement)
 {
@@ -263,13 +267,33 @@ LRESULT UIWindow::OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	//要想绘制非客户区，必须使用GDI而不能使用GDI+
+	HRESULT hr = S_OK;
+#ifdef USE_D2D_RENDER_MODE
+	hr = CreateDeviceDependentResources(m_pHwndRenderTarget);
+	if(SUCCEEDED(hr)){
+		m_pHwndRenderTarget->BeginDraw();
+		//获取无效矩形区域
+
+		//通知与无效矩形有交集的、可见的（visible=1并且未被完全遮挡）孩子
+		//m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		//m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+		//draw all children in invalid rentangle?
+		hr = m_pHwndRenderTarget->EndDraw();
+	}
+	if (hr == D2DERR_RECREATE_TARGET)
+	{
+		hr = S_OK;
+		DiscardDeviceDependentResources();
+		//通知所有孩子，丢弃设备相关资源
+	}
+#else
 	PAINTSTRUCT ps;
 	BeginPaint(&ps);
-	EndPaint(&ps);
 
+	EndPaint(&ps);
+#endif
 	bHandled = false;
-	return 0;
+	return hr;
 }
 
 LRESULT UIWindow::OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -312,3 +336,40 @@ LRESULT UIWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	bHandled = FALSE;
 	return 0;
 }
+///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
+#ifdef USE_D2D_RENDER_MODE
+HRESULT	UIWindow::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
+{
+	return S_OK;
+}
+HRESULT	UIWindow::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
+{
+	if (m_pHwndRenderTarget) return S_OK;
+	RECT rc;
+	//GetClientRect(m_hwnd, &rc);
+	GetWindowRect(&rc);
+
+	D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top);
+	HRESULT hr = RenderManager::m_pD2DFactory->CreateHwndRenderTarget(
+		D2D1::RenderTargetProperties(),
+		D2D1::HwndRenderTargetProperties(m_hWnd, size),
+		&m_pHwndRenderTarget);
+
+	ATLASSERT(SUCCEEDED(hr));
+	return hr;
+}
+HRESULT	UIWindow::DiscardDeviceDependentResources()
+{
+	SafeRelease(&m_pHwndRenderTarget);
+	return S_OK;
+}
+/////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
+#else
+HRESULT	UIWindow::OnDrawImpl(HDC* pHdc, const RECT& rcInvalid)
+{
+	HRESULT hr = S_OK;
+
+	return hr;
+}
+
+#endif

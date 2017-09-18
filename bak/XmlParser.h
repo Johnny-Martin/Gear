@@ -68,7 +68,7 @@ public:
 	
 	//the class like CBaseWnd must be declared before CObjectFactory
 	REFLECTION_DECLARE_BEGIN()
-		REGISTER_CLASS(CBaseWnd)
+		//REGISTER_CLASS(CBaseWnd)
 	REFLECTION_DECLARE_END()
 
 private:

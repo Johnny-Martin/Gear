@@ -223,19 +223,6 @@ UIBitmap::UIBitmap():m_picObject(nullptr)
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
-#ifdef USE_D2D_RENDER_MODE
-ID2D1Bitmap* UIBitmap::GetD2D1Bitmap(unsigned int width, unsigned int height)
-{
-	return nullptr;
-}
-#endif
-
-#ifndef USE_D2D_RENDER_MODE
-Gdiplus::Bitmap* UIBitmap::GetGDIBitmap(unsigned int width, unsigned int height)
-{
-	return nullptr;
-}
-#endif
 void UIBitmap::InitAttrMap()
 {
 	ADD_ATTR("fill", "1")
@@ -493,21 +480,7 @@ ResImage::ResImage(const wstring& wstrFilePath)
 	m_wstrFilePath = wstrFilePath;
 	ReadPngFile(wstrFilePath);
 }
-#ifdef USE_D2D_RENDER_MODE
-ID2D1Bitmap* ResImage::GetD2D1Bitmap(unsigned int width, unsigned int height)
-{
 
-	return nullptr;
-}
-#endif
-
-#ifndef USE_D2D_RENDER_MODE
-Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height)
-{
-
-	return nullptr;
-}
-#endif
 ResTexture::ResTexture(const wstring& wstrFilePath)
 {
 	m_wstrFilePath = wstrFilePath;
@@ -516,20 +489,7 @@ ResTexture::ResTexture(const wstring& wstrFilePath)
 		DetectVerticalLine();
 	}
 }
-#ifdef USE_D2D_RENDER_MODE
-ID2D1Bitmap* ResTexture::GetD2D1Bitmap(unsigned int width, unsigned int height)
-{
 
-	return nullptr;
-}
-#endif
-#ifndef USE_D2D_RENDER_MODE
-Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int height)
-{
-
-	return nullptr;
-}
-#endif
 unsigned int PicListDivider::GetPicCount()
 {
 	return m_arrVerticalLinePos.empty() ? 0 : m_arrVerticalLinePos.size() + 1;
@@ -623,3 +583,57 @@ ResPicture*	PicListDivider::GetPicByIndex()
 	
 	return RES_ERROR_UNKNOWN;
 }//*/
+
+///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
+#ifdef USE_D2D_RENDER_MODE
+ID2D1Bitmap* UIBitmap::GetD2D1Bitmap(unsigned int width, unsigned int height)
+{
+	return nullptr;
+}
+ID2D1Bitmap* ResImage::GetD2D1Bitmap(unsigned int width, unsigned int height)
+{
+
+	return nullptr;
+}
+ID2D1Bitmap* ResTexture::GetD2D1Bitmap(unsigned int width, unsigned int height)
+{
+
+	return nullptr;
+}
+HRESULT	UIBitmap::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
+{
+	return S_OK;
+}
+HRESULT	UIBitmap::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
+{
+
+	return S_OK;
+}
+HRESULT	UIBitmap::DiscardDeviceDependentResources()
+{
+	return S_OK;
+}
+/////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
+#else
+Gdiplus::Bitmap* UIBitmap::GetGDIBitmap(unsigned int width, unsigned int height)
+{
+	return nullptr;
+}
+Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height)
+{
+
+	return nullptr;
+}
+Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int height)
+{
+
+	return nullptr;
+}
+HRESULT	UIBitmap::OnDrawImpl(HDC* pHdc, const RECT& rcInvalid)
+{
+	HRESULT hr = S_OK;
+
+	return hr;
+}
+
+#endif

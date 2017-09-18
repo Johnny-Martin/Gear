@@ -275,8 +275,8 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 		//获取无效矩形区域
 
 		//通知与无效矩形有交集的、可见的（visible=1并且未被完全遮挡）孩子
-		//m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-		//m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+		m_pHwndRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		m_pHwndRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::YellowGreen));
 		//draw all children in invalid rentangle?
 		hr = m_pHwndRenderTarget->EndDraw();
 	}

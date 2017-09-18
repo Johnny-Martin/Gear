@@ -59,7 +59,8 @@ bool UIObject::Init(const XMLElement* pElement)
 			const char* cszChildID = pChild->Attribute("id") ? pChild->Attribute("id") : pChild->Attribute("name");
 			cszChildID = cszChildID ? cszChildID : "";
 
-			auto pChildObj = CREATE(UIObject, childClassName);
+			//auto pChildObj = CREATE(UIObject*, childClassName);
+			auto pChildObj = ::CreateUIObject<UIObject*>(childClassName);
 			if (pChildObj) {
 				//先加到父节点，再初始化
 				AddChild(pChildObj, cszChildID);

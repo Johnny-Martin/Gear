@@ -62,7 +62,8 @@ XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 	while (pElement) {
 		//XMLERROR checkRet = CheckXmlElement(element);
 		//if (checkRet != XML_SUCCESS) return checkRet;
-		auto pObj = CREATE(UIObject, pElement);
+		//auto pObj = CREATE(UIObject*, pElement);
+		auto pObj = ::CreateUIObject<UIObject*>(pElement);
 		if (!pObj || !pObj->Init(pElement))
 			ERR("create/initicalize UI ojject error: pObj£º{}", int(pObj));
 		

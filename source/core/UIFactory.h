@@ -45,7 +45,7 @@ class CObjectFactory{
 private:
 												CObjectFactory();
 public:
-	void*										CreateObject(string strClassName);
+	void*										CreateObject(const string& strClassName);
 	void*										CreateObject(const XMLElement* pElement);
 	void										RegistClass(string strClassName, CreateObjectCallBack callBackFun);
 	static CObjectFactory&						GetInstance();
@@ -60,4 +60,16 @@ private:
 	REFLECTION_DECLARE_END()
 };
 
-#define CREATE(classType, x) (classType*)CObjectFactory::GetInstance().CreateObject(x)
+#define CREATE(classType, x) (classType)CObjectFactory::GetInstance().CreateObject(x)
+
+template<class ObjectType>
+inline ObjectType CreateUIObject(const XMLElement* element)
+{
+	return static_cast<ObjectType>(CObjectFactory::GetInstance().CreateObject(element));
+}
+
+template<class ObjectType>
+inline ObjectType CreateUIObject(string sname)
+{
+	return static_cast<ObjectType>(CObjectFactory::GetInstance().CreateObject(sname));
+}

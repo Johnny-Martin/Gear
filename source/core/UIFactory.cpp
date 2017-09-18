@@ -20,7 +20,7 @@ CObjectFactory::CObjectFactory()
 	m_classInfoMap = new _ClassInfoMapType(initValueRet, initValueRet + initValueLen);
 
 }
-void* CObjectFactory::CreateObject(string strClassName) 
+void* CObjectFactory::CreateObject(const string& strClassName)
 {
 	_ClassInfoMapType::const_iterator iter = m_classInfoMap->find(strClassName);
 

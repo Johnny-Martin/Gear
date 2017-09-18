@@ -236,7 +236,8 @@ bool UIWindow::CreateUIWindow()
 	};
 	//发事件给脚本，处理窗口位置、parent\owner等关系
 	//FireLuaEvent();
-	wstring wstrWndName = StringToWString(m_attrMap["title"]);
+	wstring wstrWndName = UTF8AToUnicodeW(m_attrMap["title"]);
+	//wstring wstrWndName = StringToWString(wndTitle);
 	Create(m_hWndParent, GetWndRect(), wstrWndName.c_str(), GetWndStyle(), GetExWndStyle());
 
 	ATLASSERT(m_hWnd);

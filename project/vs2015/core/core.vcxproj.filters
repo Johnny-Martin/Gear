@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{f8a563d3-13b8-49b5-8661-bea95e6ea55a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\RenderManager.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResObject.cpp">
+      <Filter>resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\RenderManager.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\ResObject.h">
+      <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

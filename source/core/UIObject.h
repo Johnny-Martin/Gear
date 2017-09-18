@@ -87,6 +87,25 @@ private:
 	string m_filePath;							//处理该事件的lua的文件路径
 	string m_funcName;							//处理该事件的lua的函数名
 };
+
+//带有属性的XML标签的抽象（不包括父子关系）
+class XmlUIElement
+{
+public:
+	XmlUIElement();
+	virtual bool								Init(const XMLElement* pElement) = 0;
+	shared_ptr<const string>					GetObjectID();
+	shared_ptr<const string>					GetObjectName();
+	bool										CheckAttrName(const string& sAttrName);
+	bool										CheckAttrValue(const string& sAttrName, const string& sAttrValue);
+	bool										SetAttrValue(const string& sAttrName, const string& sAttrValue);
+	shared_ptr<const string>					GetAttrValue(const string& sAttrName);
+protected:
+	map<string, string>							m_attrMap;
+	void										InitAttrMap();
+	void										InitAttrValuePatternMap();
+	void										InitAttrValueParserMap();
+};
 /***************************************
 所有UI元素的基类
 ****************************************/

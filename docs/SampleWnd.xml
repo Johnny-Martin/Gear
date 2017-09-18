@@ -56,3 +56,6 @@
 	<window id="TestLayout2" pos="500, 400, 200, 200" title="测试布局对象">
 
 	</window>
+	<window id="TestLayout3" pos="400, 300, 100, 100" title="测试布局对象">
+
+	</window>

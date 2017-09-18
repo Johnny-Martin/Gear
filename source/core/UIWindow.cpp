@@ -279,6 +279,7 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 		m_pHwndRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::YellowGreen));
 		//draw all children in invalid rentangle?
 		hr = m_pHwndRenderTarget->EndDraw();
+		UpdateWindow();
 	}
 	if (hr == D2DERR_RECREATE_TARGET)
 	{

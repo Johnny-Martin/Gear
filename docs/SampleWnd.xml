@@ -37,7 +37,7 @@
 		<event name="OnClose" />
 		<event name="OnCreate" />
 	</window>
-	<rectangle id="button.bkg" pos="0,0,#width,#height" corner="3" color="A0FF00" border="1" bordercolor="FF00FF" >
+	<rectangle id="button.bkg" pos="0,0,#width,#height" corner="3" antialias="0" color="A0FF00" border="1" bordercolor="FF00FF" >
 		<string id="button.text" pos="#mid, #mid, 200, 20" font="微软雅黑.14.normal.1" text="测试字体" color="00FF00" halign="left" valign="top" />
 		<string id="button.text2" pos="#mid, #mid, 200, 20" font="#button.text.fontA" text="#button.text.content.chinese" color="00FF00" halign="left" valign="top" />
 		<bitmap id="wnd.content.icon" pos="0, 0, 150, 150" res="#image.settingIcon" />
@@ -55,7 +55,7 @@
 		<event name="OnDestory" func="OnWindowCreateDestory2" />
 	</window>
 	<window id="TestLayout2" pos="500, 400, 200, 200" title="测试布局对象">
-
+		<rectangle id="button.bkg.fskk" pos="#mid,#mid,100,100" corner="200"  color="A0FF00" border="3" bordercolor="FF00FF" />
 	</window>
 	<window id="TestLayout3" pos="400, 300, 100, 100" title="测试布局对象">
 

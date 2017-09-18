@@ -9,7 +9,7 @@ Description:		界面中的矩形图元
 #include "UIObject.h"
 #include "RenderManager.h"
 
-class UIRectangle :public UIObject, public RenderTarget
+class UIRectangle :public UIObject
 {
 public:
 	UIRectangle();

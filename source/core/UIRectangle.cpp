@@ -1,7 +1,13 @@
 #include "stdafx.h"
 #include "UIRectangle.h"
 
-UIRectangle::UIRectangle() {
+#ifdef USE_D2D_RENDER_MODE
+UIRectangle::UIRectangle():m_pColorBrush(nullptr)
+						  ,m_pBorderColorBrush(nullptr)
+{
+#else
+UIRectangle::UIRectangle(){
+#endif
 	InitAttrMap();
 	InitEventMap();
 	InitAttrValuePatternMap();
@@ -42,7 +48,20 @@ HRESULT	UIRectangle::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rc
 	rectF.right  = static_cast<FLOAT>(m_pos.width + m_pos.left);
 	rectF.bottom = static_cast<FLOAT>(m_pos.height + m_pos.top);
 
-	pRenderTarget->FillRectangle(rectF, m_pColorBrush);
+	if (m_attrMap["corner"] == "0") {
+		pRenderTarget->FillRectangle(rectF, m_pColorBrush);
+	}else{
+		FLOAT cornerRadius = static_cast<FLOAT>(atoi(m_attrMap["corner"].c_str()));
+		D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rectF, cornerRadius, cornerRadius);
+		pRenderTarget->FillRoundedRectangle(roundedRect, m_pColorBrush);
+	}
+	
+	if (m_attrMap["border"] != "0") {
+		FLOAT cornerRadius = static_cast<FLOAT>(atoi(m_attrMap["corner"].c_str()));
+		FLOAT borderWidth  = static_cast<FLOAT>(atoi(m_attrMap["border"].c_str()));
+		D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rectF, cornerRadius, cornerRadius);
+		pRenderTarget->DrawRoundedRectangle(roundedRect, m_pBorderColorBrush, borderWidth);
+	}
 
 	return S_OK;
 }
@@ -56,7 +75,7 @@ HRESULT	UIRectangle::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTa
 	}
 
 	HRESULT hr = pRenderTarget->CreateSolidColorBrush(
-		D2D1::ColorF(D2D1::ColorF::Gold),
+		D2D1::ColorF(D2D1::ColorF::Red),
 		&m_pColorBrush
 	);
 	if (FAILED(hr)) {
@@ -65,8 +84,8 @@ HRESULT	UIRectangle::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTa
 	}
 	if (m_attrMap["border"] != "0") {
 		hr = pRenderTarget->CreateSolidColorBrush(
-			D2D1::ColorF(D2D1::ColorF::LightGreen),
-			&m_pColorBrush
+			D2D1::ColorF(D2D1::ColorF::Black),
+			&m_pBorderColorBrush
 		);
 		if (FAILED(hr)) {
 			ERR("fatal error in CreateSolidColorBrush, nullptr! hr:{}", hr);

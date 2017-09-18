@@ -22,11 +22,12 @@ private:
 #endif
 };
 
+class UIObject;
 class RenderTarget
 {
 #ifdef USE_D2D_RENDER_MODE
 public:
-	virtual HRESULT					Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid);
+	virtual HRESULT					Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid, UIObject* pTargetObject = nullptr);
 	virtual HRESULT					OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid) = 0;
 	
 protected:

@@ -94,18 +94,18 @@ bool UIWindow::Init(const XMLElement* pElement)
 }
 void UIWindow::InitAttrMap()
 {
-	ADD_ATTR("title",	"")
-	ADD_ATTR("layered", "0")	
-	ADD_ATTR("topmost", "0")	
-	ADD_ATTR("caption", "30")
-	ADD_ATTR("min",		"0")
-	ADD_ATTR("max",		"0")
-	ADD_ATTR("blur",	"0")
-	ADD_ATTR("show",	"1")
-	ADD_ATTR("shadow",	"0,0,0,0")
-	ADD_ATTR("border",	"0,0,0,0")
-	ADD_ATTR("resize",	"0,0,0,0")
-	
+	ADD_ATTR("title",		"")
+	ADD_ATTR("layered",		"0")	
+	ADD_ATTR("topmost",		"0")	
+	ADD_ATTR("caption",		"30")
+	ADD_ATTR("min",			"0")
+	ADD_ATTR("max",			"0")
+	ADD_ATTR("blur",		"0")
+	ADD_ATTR("show",		"1")
+	ADD_ATTR("shadow",		"0,0,0,0")
+	ADD_ATTR("border",		"0,0,0,0")
+	ADD_ATTR("resize",		"0,0,0,0")
+
 	//shadow属性"int,int,int,int"依次对应以下四个值
 	ADD_ATTR("leftshadow",	"0")
 	ADD_ATTR("topshadow",	"0")
@@ -134,16 +134,16 @@ void UIWindow::InitEventMap()
 
 void UIWindow::InitAttrValuePatternMap()
 {
-	ADD_ATTR_PATTERN("layered", R_CHECK_BOOL)
-	ADD_ATTR_PATTERN("topmost", R_CHECK_BOOL)
-	ADD_ATTR_PATTERN("caption", R_CHECK_INT)
-	ADD_ATTR_PATTERN("min",		R_CHECK_BOOL)
-	ADD_ATTR_PATTERN("max",		R_CHECK_BOOL)
-	ADD_ATTR_PATTERN("blur",	R_CHECK_BOOL)
-	ADD_ATTR_PATTERN("show",	R_CHECK_INT)
-	ADD_ATTR_PATTERN("shadow",	R_CHECK_WINDOW_ATTR)
-	ADD_ATTR_PATTERN("border",	R_CHECK_WINDOW_ATTR)
-	ADD_ATTR_PATTERN("resize",	R_CHECK_WINDOW_ATTR)
+	ADD_ATTR_PATTERN("layered",		R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("topmost",		R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("caption",		R_CHECK_INT)
+	ADD_ATTR_PATTERN("min",			R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("max",			R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("blur",		R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("show",		R_CHECK_INT)
+	ADD_ATTR_PATTERN("shadow",		R_CHECK_WINDOW_ATTR)
+	ADD_ATTR_PATTERN("border",		R_CHECK_WINDOW_ATTR)
+	ADD_ATTR_PATTERN("resize",		R_CHECK_WINDOW_ATTR)
 }
 
 void UIWindow::InitAttrValueParserMap()
@@ -237,14 +237,12 @@ bool UIWindow::CreateUIWindow()
 	//发事件给脚本，处理窗口位置、parent\owner等关系
 	//FireLuaEvent();
 	wstring wstrWndName = UTF8AToUnicodeW(m_attrMap["title"]);
-	//wstring wstrWndName = StringToWString(wndTitle);
 	Create(m_hWndParent, GetWndRect(), wstrWndName.c_str(), GetWndStyle(), GetExWndStyle());
 
 	ATLASSERT(m_hWnd);
 	ShowWindow(atoi(m_attrMap["show"].c_str()));
 	
 	WndManager::GetInstance().AddWindow(m_hWnd);
-	//::SetWindowPos(m_hWnd, HWND_TOP, 100, 100, 1000, 600, SWP_SHOWWINDOW);
 	return m_hWnd != NULL;
 }
 BOOL UIWindow::PreTranslateMessage(MSG* pMsg)
@@ -274,13 +272,24 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 	if(SUCCEEDED(hr)){
 		m_pHwndRenderTarget->BeginDraw();
 		//获取无效矩形区域
-
+		//m_pHwndRenderTarget->GetEffectInvalidRectangles();
 		//通知与无效矩形有交集的、可见的（visible=1并且未被完全遮挡）孩子
 		m_pHwndRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-		m_pHwndRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::YellowGreen));
+		m_pHwndRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+
+		RECT rcInvalid;
+		auto size = m_pHwndRenderTarget->GetPixelSize();
+		rcInvalid.left = 0;
+		rcInvalid.top = 0;
+		rcInvalid.right = size.width + rcInvalid.left;
+		rcInvalid.bottom = size.height + rcInvalid.top;
+		for (auto it=m_childrenMap.begin(); it!=m_childrenMap.end();++it)
+		{
+			it->second->Draw(m_pHwndRenderTarget, rcInvalid, it->second);
+		}
 		//draw all children in invalid rentangle?
 		hr = m_pHwndRenderTarget->EndDraw();
-		UpdateWindow();
+		ValidateRect(NULL);
 	}
 	if (hr == D2DERR_RECREATE_TARGET)
 	{

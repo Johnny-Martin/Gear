@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "RenderManager.h"
+#include "UIObject.h"
 
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Factory*		RenderManager::m_pD2DFactory{ nullptr };
@@ -37,7 +38,7 @@ HRESULT RenderManager::UnInit()
 }
 
 #ifdef USE_D2D_RENDER_MODE
-HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
+HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid, UIObject* pTargetObject/*= nullptr*/)
 {
 	HRESULT hr = S_OK;
 	hr = CreateDeviceDependentResources(pRenderTarget);
@@ -45,6 +46,15 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 		ERR("Fatal error in RenderTarget::Draw， CreateDeviceDependentResources failed! hr: {}", hr);
 		return hr;
 	}
+	if (pTargetObject){
+		shared_ptr<const string> sAntialias = pTargetObject->GetAttrValue("antialias");
+		if (*sAntialias == "0"){
+			pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
+		} else {
+			pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+		}
+	}
+
 	return OnDrawImpl(pRenderTarget, rcInvalid);
 
 	//	窗口内在OnPaint中hr = m_pRenderTarget->EndDraw();后，需要判断是否丢弃设备相关资源

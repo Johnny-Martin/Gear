@@ -171,8 +171,8 @@
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
     <ClCompile Include="..\..\..\source\core\Log.cpp" />
     <ClCompile Include="..\..\..\source\core\RenderManager.cpp" />
-    <ClCompile Include="..\..\..\source\core\ResManage.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp" />
+    <ClCompile Include="..\..\..\source\core\resource\ResManage.cpp" />
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -190,8 +190,8 @@
     <ClInclude Include="..\..\..\source\core\Log.h" />
     <ClInclude Include="..\..\..\source\core\Micros.h" />
     <ClInclude Include="..\..\..\source\core\RenderManager.h" />
-    <ClInclude Include="..\..\..\source\core\ResManager.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h" />
+    <ClInclude Include="..\..\..\source\core\resource\ResManager.h" />
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />
     <ClInclude Include="..\..\..\source\core\UIError.h" />

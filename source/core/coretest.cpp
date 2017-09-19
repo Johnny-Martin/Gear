@@ -8,7 +8,7 @@
 #include <assert.h>
 
 #include "UIResource.h"
-#include "ResManager.h"
+#include "resource/ResManager.h"
 #include "UIFrameWnd.h"
 //#include "..\luabridge\LuaBridge.h"
 //#include "zlib.h"

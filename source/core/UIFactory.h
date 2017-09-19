@@ -12,7 +12,7 @@ Description:		实现一个简单的C++反射
 #include "UIWindow.h"
 #include "UIRectangle.h"
 #include "tinyxml2.h"
-#include "ResManager.h"
+#include "resource/ResManager.h"
 
 using namespace std;
 

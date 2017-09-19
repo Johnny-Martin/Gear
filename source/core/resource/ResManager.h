@@ -5,13 +5,13 @@ Date:				2017.8.25
 Description:		界面图片资源管理器
 *****************************************************/
 #pragma once
-#include "stdafx.h"
+#include "../stdafx.h"
 //#include "pnginfo.h"
 #include "png.h"
-#include "Log.h"
-#include "UIError.h"
-#include "UIObject.h"
-#include "RenderManager.h"
+#include "../Log.h"
+#include "../UIError.h"
+#include "../UIObject.h"
+#include "../RenderManager.h"
 using namespace std;
 
 namespace Gear {

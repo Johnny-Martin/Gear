@@ -8,13 +8,13 @@ Description:		实现一个简单的C++反射
 #pragma once
 #include "stdafx.h"
 #include "UIFrameWnd.h"
-#include "resource/UIResource.h"
+//#include "resource/UIResource.h"
 #include "UIWindow.h"
 #include "UIRectangle.h"
-#include "tinyxml2.h"
 #include "resource/ResManager.h"
 
 using namespace std;
+using namespace Gear::Res;
 
 typedef void* (*CreateObjectCallBack)(void);
 typedef std::map<string, CreateObjectCallBack> _ClassInfoMapType;

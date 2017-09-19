@@ -297,7 +297,7 @@ void FrameWnd::OnResize(UINT uWidth, UINT uHeight)
 }
 
 //ResManager resManager(L"I:\\UIEngine\\docs");
-RPicture* pic = NULL;
+//RPicture* pic = NULL;
 void FrameWnd::OnRender(const PAINTSTRUCT &ps)
 {
 	HRESULT hr = CreateDeviceResources();
@@ -322,12 +322,12 @@ void FrameWnd::OnRender(const PAINTSTRUCT &ps)
 	m_pSolidBrush->SetColor(ColorF(0.0f,0.7f,0.1f,0.5f));
 	m_pDCRenderTarget->DrawRectangle(&rc, m_pSolidBrush,6.0f);
 
-	if (NULL == pic)
+	//if (NULL == pic)
 	{
 		//RESERROR resErr = resManager.GetResPicHandle("texturelist.Nine.btnbkg.4", &pic);
 		//if (RES_SUCCESS == resErr)/**/
 		{
-			pic = new RTexture(L"I:\\UIEngine\\docs\\texture.NineInOne.wndbkg_shadow.png", "texture.NineInOne.wndbkg_shadow");
+			//pic = new RTexture(L"I:\\UIEngine\\docs\\texture.NineInOne.wndbkg_shadow.png", "texture.NineInOne.wndbkg_shadow");
 			//pic = new RTexture(L"I:\\UIEngine\\docs\\texture.ThreeV.xBtnBkg_Hover.png", "texture.ThreeV.xBtnBkg_Hover");
 			//pic = new RTexture(L"I:\\UIEngine\\docs\\texture.ThreeH.listctrl_scroll_bkg.png", "texture.ThreeH.listctrl_scroll_bkg");
 			//pic = new RImage(L"I:\\UIEngine\\docs\\image.settingIcon.png", "image.settingIcon");
@@ -335,7 +335,7 @@ void FrameWnd::OnRender(const PAINTSTRUCT &ps)
 		}
 	}
 	//pic->Draw(m_pRenderTarget, 120, 210, 340, 440);
-	pic->Draw(m_pDCRenderTarget, 120, 210, 340, 440);
+	//pic->Draw(m_pDCRenderTarget, 120, 210, 340, 440);
 
 	//POINT sourcePosition = {};
 	//POINT windowPosition = {};

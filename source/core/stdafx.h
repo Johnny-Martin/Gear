@@ -13,9 +13,7 @@
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
 
-#include <atlbase.h>
-#include <atlstr.h>
-
+///////标准库////////
 #include <vector>
 #include <string>
 #include <fstream>
@@ -25,25 +23,33 @@
 #include <stack>
 #include <map>
 #include <regex>
-#include "spdlog.h"
 
+///////XML解析////////
+#include "tinyxml2.h"
+
+///////日志库////////
+#include "spdlog.h"
 #include "Log.h"
+
+///////常用函数////////
 #include "Util.h"
+
 
 #define RGBA(r,g,b,a)  ((COLORREF) (((DWORD)(BYTE)(a))<<24 | (RGB(r,g,b))))
 
 #define WARNING_HWND_MSG(hWnd, WarningStr) \
 	::MessageBox(hWnd, WarningStr, _T("Error"), MB_OK | MB_ICONWARNING);
 
-
+///////WTL///////
 #include <atlbase.h>
 #include <atlapp.h>
 #include <atlwin.h>
-
+#include <atlstr.h>
 extern CAppModule _Module;
 
-#define USE_D2D_RENDER_MODE
 
+///////GDI+以及Direct2D////////
+#define USE_D2D_RENDER_MODE
 #ifdef USE_D2D_RENDER_MODE
 	#include <d2d1.h>
 	#include <d2d1helper.h>

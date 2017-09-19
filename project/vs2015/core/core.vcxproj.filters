@@ -16,6 +16,9 @@
     <Filter Include="resource">
       <UniqueIdentifier>{f8a563d3-13b8-49b5-8661-bea95e6ea55a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{05d7f9bf-c33b-4c2b-b182-5f4cb5d963a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp">
@@ -57,7 +60,10 @@
     <ClCompile Include="..\..\..\source\core\RenderManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\resource\ResObject.cpp">
+    <ClCompile Include="..\..\..\source\core\base\XmlUIElement.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp">
       <Filter>resource</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,7 +110,13 @@
     <ClInclude Include="..\..\..\source\core\RenderManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\resource\ResObject.h">
+    <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\Micros.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\ResColor.h">
       <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>

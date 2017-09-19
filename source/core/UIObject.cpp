@@ -78,8 +78,6 @@ bool UIObject::Init(const XMLElement* pElement)
 }
 void UIObject::InitAttrMap()
 {
-	ADD_ATTR("id",			"")
-	ADD_ATTR("name",		"")
 	ADD_ATTR("pos",			"")
 
 	ADD_ATTR("visible",		"1")
@@ -114,8 +112,6 @@ void UIObject::InitEventMap()
 **************************************************************************/
 void UIObject::InitAttrValuePatternMap()
 {
-	ADD_ATTR_PATTERN("id",			R_CHECK_ID);
-	ADD_ATTR_PATTERN("name",		R_CHECK_ID);
 	ADD_ATTR_PATTERN("pos",			R_CHECK_POS);
 	ADD_ATTR_PATTERN("visible",		R_CHECK_BOOL);
 	ADD_ATTR_PATTERN("enable",		R_CHECK_BOOL);
@@ -197,93 +193,9 @@ void UIObject::InitAttrValueParserMap()
 	ADD_ATTR_PARSER("leftexp",		ParseLeftExp)
 	ADD_ATTR_PARSER("topexp",		ParseTopExp)
 }
-shared_ptr<const string> UIObject::GetObjectID()
-{
-	if (m_attrMap.empty()) {
-		ERR("GetObjectID error: m_attrMap has not been initicalized");
-		return nullptr;
-	}
-	//id 与 name这两个key是一定存在的，无须担心map的[]操作符意外插入陌生的key
-	if (!m_attrMap["id"].empty())
-		return make_shared<const string>(m_attrMap["id"]);
-
-	if (!m_attrMap["name"].empty())
-		return make_shared<const string>(m_attrMap["name"]);
-
-	return nullptr;
-}
-shared_ptr<const string> UIObject::GetObjectName()
-{
-	return GetObjectID();
-}
-bool UIObject::CheckAttrName(const string& sAttrName)
-{
-	return (m_attrMap.end() != m_attrMap.find(sAttrName)) ? true : false;
-}
-bool UIObject::CheckAttrValue(const string& sAttrName, const string& sAttrValue)
-{
-	map<string, string>::iterator it = m_attrValuePatternMap.find(sAttrName);
-	if (it == m_attrValuePatternMap.end()) {
-		INFO("CheckAttrValue Info: attribute value pattern not found.(do not need check), name: {}", sAttrName);
-		return true;
-	}
-	regex pattern(it->second.c_str());
-	if (regex_match(sAttrValue, pattern)) {
-		return true;
-	}else {
-		ERR("CheckAttrValue error: ilegal attribute value, name: {}, value: {}", sAttrName, sAttrValue);
-		return false;
-	}
-}
 bool UIObject::CheckEventName(const string& sEventName)
 {
 	return (m_eventMap.end() != m_eventMap.find(sEventName)) ? true : false;
-}
-bool UIObject::AddAttr(const string& sAttrName, const string& sAttrDefaultValue /* = "" */)
-{
-	ADD_ATTR(sAttrName, sAttrDefaultValue)
-	return true;
-}
-bool UIObject::SetAttrValue(const string& sAttrName, const string& sAttrValue)
-{
-	//标签所有的attr的值，都会被剔除空格符
-#ifdef DEBUG
-	if (!CheckAttrName(sAttrName)) {
-		ERR("SetAttrValue error: Unsupported attribute, name: {}, value: {}.", sAttrName, sAttrValue);
-		return false;
-	}
-	if (!CheckAttrValue(sAttrName, sAttrValue)) {
-		ERR("SetAttrValue error: ilegal attribute value, name: {}, value: {}.", sAttrName, sAttrValue);
-		return false;
-	}
-#endif // DEBUG
-
-	m_attrMap[sAttrName] = sAttrValue;
-
-	//name 与 id 同等对待
-	if(sAttrName == "name")
-		m_attrMap["id"] = sAttrValue;
-	else if(sAttrName == "id")
-		m_attrMap["name"] = sAttrValue;
-
-	auto it = m_attrValueParserMap.find(sAttrName);
-	if (it != m_attrValueParserMap.end()) {
-		if (!it->second(sAttrName)) {
-			ERR("SetAttrValue error: parse attribute value error, name: {}, value: {}", sAttrName, sAttrValue);
-			return false;
-		}
-	}
-	return true;
-}
-shared_ptr<const string> UIObject::GetAttrValue(const string& sAttrName)
-{
-	//由于map的[]操作符在索引不存在的key的时候，会将key插入（此时的value调用默认构造生成，也就是""）
-	//造成key的污染，此处不得不使用find遍历map
-	if (!CheckAttrName(sAttrName)) {
-		WARN("GetAttrValue warning: attribute not found, key: {}", sAttrName);
-		return nullptr;
-	}
-	return make_shared<const string>(m_attrMap[sAttrName]);
 }
 bool UIObject::AddEvent(const string& sEventName, UIEvent* pEventObj /* nullptr */)
 {
@@ -519,17 +431,6 @@ const UIPos UIObject::GetPosObject()
 	return m_pos;
 }
 
-/********************************************
-解析带#的特殊命令，UIBase仅提供pos一个属性内
-种命令的解析(#mid #left #top #width #height)
-五个命令的解析，并将结果存入leftexp topexp...
-*********************************************/
-bool UIObject::ParseSpecialCmd()
-{
-	//解析pos属性
-
-	return true;
-}
 LayoutObject::LayoutObject()
 {
 	InitAttrMap();

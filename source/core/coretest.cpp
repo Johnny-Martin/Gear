@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <assert.h>
 
-#include "UIResource.h"
+#include "resource/UIResource.h"
 #include "resource/ResManager.h"
 #include "UIFrameWnd.h"
 //#include "..\luabridge\LuaBridge.h"

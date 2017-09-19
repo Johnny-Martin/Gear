@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\..\source\core\RenderManager.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResManage.cpp" />
+    <ClCompile Include="..\..\..\source\core\resource\UIResource.cpp" />
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -180,7 +181,6 @@
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
     <ClCompile Include="..\..\..\source\core\UIObject.cpp" />
     <ClCompile Include="..\..\..\source\core\UIRectangle.cpp" />
-    <ClCompile Include="..\..\..\source\core\UIResource.cpp" />
     <ClCompile Include="..\..\..\source\core\UIWindow.cpp" />
     <ClCompile Include="..\..\..\source\core\Util.cpp" />
     <ClCompile Include="..\..\..\source\core\XmlAgent.cpp" />
@@ -192,6 +192,7 @@
     <ClInclude Include="..\..\..\source\core\RenderManager.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResManager.h" />
+    <ClInclude Include="..\..\..\source\core\resource\UIResource.h" />
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />
     <ClInclude Include="..\..\..\source\core\UIError.h" />
@@ -199,7 +200,6 @@
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
     <ClInclude Include="..\..\..\source\core\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\UIRectangle.h" />
-    <ClInclude Include="..\..\..\source\core\UIResource.h" />
     <ClInclude Include="..\..\..\source\core\UIWindow.h" />
     <ClInclude Include="..\..\..\source\core\Util.h" />
     <ClInclude Include="..\..\..\source\core\XmlAgent.h" />

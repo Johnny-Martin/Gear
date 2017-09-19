@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIFrameWnd.h"
-#include "UIResource.h"
+#include "resource/UIResource.h"
 #include "resource/ResManager.h"
 #include "Wincodec.h"
 

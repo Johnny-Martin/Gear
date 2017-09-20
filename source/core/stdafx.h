@@ -49,7 +49,7 @@ extern CAppModule _Module;
 
 
 ///////GDI+“‘º∞Direct2D////////
-//#define USE_D2D_RENDER_MODE
+#define USE_D2D_RENDER_MODE
 #ifdef USE_D2D_RENDER_MODE
 	#include <d2d1.h>
 	#include <d2d1helper.h>

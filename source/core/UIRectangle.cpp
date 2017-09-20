@@ -19,9 +19,9 @@ UIRectangle::UIRectangle(){
 void UIRectangle::InitAttrMap()
 {
 	ADD_ATTR("corner",		"1")
-	ADD_ATTR("color",		"000000")
+	ADD_ATTR("color",		"FFFFFF")
 	ADD_ATTR("border",		"0")
-	ADD_ATTR("bordercolor", "000000")
+	ADD_ATTR("bordercolor", "FFFFFF")
 }
 void UIRectangle::InitEventMap()
 {

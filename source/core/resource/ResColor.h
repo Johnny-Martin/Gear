@@ -17,6 +17,7 @@ public:
 public:
 	D2D1::ColorF								GetD2D1ColorF();
 private:
+	void										UpdateD2D1ColorF();
 	D2D1::ColorF								m_d2d1ColorF;
 #else
 
@@ -25,6 +26,8 @@ protected:
 	void										InitAttrMap();
 	void										InitAttrValuePatternMap();
 	void										InitAttrValueParserMap();
+	void										UpdateColorValue(const string& sHexR, const string& sHexG, const string& sHexB);
+	void										UpdateColorValue(const string& sHexR, const string& sHexG, const string& sHexB, const string& sHexA);
 private:
 	unsigned char m_R;
 	unsigned char m_G;

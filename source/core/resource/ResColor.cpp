@@ -64,29 +64,17 @@ void ResColor::InitAttrValueParserMap()
 			auto valueExp = m_attrMap[sAttrName];
 			if (valueExp.length() == 6){
 				regex sPattern(R_CHECK_COLOR_HEX_6);
-				char* endstr;
-				string channelHex = regex_replace(valueExp, sPattern, string("$2"));
-				m_R = static_cast<unsigned char>(strtol(channelHex.c_str(), &endstr, 16));
-
-				channelHex = regex_replace(valueExp, sPattern, string("$3"));
-				m_G = static_cast<unsigned char>(strtol(channelHex.c_str(), &endstr, 16));
-
-				channelHex = regex_replace(valueExp, sPattern, string("$4"));
-				m_B = static_cast<unsigned char>(strtol(channelHex.c_str(), &endstr, 16));
+				auto sHexR = regex_replace(valueExp, sPattern, string("$2"));
+				auto sHexG = regex_replace(valueExp, sPattern, string("$3"));
+				auto sHexB = regex_replace(valueExp, sPattern, string("$4"));
+				UpdateColorValue(sHexR, sHexG, sHexB);
 			}else if (valueExp.length() == 8){
 				regex sPattern(R_CHECK_COLOR_HEX_8);
-				char* endstr;
-				string channelHex = regex_replace(valueExp, sPattern, string("$2"));
-				m_R = static_cast<unsigned char>(strtol(channelHex.c_str(), &endstr, 16));
-				
-				channelHex = regex_replace(valueExp, sPattern, string("$3"));
-				m_G = static_cast<unsigned char>(strtol(channelHex.c_str(), &endstr, 16));
-
-				channelHex = regex_replace(valueExp, sPattern, string("$4"));
-				m_B = static_cast<unsigned char>(strtol(channelHex.c_str(), &endstr, 16));
-
-				channelHex = regex_replace(valueExp, sPattern, string("$5"));
-				m_A = static_cast<unsigned char>(strtol(channelHex.c_str(), &endstr, 16));
+				auto sHexR = regex_replace(valueExp, sPattern, string("$2"));				
+				auto sHexG = regex_replace(valueExp, sPattern, string("$3"));	
+				auto sHexB = regex_replace(valueExp, sPattern, string("$4"));
+				auto sHexA = regex_replace(valueExp, sPattern, string("$5"));
+				UpdateColorValue(sHexR, sHexG, sHexB, sHexA);
 			} else {
 				ERR("ParseHexValue error: illegal value length, color valueExp: {}", valueExp);
 				return false;
@@ -101,3 +89,33 @@ void ResColor::InitAttrValueParserMap()
 
 	ADD_ATTR_PARSER("value", ParseHexValue)
 }
+void ResColor::UpdateColorValue(const string& sHexR, const string& sHexG, const string& sHexB)
+{
+	char* endstr;
+	m_R = static_cast<unsigned char>(strtol(sHexR.c_str(), &endstr, 16));
+	m_G = static_cast<unsigned char>(strtol(sHexG.c_str(), &endstr, 16));
+	m_B = static_cast<unsigned char>(strtol(sHexB.c_str(), &endstr, 16));
+
+#ifdef USE_D2D_RENDER_MODE
+	UpdateD2D1ColorF();
+#endif
+}
+void ResColor::UpdateColorValue(const string& sHexR, const string& sHexG, const string& sHexB, const string& sHexA)
+{
+	UpdateColorValue(sHexR, sHexG, sHexB);
+	char* endstr;
+	m_A = static_cast<unsigned char>(strtol(sHexA.c_str(), &endstr, 16));
+
+#ifdef USE_D2D_RENDER_MODE
+	UpdateD2D1ColorF();
+#endif
+}
+#ifdef USE_D2D_RENDER_MODE
+void ResColor::UpdateD2D1ColorF()
+{
+	m_d2d1ColorF.r = m_R / 255.f;
+	m_d2d1ColorF.g = m_G / 255.f;
+	m_d2d1ColorF.b = m_B / 255.f;
+	m_d2d1ColorF.a = m_A / 255.f;
+}
+#endif

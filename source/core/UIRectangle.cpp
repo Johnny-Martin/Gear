@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UIRectangle.h"
+#include "resource/ResManager.h"
 
+using namespace Gear::Res;
 #ifdef USE_D2D_RENDER_MODE
 UIRectangle::UIRectangle():m_pColorBrush(nullptr)
 						  ,m_pBorderColorBrush(nullptr)
@@ -74,19 +76,15 @@ HRESULT	UIRectangle::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTa
 		return S_FALSE;
 	}
 
-	HRESULT hr = pRenderTarget->CreateSolidColorBrush(
-		D2D1::ColorF(D2D1::ColorF::Red),
-		&m_pColorBrush
-	);
+	D2D1::ColorF rectColor = ResManager::GetInstance().GetColorObject(m_attrMap["color"])->GetD2D1ColorF();
+	HRESULT hr = pRenderTarget->CreateSolidColorBrush(rectColor, &m_pColorBrush);
 	if (FAILED(hr)) {
 		ERR("fatal error in CreateSolidColorBrush, nullptr! hr:{}", hr);
 		return hr;
 	}
 	if (m_attrMap["border"] != "0") {
-		hr = pRenderTarget->CreateSolidColorBrush(
-			D2D1::ColorF(D2D1::ColorF::Black),
-			&m_pBorderColorBrush
-		);
+		D2D1::ColorF rectBorderColor = ResManager::GetInstance().GetColorObject(m_attrMap["bordercolor"])->GetD2D1ColorF();
+		hr = pRenderTarget->CreateSolidColorBrush(rectBorderColor, &m_pBorderColorBrush);
 		if (FAILED(hr)) {
 			ERR("fatal error in CreateSolidColorBrush, nullptr! hr:{}", hr);
 			return hr;

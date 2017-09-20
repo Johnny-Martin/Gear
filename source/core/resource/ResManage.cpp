@@ -338,10 +338,16 @@ ResColor* ResManager::GetColorObject(const string& strColorValueOrID)
 	if (strColorValueOrID.find("#") == 0){
 		auto it = m_colorMap.find(strColorValueOrID);
 		return it == m_colorMap.end() ? nullptr : it->second;
-	} else{
-
+	} 
+	
+	auto it = m_colorMap2.find(strColorValueOrID);
+	if (it != m_colorMap2.end()){
+		return it->second;
 	}
-	return nullptr;
+	//用给定的色值创建一个颜色对象
+	ResColor* pColorObj = new ResColor(strColorValueOrID);
+	m_colorMap2[strColorValueOrID] = pColorObj;
+	return pColorObj;
 }
 bool ResManager::LoadResource(const string& strResID)
 {

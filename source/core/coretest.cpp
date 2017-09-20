@@ -33,6 +33,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	return 0;
 }
 
+void TestFunc()
+{
+	
+}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)
 //int _tmain(int argc, _TCHAR* argv[])
 {
@@ -44,6 +48,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	_Module.AddMessageLoop(&theLoop);
 	RenderManager::Init();
 
+	TestFunc();
 	ResManager::GetInstance().AddResPath(L"..\\..\\..\\..\\docs\\");
 	Gear::Xml::XmlAgent& xmlAgent = Gear::Xml::XmlAgent::GetInstance();
 	xmlAgent.GetXmlRootElement("..\\..\\..\\docs\\SampleWnd.xml");

@@ -2,11 +2,28 @@
 #include "../Micros.h"
 #include "ResColor.h"
 
-ResColor::ResColor() :m_R(0), m_G(0), m_B(0), m_A(255)
+#ifdef USE_D2D_RENDER_MODE
+ResColor::ResColor() :m_R(0), m_G(0), m_B(0), m_A(255), m_d2d1ColorF(0,0,0)
+#else
+ResColor::ResColor() : m_R(0), m_G(0), m_B(0), m_A(255)
+#endif
 {
 	InitAttrMap();
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
+}
+#ifdef USE_D2D_RENDER_MODE
+ResColor::ResColor(const string& sColorHexValue) :m_R(0), m_G(0), m_B(0), m_A(255), m_d2d1ColorF(0, 0, 0)
+#else
+ResColor::ResColor(const string& sColorHexValue) : m_R(0), m_G(0), m_B(0), m_A(255)
+#endif
+{
+	InitAttrMap();
+	InitAttrValuePatternMap();
+	InitAttrValueParserMap();
+
+	SetAttrValue("id", CreateGUIDAsResID());
+	SetAttrValue("value", sColorHexValue);
 }
 bool ResColor::Init(const XMLElement* pElement)
 {
@@ -20,6 +37,12 @@ bool ResColor::Init(const XMLElement* pElement)
 
 	return true;
 }
+#ifdef USE_D2D_RENDER_MODE
+D2D1::ColorF ResColor::GetD2D1ColorF()
+{
+	return m_d2d1ColorF;
+}
+#endif
 void ResColor::InitAttrMap()
 {
 	ADD_ATTR("value",	"")//十六进制RGB(A)值，alpha通道可选

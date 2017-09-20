@@ -7,7 +7,7 @@
 #define ADD_EVENT(attrName, defaultValue)	\
 		m_eventMap.insert(pair<string, UIEvent*>(attrName, defaultValue));
 
-#define ADD_ATTR_PATTERN(attrName, sPattern)	\
+#define ADD_ATTR_PATTERN(attrName, sPattern)\
 		m_attrValuePatternMap.insert(pair<string, string>(attrName, sPattern));
 
 #define ADD_ATTR_PARSER(attrName, sParser)	\
@@ -52,3 +52,15 @@
 *检查窗口的shadow、border、resize等四段类的属性
 *******************************************************************************/
 #define R_CHECK_WINDOW_ATTR	  "(([0-9\\s*]*),([0-9\\s*]*),([0-9\\s*]*),([0-9\\s*]*))"
+
+/*******************************************************************************
+*检查颜色的色值设置是否合法
+*******************************************************************************/
+#define R_CHECK_COLOR_VALUE	  "((([0-9a-fA-F]{6}){0,1})(([0-9a-fA-F]{8}){0,1}))"
+#define HEX_CHANNEL "([0-9a-fA-F]{2})"
+#define R_CHECK_COLOR_HEX_6 "(" HEX_CHANNEL HEX_CHANNEL HEX_CHANNEL ")"
+#define R_CHECK_COLOR_HEX_8 "(" HEX_CHANNEL HEX_CHANNEL HEX_CHANNEL HEX_CHANNEL")"
+
+#define TEN "([0-9\\s*]*)"
+#define R_CHECK_COLOR_RGB	  "(" TEN "," TEN "," TEN ")"
+#define R_CHECK_COLOR_RGBA	  "(" TEN "," TEN "," TEN "," TEN ")"

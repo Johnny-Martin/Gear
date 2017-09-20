@@ -130,14 +130,6 @@ void UIObject::InitAttrValuePatternMap()
 void UIObject::InitAttrValueParserMap()
 {
 	//正则表达式的\s会匹配 tab、空格、回车
-	auto EraseSpace = [](string& str) {
-		for (string::iterator it = str.end(); it != str.begin();) {
-			--it;
-			if ((*it) == ' ' || (*it) == '\t' || (*it) == '\n' || (*it) == '\r') {
-				str.erase(it);
-			}
-		}
-	};
 
 	auto ParsePos = [&](const string& sAttrName="pos")->bool{
 		try {

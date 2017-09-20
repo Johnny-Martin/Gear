@@ -12,6 +12,8 @@ Description:		界面图片资源管理器
 #include "../UIError.h"
 #include "../UIObject.h"
 #include "../RenderManager.h"
+#include "ResColor.h"
+
 using namespace std;
 
 namespace Gear {
@@ -37,6 +39,7 @@ public:
 	static ResManager&				GetInstance();
 	//主要接口
 	ResPicture*						GetResObject(const string& strResID);
+	ResColor*						GetColorObject(const string& strColorValueOrID);
 	bool							LoadResource(const string& strResID);
 	bool							LoadResFromFile(const wstring& wstrFilePath, const string& strResID, ResType resType);
 private:
@@ -48,6 +51,8 @@ private:
 	//map<string, RPicture*>		m_resID2HandleMap;
 	vector<wstring>					m_resPathVec;
 	map<const string, ResPicture*>  m_resMap;
+	map<const string, ResColor*>	m_colorMap;
+	map<const string, ResColor*>	m_colorMap2;
 };
 
 class ResPicture

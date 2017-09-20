@@ -12,6 +12,7 @@ Description:		实现一个简单的C++反射
 #include "UIWindow.h"
 #include "UIRectangle.h"
 #include "resource/ResManager.h"
+#include "resource/ResColor.h"
 
 using namespace std;
 using namespace Gear::Res;
@@ -59,6 +60,7 @@ private:
 		REGISTER_CLASS("layout",	LayoutObject)
 		REGISTER_CLASS("bitmap",	UIBitmap)
 		REGISTER_CLASS("rectangle", UIRectangle)
+		//REGISTER_CLASS("color", ResColor)
 	REFLECTION_DECLARE_END()
 };
 

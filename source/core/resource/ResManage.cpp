@@ -274,6 +274,12 @@ ResManager::~ResManager()
 		delete iter->second;
 	}
 	//*/
+	for (auto it = m_colorMap.begin(); it != m_colorMap.end(); ++it) {
+		delete it->second;
+	}
+	for (auto it = m_colorMap2.begin(); it != m_colorMap2.end(); ++it) {
+		delete it->second;
+	}
 }
 
 //设置资源文件夹，可以是相对路径(相对于exe),也可以是绝对路径.
@@ -327,7 +333,16 @@ ResPicture*	ResManager::GetResObject(const string& strResID)
 	ERR("GetResObject error: can not find ResObject, strResID: {}", strResID);
 	return nullptr;
 }
+ResColor* ResManager::GetColorObject(const string& strColorValueOrID)
+{
+	if (strColorValueOrID.find("#") == 0){
+		auto it = m_colorMap.find(strColorValueOrID);
+		return it == m_colorMap.end() ? nullptr : it->second;
+	} else{
 
+	}
+	return nullptr;
+}
 bool ResManager::LoadResource(const string& strResID)
 {
 	auto GetResType = [](const string& resID)->ResType {

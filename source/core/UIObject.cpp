@@ -29,7 +29,7 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
-UIObject::UIObject():m_pos(), m_parentObj(nullptr)
+UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_nextSiblingObj(nullptr), m_bottomChild(nullptr)
 {
 	InitAttrMap();
 	InitEventMap();
@@ -74,6 +74,7 @@ bool UIObject::InitImpl(const XMLElement* pElement)
 		pChild = pChild->NextSiblingElement();
 	}
 
+	SortChildrenByZorder();
 	return true;
 }
 void UIObject::InitAttrMap()
@@ -181,9 +182,19 @@ void UIObject::InitAttrValueParserMap()
 		return true;
 	};
 	
+	auto UpdateZorder = [&](const string& sAttrName)->bool {
+		UIObject* pParent = GetParent();
+		if (pParent && pParent->GetInitState()){
+			//父节点初始化完毕，才有必要在一个孩子改变了zorder之后重新排序
+			pParent->SortChildrenByZorder();
+		}
+		return true;
+	};
+
 	ADD_ATTR_PARSER("pos",			ParsePos)
 	ADD_ATTR_PARSER("leftexp",		ParseLeftExp)
 	ADD_ATTR_PARSER("topexp",		ParseTopExp)
+	ADD_ATTR_PARSER("zorder",		UpdateZorder)
 }
 bool UIObject::CheckEventName(const string& sEventName)
 {
@@ -422,7 +433,10 @@ const UIPos UIObject::GetPosObject()
 {
 	return m_pos;
 }
+void UIObject::SortChildrenByZorder()
+{
 
+}
 LayoutObject::LayoutObject()
 {
 	InitAttrMap();

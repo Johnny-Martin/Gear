@@ -60,7 +60,7 @@ public:
 	bool										RemoveChild(const string& sChildName);
 	bool										CalcPosFromExp();
 	const UIPos									GetPosObject();
-
+	void										SortChildrenByZorder();
 #ifdef USE_D2D_RENDER_MODE
 public:
 	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid) = 0;
@@ -75,6 +75,8 @@ protected:
 	//map<string, string>							m_attrMap;
 	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象
 	UIObject*									m_parentObj;
+	UIObject*									m_bottomChild;//zorder最小的孩子节点
+	UIObject*									m_nextSiblingObj;//下一个兄弟节点（zorder比自己大）
 	map<string, UIObject*>						m_childrenMap;
 	//map<string, string>							m_attrValuePatternMap;
 	//map<string, function<bool(const string&)> >	m_attrValueParserMap;

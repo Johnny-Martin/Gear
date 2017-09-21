@@ -39,7 +39,15 @@ void XmlUIElement::InitAttrValuePatternMap()
 **************************************************************************/
 void XmlUIElement::InitAttrValueParserMap()
 {
+	auto OnSetID = [&](const string& sAttrName)->bool {
+		//name 与 id 同等对待
+		m_attrMap["id"]		= m_attrMap[sAttrName];
+		m_attrMap["name"]	= m_attrMap[sAttrName];
+		return true;
+	};
 
+	ADD_ATTR_PARSER("id", OnSetID)
+	ADD_ATTR_PARSER("name", OnSetID)
 }
 shared_ptr<const string> XmlUIElement::GetObjectID()
 {
@@ -99,12 +107,6 @@ bool XmlUIElement::SetAttrValue(const string& sAttrName, const string& sAttrValu
 #endif // DEBUG
 
 	m_attrMap[sAttrName] = sAttrValue;
-
-	//name 与 id 同等对待
-	if (sAttrName == "name")
-		m_attrMap["id"] = sAttrValue;
-	else if (sAttrName == "id")
-		m_attrMap["name"] = sAttrValue;
 
 	auto it = m_attrValueParserMap.find(sAttrName);
 	if (it != m_attrValueParserMap.end()) {

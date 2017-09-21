@@ -12,7 +12,7 @@ class ResColor:public XmlUIElement
 public:
 												ResColor();
 												ResColor(const string& sColorHexValue);
-	virtual bool								Init(const XMLElement* pElement);
+	virtual bool								InitImpl(const XMLElement* pElement);
 #ifdef USE_D2D_RENDER_MODE
 public:
 	D2D1::ColorF								GetD2D1ColorF();
@@ -20,7 +20,11 @@ private:
 	void										UpdateD2D1ColorF();
 	D2D1::ColorF								m_d2d1ColorF;
 #else
-
+public:
+	Gdiplus::Color								GetGdiplusColor();
+private:
+	void										UpdateGdiplusColor();
+	Gdiplus::Color								m_gdiplusColor;
 #endif
 protected:
 	void										InitAttrMap();

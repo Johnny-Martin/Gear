@@ -47,7 +47,7 @@ public:
 	//(重写InitAttrMap、InitEventMap)此处应作编译时强制，但未想到好的方案
 	UIObject();
 	//使用XML节点初始化一个UI对象
-	virtual bool								Init(const XMLElement* pElement);
+	virtual bool								InitImpl(const XMLElement* pElement);
 	bool										CheckEventName(const string& sEventName);
 	bool										AddEvent(const string& sEventName, UIEvent* pEventObj = nullptr);
 	bool										SetEventHandler(const string& sEventName, const string& sFuncName, const string& sFilePath);

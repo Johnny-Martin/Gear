@@ -6,11 +6,16 @@
 //不可识别的字符转义序列（正则表达式中的\s）
 #pragma warning(disable:4129)
 
-XmlUIElement::XmlUIElement()
+XmlUIElement::XmlUIElement():m_bInit(false)
 {
 	InitAttrMap();
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
+}
+bool XmlUIElement::Init(const XMLElement* pElement)
+{
+	m_bInit = InitImpl(pElement);
+	return m_bInit;
 }
 void XmlUIElement::InitAttrMap()
 {
@@ -119,4 +124,8 @@ shared_ptr<const string> XmlUIElement::GetAttrValue(const string& sAttrName)
 		return nullptr;
 	}
 	return make_shared<const string>(m_attrMap[sAttrName]);
+}
+bool XmlUIElement::GetInitState()
+{
+	return m_bInit;
 }

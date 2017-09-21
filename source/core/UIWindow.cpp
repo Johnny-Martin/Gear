@@ -299,8 +299,12 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 	}
 #else
 	PAINTSTRUCT ps;
-	BeginPaint(&ps);
-
+	HDC hdc = BeginPaint(&ps);
+	RECT rect;
+	for (auto it = m_childrenMap.begin(); it != m_childrenMap.end(); ++it)
+	{
+		it->second->Draw(&hdc, rect);
+	}
 	EndPaint(&ps);
 #endif
 	bHandled = false;

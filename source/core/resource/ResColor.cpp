@@ -12,6 +12,7 @@ ResColor::ResColor() : m_R(0), m_G(0), m_B(0), m_A(255)
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
+
 #ifdef USE_D2D_RENDER_MODE
 ResColor::ResColor(const string& sColorHexValue) :m_R(0), m_G(0), m_B(0), m_A(255), m_d2d1ColorF(0, 0, 0)
 #else
@@ -25,7 +26,7 @@ ResColor::ResColor(const string& sColorHexValue) : m_R(0), m_G(0), m_B(0), m_A(2
 	SetAttrValue("id", CreateGUIDAsResID());
 	SetAttrValue("value", sColorHexValue);
 }
-bool ResColor::Init(const XMLElement* pElement)
+bool ResColor::InitImpl(const XMLElement* pElement)
 {
 	//保存element的属性
 	auto pAttr = pElement->FirstAttribute();
@@ -37,12 +38,7 @@ bool ResColor::Init(const XMLElement* pElement)
 
 	return true;
 }
-#ifdef USE_D2D_RENDER_MODE
-D2D1::ColorF ResColor::GetD2D1ColorF()
-{
-	return m_d2d1ColorF;
-}
-#endif
+
 void ResColor::InitAttrMap()
 {
 	ADD_ATTR("value",	"")//十六进制RGB(A)值，alpha通道可选
@@ -98,6 +94,8 @@ void ResColor::UpdateColorValue(const string& sHexR, const string& sHexG, const 
 
 #ifdef USE_D2D_RENDER_MODE
 	UpdateD2D1ColorF();
+#else
+	UpdateGdiplusColor();
 #endif
 }
 void ResColor::UpdateColorValue(const string& sHexR, const string& sHexG, const string& sHexB, const string& sHexA)
@@ -108,8 +106,11 @@ void ResColor::UpdateColorValue(const string& sHexR, const string& sHexG, const 
 
 #ifdef USE_D2D_RENDER_MODE
 	UpdateD2D1ColorF();
+#else
+	UpdateGdiplusColor();
 #endif
 }
+
 #ifdef USE_D2D_RENDER_MODE
 void ResColor::UpdateD2D1ColorF()
 {
@@ -117,5 +118,18 @@ void ResColor::UpdateD2D1ColorF()
 	m_d2d1ColorF.g = m_G / 255.f;
 	m_d2d1ColorF.b = m_B / 255.f;
 	m_d2d1ColorF.a = m_A / 255.f;
+}
+D2D1::ColorF ResColor::GetD2D1ColorF()
+{
+	return m_d2d1ColorF;
+}
+#else
+void ResColor::UpdateGdiplusColor()
+{
+	m_gdiplusColor.SetValue(Color::MakeARGB(m_A, m_R, m_G, m_B));
+}
+Gdiplus::Color ResColor::GetGdiplusColor()
+{
+	return m_gdiplusColor;
 }
 #endif

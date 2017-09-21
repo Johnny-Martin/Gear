@@ -31,10 +31,12 @@ void UIRectangle::InitAttrValuePatternMap()
 {
 	ADD_ATTR_PATTERN("corner", R_CHECK_INT);
 	ADD_ATTR_PATTERN("border", R_CHECK_INT);
+	ADD_ATTR_PATTERN("color", R_CHECK_COLOR_VALUE);
+	ADD_ATTR_PATTERN("bordercolor", R_CHECK_COLOR_VALUE);
 }
 void UIRectangle::InitAttrValueParserMap()
 {
-
+	//ADD_ATTR_PARSER("value", ParseHexValue)
 }
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
@@ -103,7 +105,19 @@ HRESULT	UIRectangle::DiscardDeviceDependentResources()
 HRESULT	UIRectangle::OnDrawImpl(HDC* pHdc, const RECT& rcInvalid)
 {
 	HRESULT hr = S_OK;
+	Graphics graphics(*pHdc);
+	graphics.Clear(Color::White);
 
+	Gdiplus::Color rectColor = ResManager::GetInstance().GetColorObject(m_attrMap["color"])->GetGdiplusColor();
+	Gdiplus::SolidBrush linGrBrush(rectColor);
+	graphics.FillRectangle(&linGrBrush, 10, 10, 100, 100);
+
+	if (m_attrMap["border"] != "0") {
+		Gdiplus::Color rectBorderColor = ResManager::GetInstance().GetColorObject(m_attrMap["bordercolor"])->GetGdiplusColor();
+		FLOAT borderWidth = static_cast<FLOAT>(atoi(m_attrMap["border"].c_str()));
+		Pen pen(rectBorderColor, borderWidth);
+		graphics.DrawRectangle(&pen, 10, 10, 100, 100);
+	}
 	return hr;
 }
 

@@ -36,7 +36,7 @@ UIObject::UIObject():m_pos(), m_parentObj(nullptr)
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
-bool UIObject::Init(const XMLElement* pElement)
+bool UIObject::InitImpl(const XMLElement* pElement)
 {
 	//±£´æelementµÄÊôÐÔ
 	auto pAttr = pElement->FirstAttribute();

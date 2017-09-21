@@ -55,7 +55,7 @@
 		<event name="OnDestory" func="OnWindowCreateDestory2" />
 	</window>
 	<window id="TestLayout2" pos="500, 400, 200, 200" title="测试布局对象">
-		<rectangle id="button.bkg.fskk" pos="#mid,#mid,100,100" corner="20" color="FFFFFF" border="3" bordercolor="FF00FF" />
+		<rectangle id="button.bkg.fskk" pos="#mid,#mid,100,100" corner="20" color="FFFF00" border="3" bordercolor="FF00FF" />
 	</window>
 	<window id="TestLayout3" pos="400, 300, 100, 100" title="测试布局对象">
 	</window>

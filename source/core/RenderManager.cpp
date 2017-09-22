@@ -42,6 +42,7 @@ bool CalcIntersection(const RECT& rcInvalid, const UIPos& curObjWndPos)
 	return true;
 }
 
+///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
 HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid, UIObject* pTargetObject/*= nullptr*/)
 {
@@ -77,9 +78,8 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 	//	窗口内在OnPaint中hr = m_pRenderTarget->EndDraw();后，需要判断是否丢弃设备相关资源
 	//	DiscardDeviceDependentResources();
 }
-#endif
-
-#ifndef USE_D2D_RENDER_MODE
+/////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
+#else
 HRESULT	RenderTarget::Draw(Graphics& graphics, const RECT& rcInvalid, UIObject* pTargetObject/*= nullptr*/)
 {
 	auto spStrAntialias = pTargetObject->GetAttrValue("antialias");

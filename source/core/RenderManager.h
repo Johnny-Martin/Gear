@@ -35,7 +35,7 @@ protected:
 	virtual HRESULT					DiscardDeviceDependentResources() = 0;
 #else
 public:
-	virtual HRESULT					Draw(Graphics& graphics, const RECT& rcInvalid);
+	virtual HRESULT					Draw(Graphics& graphics, const RECT& rcInvalid, UIObject* pTargetObject = nullptr);
 	virtual HRESULT					OnDrawImpl(Graphics& graphics, const RECT& rcInvalid) = 0;
 #endif // USE_D2D_RENDER_MODE
 

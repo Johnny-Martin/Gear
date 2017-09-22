@@ -52,19 +52,24 @@ HRESULT	UIRectangle::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rc
 	rectF.right  = static_cast<FLOAT>(m_pos.width + m_pos.left);
 	rectF.bottom = static_cast<FLOAT>(m_pos.height + m_pos.top);
 
-	if (m_attrMap["corner"] == "0") {
+	int cornerRadius = static_cast<int>(atoi(m_attrMap["corner"].c_str()));
+	if (cornerRadius == 0) {
 		pRenderTarget->FillRectangle(rectF, m_pColorBrush);
 	}else{
-		FLOAT cornerRadius = static_cast<FLOAT>(atoi(m_attrMap["corner"].c_str()));
-		D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rectF, cornerRadius, cornerRadius);
+		D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rectF, (FLOAT)cornerRadius, (FLOAT)cornerRadius);
 		pRenderTarget->FillRoundedRectangle(roundedRect, m_pColorBrush);
 	}
 	
 	if (m_attrMap["border"] != "0") {
+		FLOAT borderWidth = static_cast<FLOAT>(atoi(m_attrMap["border"].c_str()));
 		FLOAT cornerRadius = static_cast<FLOAT>(atoi(m_attrMap["corner"].c_str()));
-		FLOAT borderWidth  = static_cast<FLOAT>(atoi(m_attrMap["border"].c_str()));
-		D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rectF, cornerRadius, cornerRadius);
-		pRenderTarget->DrawRoundedRectangle(roundedRect, m_pBorderColorBrush, borderWidth);
+		if (cornerRadius == 0) {
+			pRenderTarget->DrawRectangle(rectF, m_pBorderColorBrush);
+		} else {
+			D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rectF, (FLOAT)cornerRadius, (FLOAT)cornerRadius);
+			pRenderTarget->DrawRoundedRectangle(roundedRect, m_pBorderColorBrush, borderWidth);
+		}
+		
 	}
 
 	return S_OK;
@@ -104,22 +109,80 @@ HRESULT	UIRectangle::DiscardDeviceDependentResources()
 #else
 HRESULT	UIRectangle::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 {
+	auto DrawRoundRectange = [](Gdiplus::Graphics &g, Gdiplus::Pen* pen, int x, int y, int width, int height, int corner){
+		//矩形上边  
+		g.DrawLine(pen, x + corner, y, x + width - corner, y);
+
+		//矩形下边  
+		g.DrawLine(pen, x + corner, y + height, x + width - corner, y + height);
+
+		//矩形左边  
+		g.DrawLine(pen, x, y + corner, x, y + height - corner);
+
+		//矩形右边  
+		g.DrawLine(pen, x + width, y + corner, x + width, y + height - corner);
+
+		//左上角圆角  
+		g.DrawArc(pen, x, y, corner * 2, corner * 2, 180, 90);
+
+		//右下角圆角  
+		g.DrawArc(pen, x + width - corner * 2, y + height - corner * 2, corner * 2, corner * 2, 360, 90);
+
+		//右上角圆角  
+		g.DrawArc(pen, x + width - corner * 2, y, corner * 2, corner * 2, 270, 90);
+
+		//左下角圆角  
+		g.DrawArc(pen, x, y + height - corner * 2, corner * 2, corner * 2, 90, 90);
+	};
+	auto FillRoundRectangle = [](Graphics &g, Gdiplus::Brush* brush, int x, int y, int width, int height, int corner){
+		//矩形填充的步骤：  
+		//1、把圆角矩形画分为四个圆角上分成四个同等的扇形外加三个直角矩形  
+		//2、先填充三个直角矩形  
+		//3、然后填充四个角上的扇形  
+
+		//填充三个直角矩形  
+		g.FillRectangle(brush, x, y + corner, width, height - corner * 2);
+		g.FillRectangle(brush, x + corner, y, width - corner * 2, height);
+
+		//填充四个角上的扇形区  
+		//填充左上角扇形  
+		const int PIE_OFFSET = 2;
+		g.FillPie(brush, x, y, corner * 2 + PIE_OFFSET, corner * 2 + PIE_OFFSET, 180, 90);
+
+		//填充右下角的扇形  
+		g.FillPie(brush, x + width - (corner * 2 + PIE_OFFSET), y + height - (corner * 2 + PIE_OFFSET), corner * 2 + PIE_OFFSET, corner * 2 + PIE_OFFSET, 360, 90);
+
+		//填充右上角的扇形  
+		g.FillPie(brush, x + width - (corner * 2 + PIE_OFFSET), y, (corner * 2 + PIE_OFFSET), (corner * 2 + PIE_OFFSET), 270, 90);
+
+		//填充左下角的扇形  
+		g.FillPie(brush, x, y + height - (corner * 2 + PIE_OFFSET), (corner * 2 + PIE_OFFSET), (corner * 2 + PIE_OFFSET), 90, 90);
+	};
+
 	HRESULT hr = S_OK;
 	//graphics.Clear(Color::White);
 
-	Gdiplus::Color rectColor = ResManager::GetInstance().GetColorObject(m_attrMap["color"])->GetGdiplusColor();
-	Gdiplus::SolidBrush linGrBrush(rectColor);
+	Color rectColor = ResManager::GetInstance().GetColorObject(m_attrMap["color"])->GetGdiplusColor();
+	SolidBrush linGrBrush(rectColor);
 	//--//需要将m_pos（相对(父节点)坐标）转换成窗口坐标
-	graphics.FillRectangle(&linGrBrush, m_pos.left, m_pos.top, m_pos.width, m_pos.height);
-	//graphics.FillRectangle(&linGrBrush, m_pos.left + 20, m_pos.top + 20, m_pos.width, m_pos.height);
-
+	int cornerRadius = static_cast<int>(atoi(m_attrMap["corner"].c_str()));
+	if (cornerRadius == 0) {
+		graphics.FillRectangle(&linGrBrush, m_pos.left, m_pos.top, m_pos.width, m_pos.height);
+	} else {
+		FillRoundRectangle(graphics, &linGrBrush, m_pos.left, m_pos.top, m_pos.width, m_pos.height, cornerRadius);
+	}
+	
 	if (m_attrMap["border"] != "0") {
-		Gdiplus::Color rectBorderColor = ResManager::GetInstance().GetColorObject(m_attrMap["bordercolor"])->GetGdiplusColor();
 		FLOAT borderWidth = static_cast<FLOAT>(atoi(m_attrMap["border"].c_str()));
+		Color rectBorderColor = ResManager::GetInstance().GetColorObject(m_attrMap["bordercolor"])->GetGdiplusColor();
 		Pen pen(rectBorderColor, borderWidth);
-		graphics.DrawRectangle(&pen, m_pos.left, m_pos.top, m_pos.width, m_pos.height);
+
+		if (cornerRadius == 0) {
+			graphics.DrawRectangle(&pen, m_pos.left, m_pos.top, m_pos.width, m_pos.height);
+		} else {
+			DrawRoundRectange(graphics, &pen, m_pos.left, m_pos.top, m_pos.width, m_pos.height, cornerRadius);
+		}
 	}
 	return hr;
 }
-
 #endif

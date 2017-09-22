@@ -63,8 +63,16 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 #endif
 
 #ifndef USE_D2D_RENDER_MODE
-HRESULT	RenderTarget::Draw(Graphics& graphics, const RECT& rcInvalid)
+HRESULT	RenderTarget::Draw(Graphics& graphics, const RECT& rcInvalid, UIObject* pTargetObject/*= nullptr*/)
 {
+	if (pTargetObject) {
+		auto spStrAntialias = pTargetObject->GetAttrValue("antialias");
+		if (*spStrAntialias == "0") {
+			graphics.SetSmoothingMode(SmoothingModeNone);
+		} else {
+			graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+		}
+	}
 	return OnDrawImpl(graphics, rcInvalid);
 }
 #endif

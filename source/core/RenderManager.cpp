@@ -63,8 +63,8 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 #endif
 
 #ifndef USE_D2D_RENDER_MODE
-HRESULT	RenderTarget::Draw(HDC* pHdc, const RECT& rcInvalid)
+HRESULT	RenderTarget::Draw(Graphics& graphics, const RECT& rcInvalid)
 {
-	return OnDrawImpl(pHdc, rcInvalid);
+	return OnDrawImpl(graphics, rcInvalid);
 }
 #endif

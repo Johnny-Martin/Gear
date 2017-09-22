@@ -75,14 +75,14 @@ protected:
 	virtual HRESULT								DiscardDeviceDependentResources() = 0;
 #else
 public:
-	virtual HRESULT								OnDrawImpl(HDC* pHdc, const RECT& rcInvalid) = 0;
+	virtual HRESULT								OnDrawImpl(Graphics& graphics, const RECT& rcInvalid) = 0;
 #endif
 protected:
 	//map<string, string>							m_attrMap;
 	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象
 	UIObject*									m_parentObj;
 	map<string, UIObject*>						m_childrenMap;
-	vector<PAIR>*								m_pChildrenVec;
+	vector<PAIR>*								m_pVecChildrenPair;
 	//map<string, string>							m_attrValuePatternMap;
 	//map<string, function<bool(const string&)> >	m_attrValueParserMap;
 	UIPos										m_pos;
@@ -117,7 +117,7 @@ protected:
 	virtual HRESULT								CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
 	virtual HRESULT								DiscardDeviceDependentResources();
 #else
-	virtual HRESULT								OnDrawImpl(HDC* pHdc, const RECT& rcInvalid);
+	virtual HRESULT								OnDrawImpl(Graphics& graphics, const RECT& rcInvalid);
 #endif
 protected:
 	void										InitAttrMap();

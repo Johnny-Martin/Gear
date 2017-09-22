@@ -650,7 +650,7 @@ Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int heigh
 
 	return nullptr;
 }
-HRESULT	UIBitmap::OnDrawImpl(HDC* pHdc, const RECT& rcInvalid)
+HRESULT	UIBitmap::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 {
 	HRESULT hr = S_OK;
 

@@ -29,7 +29,7 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
-UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pChildrenVec(nullptr)
+UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pVecChildrenPair(nullptr)
 {
 	InitAttrMap();
 	InitEventMap();
@@ -38,8 +38,8 @@ UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pChildrenVec(nullptr)
 }
 UIObject::~UIObject()
 {
-	if (m_pChildrenVec)
-		delete m_pChildrenVec;
+	if (m_pVecChildrenPair)
+		delete m_pVecChildrenPair;
 	
 	for (auto it=m_childrenMap.begin(); it!=m_childrenMap.end(); ++it){
 		delete it->second;
@@ -457,13 +457,13 @@ inline bool  CmpByZorder::operator()(const PAIR& k1, const PAIR& k2)
 }
 void UIObject::SortChildrenByZorder()
 {
-	if (m_pChildrenVec)
+	if (m_pVecChildrenPair)
 	{
-		delete m_pChildrenVec;
-		m_pChildrenVec = nullptr;
+		delete m_pVecChildrenPair;
+		m_pVecChildrenPair = nullptr;
 	}
-	m_pChildrenVec = new vector<PAIR>(m_childrenMap.begin(), m_childrenMap.end());
-	std::sort(m_pChildrenVec->begin(), m_pChildrenVec->end(), CmpByZorder());
+	m_pVecChildrenPair = new vector<PAIR>(m_childrenMap.begin(), m_childrenMap.end());
+	std::sort(m_pVecChildrenPair->begin(), m_pVecChildrenPair->end(), CmpByZorder());
 }
 LayoutObject::LayoutObject()
 {
@@ -496,7 +496,7 @@ HRESULT	LayoutObject::DiscardDeviceDependentResources()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-HRESULT	LayoutObject::OnDrawImpl(HDC* pHdc, const RECT& rcInvalid)
+HRESULT	LayoutObject::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 {
 	HRESULT hr = S_OK;
 

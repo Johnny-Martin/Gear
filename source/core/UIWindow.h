@@ -57,7 +57,7 @@ protected:
 private:
 	ID2D1HwndRenderTarget*				m_pHwndRenderTarget;
 #else
-	virtual HRESULT						OnDrawImpl(HDC* pHdc, const RECT& rcInvalid);
+	virtual HRESULT						OnDrawImpl(Graphics& graphics, const RECT& rcInvalid);
 #endif
 protected:
 	virtual bool						InitImpl(const XMLElement* pElement);

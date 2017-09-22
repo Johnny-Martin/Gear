@@ -282,7 +282,7 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 		rcInvalid.top = 0;
 		rcInvalid.right = size.width + rcInvalid.left;
 		rcInvalid.bottom = size.height + rcInvalid.top;
-		for (auto it=m_childrenMap.begin(); it!=m_childrenMap.end();++it)
+		for (auto it=m_pVecChildrenPair->begin(); it!= m_pVecChildrenPair->end();++it)
 		{
 			it->second->Draw(m_pHwndRenderTarget, rcInvalid, it->second);
 		}
@@ -300,9 +300,10 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(&ps);
 	RECT rect;
-	for (auto it = m_childrenMap.begin(); it != m_childrenMap.end(); ++it)
+	Graphics graphics(hdc);
+	for (auto it=m_pVecChildrenPair->begin(); it!=m_pVecChildrenPair->end(); ++it)
 	{
-		it->second->Draw(&hdc, rect);
+		it->second->Draw(graphics, rect);
 	}
 	EndPaint(&ps);
 #endif
@@ -381,7 +382,7 @@ HRESULT	UIWindow::DiscardDeviceDependentResources()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-HRESULT	UIWindow::OnDrawImpl(HDC* pHdc, const RECT& rcInvalid)
+HRESULT	UIWindow::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 {
 	HRESULT hr = S_OK;
 

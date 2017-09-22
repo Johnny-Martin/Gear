@@ -102,21 +102,22 @@ HRESULT	UIRectangle::DiscardDeviceDependentResources()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-HRESULT	UIRectangle::OnDrawImpl(HDC* pHdc, const RECT& rcInvalid)
+HRESULT	UIRectangle::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 {
 	HRESULT hr = S_OK;
-	Graphics graphics(*pHdc);
-	graphics.Clear(Color::White);
+	//graphics.Clear(Color::White);
 
 	Gdiplus::Color rectColor = ResManager::GetInstance().GetColorObject(m_attrMap["color"])->GetGdiplusColor();
 	Gdiplus::SolidBrush linGrBrush(rectColor);
-	graphics.FillRectangle(&linGrBrush, 10, 10, 100, 100);
+	//--//需要将m_pos（相对(父节点)坐标）转换成窗口坐标
+	graphics.FillRectangle(&linGrBrush, m_pos.left, m_pos.top, m_pos.width, m_pos.height);
+	//graphics.FillRectangle(&linGrBrush, m_pos.left + 20, m_pos.top + 20, m_pos.width, m_pos.height);
 
 	if (m_attrMap["border"] != "0") {
 		Gdiplus::Color rectBorderColor = ResManager::GetInstance().GetColorObject(m_attrMap["bordercolor"])->GetGdiplusColor();
 		FLOAT borderWidth = static_cast<FLOAT>(atoi(m_attrMap["border"].c_str()));
 		Pen pen(rectBorderColor, borderWidth);
-		graphics.DrawRectangle(&pen, 10, 10, 100, 100);
+		graphics.DrawRectangle(&pen, m_pos.left, m_pos.top, m_pos.width, m_pos.height);
 	}
 	return hr;
 }

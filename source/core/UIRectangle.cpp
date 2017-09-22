@@ -46,11 +46,12 @@ HRESULT	UIRectangle::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rc
 	if (m_attrMap["visible"] == "0") return S_OK;
 	//窗口在重绘时，应该只通知处于rcInvalid区域的UI对象
 	
+	UIPos toWndPos = GetWndCoordinatePos();
 	D2D1_RECT_F rectF;
-	rectF.left	 = static_cast<FLOAT>(m_pos.left);
-	rectF.top	 = static_cast<FLOAT>(m_pos.top);
-	rectF.right  = static_cast<FLOAT>(m_pos.width + m_pos.left);
-	rectF.bottom = static_cast<FLOAT>(m_pos.height + m_pos.top);
+	rectF.left	 = static_cast<FLOAT>(toWndPos.left);
+	rectF.top	 = static_cast<FLOAT>(toWndPos.top);
+	rectF.right  = static_cast<FLOAT>(toWndPos.width + toWndPos.left);
+	rectF.bottom = static_cast<FLOAT>(toWndPos.height + toWndPos.top);
 
 	int cornerRadius = static_cast<int>(atoi(m_attrMap["corner"].c_str()));
 	if (cornerRadius == 0) {
@@ -164,12 +165,13 @@ HRESULT	UIRectangle::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 
 	Color rectColor = ResManager::GetInstance().GetColorObject(m_attrMap["color"])->GetGdiplusColor();
 	SolidBrush linGrBrush(rectColor);
-	//--//需要将m_pos（相对(父节点)坐标）转换成窗口坐标
+	//将m_pos（相对(父节点)坐标）转换成窗口坐标
+	UIPos toWndPos = GetWndCoordinatePos();
 	int cornerRadius = static_cast<int>(atoi(m_attrMap["corner"].c_str()));
 	if (cornerRadius == 0) {
-		graphics.FillRectangle(&linGrBrush, m_pos.left, m_pos.top, m_pos.width, m_pos.height);
+		graphics.FillRectangle(&linGrBrush, toWndPos.left, toWndPos.top, toWndPos.width, toWndPos.height);
 	} else {
-		FillRoundRectangle(graphics, &linGrBrush, m_pos.left, m_pos.top, m_pos.width, m_pos.height, cornerRadius);
+		FillRoundRectangle(graphics, &linGrBrush, toWndPos.left, toWndPos.top, toWndPos.width, toWndPos.height, cornerRadius);
 	}
 	
 	if (m_attrMap["border"] != "0") {
@@ -178,11 +180,12 @@ HRESULT	UIRectangle::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 		Pen pen(rectBorderColor, borderWidth);
 
 		if (cornerRadius == 0) {
-			graphics.DrawRectangle(&pen, m_pos.left, m_pos.top, m_pos.width, m_pos.height);
+			graphics.DrawRectangle(&pen, toWndPos.left, toWndPos.top, toWndPos.width, toWndPos.height);
 		} else {
-			DrawRoundRectange(graphics, &pen, m_pos.left, m_pos.top, m_pos.width, m_pos.height, cornerRadius);
+			DrawRoundRectange(graphics, &pen, toWndPos.left, toWndPos.top, toWndPos.width, toWndPos.height, cornerRadius);
 		}
 	}
+	
 	return hr;
 }
 #endif

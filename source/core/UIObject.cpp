@@ -29,7 +29,7 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
-UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pVecChildrenPair(nullptr)
+UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pVecChildrenPair(nullptr), m_bWndObj(false)
 {
 	InitAttrMap();
 	InitEventMap();
@@ -464,6 +464,25 @@ void UIObject::SortChildrenByZorder()
 	}
 	m_pVecChildrenPair = new vector<PAIR>(m_childrenMap.begin(), m_childrenMap.end());
 	std::sort(m_pVecChildrenPair->begin(), m_pVecChildrenPair->end(), CmpByZorder());
+}
+UIPos UIObject::GetWndCoordinatePos()
+{
+	if (m_bWndObj) {
+		UIPos pos(m_pos);
+		pos.left = 0;
+		pos.top  = 0;
+		return pos;
+	}
+	if (!m_parentObj) {
+		WARN("GetWndCoordinatePos warning: m_parentObj is null");
+		return UIPos();
+	}
+	UIPos pos    = m_parentObj->GetWndCoordinatePos();
+	pos.left	+= m_pos.left;
+	pos.top		+= m_pos.top;
+	pos.width	 = m_pos.width;
+	pos.height   = m_pos.height;
+	return pos;
 }
 LayoutObject::LayoutObject()
 {

@@ -47,6 +47,7 @@ public:
 
 class UIObject:public XmlUIElement, public RenderTarget
 {
+	friend RenderTarget;
 public:
 	//UIBase的子类需要有一个无参构造，在里面初始化m_attrMap 和 m_eventMap
 	//(重写InitAttrMap、InitEventMap)此处应作编译时强制，但未想到好的方案
@@ -67,6 +68,7 @@ public:
 	bool										CalcPosFromExp();
 	const UIPos									GetPosObject();
 	void										SortChildrenByZorder();
+	UIPos										GetWndCoordinatePos();
 #ifdef USE_D2D_RENDER_MODE
 public:
 	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid) = 0;
@@ -86,7 +88,7 @@ protected:
 	//map<string, string>							m_attrValuePatternMap;
 	//map<string, function<bool(const string&)> >	m_attrValueParserMap;
 	UIPos										m_pos;
-
+	bool										m_bWndObj;
 	void										InitAttrMap();
 	void										InitEventMap();
 	void										InitAttrValuePatternMap();

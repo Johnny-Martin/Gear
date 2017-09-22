@@ -54,8 +54,14 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 			pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 		}
 	}
+	auto ret = OnDrawImpl(pRenderTarget, rcInvalid);
 
-	return OnDrawImpl(pRenderTarget, rcInvalid);
+	if (pTargetObject) {
+		for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
+			it->second->Draw(pRenderTarget, rcInvalid, it->second);
+		}
+	}
+	return ret;
 
 	//	窗口内在OnPaint中hr = m_pRenderTarget->EndDraw();后，需要判断是否丢弃设备相关资源
 	//	DiscardDeviceDependentResources();
@@ -73,6 +79,13 @@ HRESULT	RenderTarget::Draw(Graphics& graphics, const RECT& rcInvalid, UIObject* 
 			graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 		}
 	}
-	return OnDrawImpl(graphics, rcInvalid);
+	auto ret = OnDrawImpl(graphics, rcInvalid);
+
+	if (pTargetObject) {
+		for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
+			it->second->Draw(graphics, rcInvalid, it->second);
+		}
+	}
+	return ret;
 }
 #endif

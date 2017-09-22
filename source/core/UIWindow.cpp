@@ -50,13 +50,14 @@ WndManager::~WndManager()
 {
 	OnTryExit();
 }
-UIWindow::UIWindow():m_hWndParent(0)
+UIWindow::UIWindow() :m_hWndParent(0)
 {
 	InitAttrMap();
 	InitEventMap();
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 
+	m_bWndObj = true;
 #ifdef USE_D2D_RENDER_MODE
 	m_pHwndRenderTarget = nullptr;
 #endif

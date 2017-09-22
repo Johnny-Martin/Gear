@@ -51,7 +51,7 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 		ERR("Fatal error in RenderTarget::Draw£¬ CreateDeviceDependentResources failed! hr: {}", hr);
 		return hr;
 	}
-	shared_ptr<const string> sAntialias = pTargetObject->GetAttrValue("antialias");
+	auto sAntialias = pTargetObject->GetAttrValue("antialias");
 	if (*sAntialias == "0") {
 		pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
 	} else {

@@ -4,6 +4,7 @@
 #include "UIFactory.h"
 #include "UIObject.h"
 #include "Log.h"
+#include "GearEnv.h"
 
 using namespace std;
 using namespace Gear::Xml;
@@ -67,6 +68,7 @@ XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 		if (!pObj || !pObj->Init(pElement))
 			ERR("create/initicalize UI ojject error: pObj£º{}", int(pObj));
 		
+		GearEnv::AddRootObject(pObj);
 		pElement = pElement->NextSiblingElement();
 	}
 

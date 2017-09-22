@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\base\XmlUIElement.cpp" />
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
+    <ClCompile Include="..\..\..\source\core\GearEnv.cpp" />
     <ClCompile Include="..\..\..\source\core\Log.cpp" />
     <ClCompile Include="..\..\..\source\core\RenderManager.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp" />
@@ -187,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h" />
+    <ClInclude Include="..\..\..\source\core\GearEnv.h" />
     <ClInclude Include="..\..\..\source\core\Log.h" />
     <ClInclude Include="..\..\..\source\core\Micros.h" />
     <ClInclude Include="..\..\..\source\core\RenderManager.h" />

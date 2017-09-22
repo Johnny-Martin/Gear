@@ -10,6 +10,7 @@
 #include "resource/UIResource.h"
 #include "resource/ResManager.h"
 #include "UIFrameWnd.h"
+#include "GearEnv.h"
 //#include "..\luabridge\LuaBridge.h"
 //#include "zlib.h"
 
@@ -46,7 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ATLASSERT(SUCCEEDED(hRes));
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
-	RenderManager::Init();
+	GearEnv::Init();
 
 	TestFunc();
 	ResManager::GetInstance().AddResPath(L"..\\..\\..\\..\\docs\\");
@@ -57,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	_Module.RemoveMessageLoop();
 	_Module.Term();
 
-	RenderManager::UnInit();
+	GearEnv::UnInit();
 	::CoUninitialize();
 
 	return nRet;

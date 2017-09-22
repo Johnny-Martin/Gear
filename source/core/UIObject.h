@@ -36,6 +36,11 @@ private:
 	string m_funcName;							//处理该事件的lua的函数名
 };
 
+typedef  pair<string, UIObject*> PAIR;
+class CmpByZorder {
+public:
+	inline bool operator()(const PAIR& k1, const PAIR& k2);
+};
 /***************************************
 所有UI元素的基类
 ****************************************/
@@ -45,7 +50,8 @@ class UIObject:public XmlUIElement, public RenderTarget
 public:
 	//UIBase的子类需要有一个无参构造，在里面初始化m_attrMap 和 m_eventMap
 	//(重写InitAttrMap、InitEventMap)此处应作编译时强制，但未想到好的方案
-	UIObject();
+												UIObject();
+	virtual										~UIObject();
 	//使用XML节点初始化一个UI对象
 	virtual bool								InitImpl(const XMLElement* pElement);
 	bool										CheckEventName(const string& sEventName);
@@ -57,7 +63,7 @@ public:
 	bool										SetParent(UIObject* pParent);
 	bool										AddChild(UIObject* pChild, const string& sChildID = "");
 	UIObject*									GetChild(const string& sChildName);
-	bool										RemoveChild(const string& sChildName);
+	bool										RemoveChild(const string& sChildName, bool bDestoryChild = true, UIObject** ppChildObj = nullptr);
 	bool										CalcPosFromExp();
 	const UIPos									GetPosObject();
 	void										SortChildrenByZorder();
@@ -75,9 +81,8 @@ protected:
 	//map<string, string>							m_attrMap;
 	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象
 	UIObject*									m_parentObj;
-	UIObject*									m_bottomChild;//zorder最小的孩子节点
-	UIObject*									m_nextSiblingObj;//下一个兄弟节点（zorder比自己大）
 	map<string, UIObject*>						m_childrenMap;
+	vector<PAIR>*								m_pChildrenVec;
 	//map<string, string>							m_attrValuePatternMap;
 	//map<string, function<bool(const string&)> >	m_attrValueParserMap;
 	UIPos										m_pos;

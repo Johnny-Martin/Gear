@@ -234,9 +234,9 @@ void UIBitmap::InitEventMap()
 	//ADD_EVENT("OnCreate", nullptr)
 }
 
-bool UIBitmap::Init(const XMLElement* pElement)
+bool UIBitmap::InitImpl(const XMLElement* pElement)
 {
-	auto ret = UIObject::Init(pElement);
+	auto ret = UIObject::InitImpl(pElement);
 	if (ret && !m_attrMap["res"].empty()) {
 		//加载res属性对应的png
 		auto resID = m_attrMap["res"];

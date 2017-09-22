@@ -60,7 +60,7 @@ private:
 	virtual HRESULT						OnDrawImpl(HDC* pHdc, const RECT& rcInvalid);
 #endif
 protected:
-	virtual bool						Init(const XMLElement* pElement);
+	virtual bool						InitImpl(const XMLElement* pElement);
 	void								InitAttrMap();
 	void								InitEventMap();
 	void								InitAttrValuePatternMap();

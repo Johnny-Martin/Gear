@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\..\source\core\resource\UIResource.cpp">
       <Filter>resource</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\GearEnv.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\UIResource.h">
       <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\GearEnv.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

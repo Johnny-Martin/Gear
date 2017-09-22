@@ -61,11 +61,9 @@ UIWindow::UIWindow():m_hWndParent(0)
 	m_pHwndRenderTarget = nullptr;
 #endif
 }
-bool UIWindow::Init(const XMLElement* pElement)
+bool UIWindow::InitImpl(const XMLElement* pElement)
 {
-	if (!UIObject::Init(pElement)){
-		return false;
-	}
+	if (!UIObject::InitImpl(pElement)) { return false; }
 
 	//额外校验、处理一些属性值
 	unsigned int minwidth	= atoi(m_attrMap["minwidth"].c_str());
@@ -90,6 +88,7 @@ bool UIWindow::Init(const XMLElement* pElement)
 		m_pos.height = maxheight;
 	}
 	//return true;
+	//--//这里不能直接把xml里所有的<window>标签都一下子创建出来
 	return CreateUIWindow();
 }
 void UIWindow::InitAttrMap()
@@ -342,6 +341,8 @@ LRESULT UIWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	//模仿脚本中退出
 	//WndManager::GetInstance().OnTryExit();
 
+	//窗口即将销毁，
+	//--//m_hWnd = NULL;
 	auto filterCount = pLoop->m_aMsgFilter.GetSize();
 	if (filterCount == 0)
 	{

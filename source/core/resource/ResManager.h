@@ -143,7 +143,7 @@ protected:
 	virtual HRESULT					OnDrawImpl(HDC* pHdc, const RECT& rcInvalid);
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
 #endif
-	bool							Init(const XMLElement* pElement);
+	bool							InitImpl(const XMLElement* pElement);
 protected:
 	void							InitAttrMap();
 	void							InitEventMap();

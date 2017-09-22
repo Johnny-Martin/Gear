@@ -29,12 +29,21 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
-UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_nextSiblingObj(nullptr), m_bottomChild(nullptr)
+UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pChildrenVec(nullptr)
 {
 	InitAttrMap();
 	InitEventMap();
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
+}
+UIObject::~UIObject()
+{
+	if (m_pChildrenVec)
+		delete m_pChildrenVec;
+	
+	for (auto it=m_childrenMap.begin(); it!=m_childrenMap.end(); ++it){
+		delete it->second;
+	}
 }
 bool UIObject::InitImpl(const XMLElement* pElement)
 {
@@ -342,12 +351,19 @@ UIObject*	UIObject::GetChild(const string& sChildName)
 
 	return m_childrenMap[sChildName];
 }
-bool UIObject::RemoveChild(const string& sChildName)
+bool UIObject::RemoveChild(const string& sChildName, bool bDestoryChild /*= true*/, UIObject** ppChildObj /*= nullptr*/)
 {
+	if (ppChildObj) { *ppChildObj = nullptr; }
 	map<string, UIObject*>::iterator it = m_childrenMap.find(sChildName);
 	if (m_childrenMap.end() == it) {
 		WARN("RemoveChild warning: child not found, name: {}", sChildName);
 		return false;
+	}
+	if (bDestoryChild) {
+		delete (it->second);
+	} else {
+		ATLASSERT(ppChildObj);
+		*ppChildObj = it->second;
 	}
 	m_childrenMap.erase(it);
 	return true;
@@ -433,9 +449,21 @@ const UIPos UIObject::GetPosObject()
 {
 	return m_pos;
 }
+inline bool  CmpByZorder::operator()(const PAIR& k1, const PAIR& k2)
+{
+	shared_ptr<const string> zorderA = k1.second->GetAttrValue("zorder");
+	shared_ptr<const string> zorderB = k2.second->GetAttrValue("zorder");
+	return atoi(zorderA->c_str()) < atoi(zorderB->c_str());
+}
 void UIObject::SortChildrenByZorder()
 {
-
+	if (m_pChildrenVec)
+	{
+		delete m_pChildrenVec;
+		m_pChildrenVec = nullptr;
+	}
+	m_pChildrenVec = new vector<PAIR>(m_childrenMap.begin(), m_childrenMap.end());
+	std::sort(m_pChildrenVec->begin(), m_pChildrenVec->end(), CmpByZorder());
 }
 LayoutObject::LayoutObject()
 {

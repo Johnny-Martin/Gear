@@ -36,6 +36,11 @@ HRESULT RenderManager::UnInit()
 #endif
 	return hr;
 }
+bool CalcIntersection(const RECT& rcInvalid, const UIPos& curObjWndPos)
+{
+	//IntersectRect();
+	return true;
+}
 
 #ifdef USE_D2D_RENDER_MODE
 HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid, UIObject* pTargetObject/*= nullptr*/)
@@ -46,17 +51,23 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 		ERR("Fatal error in RenderTarget::Draw， CreateDeviceDependentResources failed! hr: {}", hr);
 		return hr;
 	}
-	if (pTargetObject){
-		shared_ptr<const string> sAntialias = pTargetObject->GetAttrValue("antialias");
-		if (*sAntialias == "0"){
-			pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-		} else {
-			pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
-		}
+	shared_ptr<const string> sAntialias = pTargetObject->GetAttrValue("antialias");
+	if (*sAntialias == "0") {
+		pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
+	} else {
+		pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 	}
-	auto ret = OnDrawImpl(pRenderTarget, rcInvalid);
 
-	if (pTargetObject) {
+	UIPos curObjWndPos = pTargetObject->GetWndCoordinatePos();
+	auto bIntersection = CalcIntersection(rcInvalid, curObjWndPos);
+	auto spStrLimit = pTargetObject->GetAttrValue("limit");
+	auto ret = S_OK;
+
+	if (bIntersection) {
+		ret = OnDrawImpl(pRenderTarget, rcInvalid);
+	}
+
+	if (bIntersection || *spStrLimit == "0") {
 		for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
 			it->second->Draw(pRenderTarget, rcInvalid, it->second);
 		}
@@ -71,17 +82,22 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 #ifndef USE_D2D_RENDER_MODE
 HRESULT	RenderTarget::Draw(Graphics& graphics, const RECT& rcInvalid, UIObject* pTargetObject/*= nullptr*/)
 {
-	if (pTargetObject) {
-		auto spStrAntialias = pTargetObject->GetAttrValue("antialias");
-		if (*spStrAntialias == "0") {
-			graphics.SetSmoothingMode(SmoothingModeNone);
-		} else {
-			graphics.SetSmoothingMode(SmoothingModeAntiAlias);
-		}
+	auto spStrAntialias = pTargetObject->GetAttrValue("antialias");
+	if (*spStrAntialias == "0") {
+		graphics.SetSmoothingMode(SmoothingModeNone);
+	} else {
+		graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 	}
-	auto ret = OnDrawImpl(graphics, rcInvalid);
-
-	if (pTargetObject) {
+	//--//计算是否相交
+	UIPos curObjWndPos = pTargetObject->GetWndCoordinatePos();
+	auto bIntersection = CalcIntersection(rcInvalid, curObjWndPos);
+	auto spStrLimit	   = pTargetObject->GetAttrValue("limit");
+	auto ret = S_OK;
+	
+	if (bIntersection) {
+		ret = OnDrawImpl(graphics, rcInvalid);
+	}
+	if (bIntersection || *spStrLimit == "0") {
 		for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
 			it->second->Draw(graphics, rcInvalid, it->second);
 		}

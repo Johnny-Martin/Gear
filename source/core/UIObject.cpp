@@ -95,6 +95,7 @@ void UIObject::InitAttrMap()
 	ADD_ATTR("alpha",		"255")
 	ADD_ATTR("zorder",		"")
 	ADD_ATTR("antialias",	"1")
+	ADD_ATTR("limit",		"1")
 
 	//以下属性不建议在xml中直接使用(引入空格、Tab等字符，可能出异常)
 	ADD_ATTR("leftexp",		"")
@@ -122,17 +123,18 @@ void UIObject::InitEventMap()
 **************************************************************************/
 void UIObject::InitAttrValuePatternMap()
 {
-	ADD_ATTR_PATTERN("pos",			R_CHECK_POS);
-	ADD_ATTR_PATTERN("visible",		R_CHECK_BOOL);
-	ADD_ATTR_PATTERN("enable",		R_CHECK_BOOL);
-	ADD_ATTR_PATTERN("alpha",		R_CHECK_INT);
-	ADD_ATTR_PATTERN("zorder",		R_CHECK_INT);
-	ADD_ATTR_PATTERN("antialias",	R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("pos",			R_CHECK_POS)
+	ADD_ATTR_PATTERN("visible",		R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("enable",		R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("alpha",		R_CHECK_INT)
+	ADD_ATTR_PATTERN("zorder",		R_CHECK_INT)
+	ADD_ATTR_PATTERN("antialias", R_CHECK_BOOL)
+	ADD_ATTR_PATTERN("limit",	R_CHECK_BOOL)
 
-	ADD_ATTR_PATTERN("leftexp",		R_CHECK_LEFTEXP);
-	ADD_ATTR_PATTERN("topexp",		R_CHECK_TOPEXP);
-	ADD_ATTR_PATTERN("widthexp",	R_CHECK_WIDTHEXP);
-	ADD_ATTR_PATTERN("heightexp",	R_CHECK_HEIGHTEXP);
+	ADD_ATTR_PATTERN("leftexp",		R_CHECK_LEFTEXP)
+	ADD_ATTR_PATTERN("topexp",		R_CHECK_TOPEXP)
+	ADD_ATTR_PATTERN("widthexp",	R_CHECK_WIDTHEXP)
+	ADD_ATTR_PATTERN("heightexp",	R_CHECK_HEIGHTEXP)
 }
 /*************************************************************************
 *解析属性值

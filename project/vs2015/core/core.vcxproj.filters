@@ -42,9 +42,6 @@
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\XmlAgent.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\base\XmlUIElement.cpp">
       <Filter>base</Filter>
     </ClCompile>
@@ -93,6 +90,9 @@
     <ClCompile Include="..\..\..\source\core\entry\RenderManager.cpp">
       <Filter>entry</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\entry\XmlAgent.cpp">
+      <Filter>entry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -108,9 +108,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\UIError.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\core\XmlAgent.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h">
@@ -162,6 +159,9 @@
       <Filter>entry</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\entry\RenderManager.h">
+      <Filter>entry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\entry\XmlAgent.h">
       <Filter>entry</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,7 +19,7 @@
 #include "png.h"
 #include "spdlog.h"
 #include "tinyxml2.h"
-#include "XmlAgent.h"
+#include "entry/XmlAgent.h"
 
 using namespace std;
 using namespace tinyxml2;

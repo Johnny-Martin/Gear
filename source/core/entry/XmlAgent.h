@@ -5,10 +5,10 @@ Date:				2017.7.26
 Description:		xml代理，负责检验xml、生成对象列表
 *****************************************************/
 #pragma once
-#include "stdafx.h"
+#include "../stdafx.h"
 #include "tinyxml2.h"
-#include "UIError.h"
-#include "base/UIObject.h"
+#include "../UIError.h"
+#include "../base/UIObject.h"
 #include <string>
 
 using namespace tinyxml2;

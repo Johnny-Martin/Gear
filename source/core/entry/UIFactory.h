@@ -9,6 +9,7 @@ Description:		实现一个简单的C++反射
 #include "../stdafx.h"
 #include "../metaobject/UIWindow.h"
 #include "../metaobject/UIRectangle.h"
+#include "../metaobject/UIBitmap.h"
 #include "../resource/ResManager.h"
 #include "../resource/ResColor.h"
 

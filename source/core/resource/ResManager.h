@@ -8,7 +8,7 @@ Description:		界面图片资源管理器
 #include "../stdafx.h"
 //#include "pnginfo.h"
 #include "png.h"
-#include "../UIError.h"
+#include "../utils/UIError.h"
 #include "../base/UIObject.h"
 #include "../entry/RenderManager.h"
 #include "ResColor.h"

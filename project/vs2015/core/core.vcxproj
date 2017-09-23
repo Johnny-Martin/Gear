@@ -187,8 +187,8 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
-    <ClCompile Include="..\..\..\source\core\Util.cpp" />
     <ClCompile Include="..\..\..\source\core\utils\Log.cpp" />
+    <ClCompile Include="..\..\..\source\core\utils\Util.cpp" />
     <ClCompile Include="..\..\..\source\core\XmlAgent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -212,8 +212,8 @@
     <ClInclude Include="..\..\..\source\core\UIError.h" />
     <ClInclude Include="..\..\..\source\core\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
-    <ClInclude Include="..\..\..\source\core\Util.h" />
     <ClInclude Include="..\..\..\source\core\utils\Log.h" />
+    <ClInclude Include="..\..\..\source\core\utils\Util.h" />
     <ClInclude Include="..\..\..\source\core\XmlAgent.h" />
   </ItemGroup>
   <ItemGroup>

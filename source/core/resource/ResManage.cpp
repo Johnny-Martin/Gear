@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ResManager.h"
-#include "../Util.h"
 
 using namespace Gear::Res;
 

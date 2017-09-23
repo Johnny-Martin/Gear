@@ -92,26 +92,34 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 #else
 HRESULT	RenderTarget::Draw(Graphics& graphics, const RECT& rcInvalid, UIObject* pTargetObject/*= nullptr*/)
 {
+	auto visible = pTargetObject->GetAttrValue("visible");
+	if (*visible == "0") {
+		return S_OK;
+	}
+
+	UIPos curObjWndPos = pTargetObject->GetWndCoordinatePos();
+	auto bIntersection = CalcIntersection(rcInvalid, curObjWndPos);
+	auto spStrLimit = pTargetObject->GetAttrValue("limit");
+	//父节点不在绘制区域，且子节点被限定在父亲范围内，则不进行任何绘制
+	if (!bIntersection && *spStrLimit == "1") {
+		return S_OK;
+	}
+
 	auto spStrAntialias = pTargetObject->GetAttrValue("antialias");
 	if (*spStrAntialias == "0") {
 		graphics.SetSmoothingMode(SmoothingModeNone);
 	} else {
 		graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 	}
-	//--//计算是否相交
-	UIPos curObjWndPos = pTargetObject->GetWndCoordinatePos();
-	auto bIntersection = CalcIntersection(rcInvalid, curObjWndPos);
-	auto spStrLimit	   = pTargetObject->GetAttrValue("limit");
-	auto ret = S_OK;
 	
+	HRESULT hr = S_OK;
 	if (bIntersection) {
-		ret = OnDrawImpl(graphics, rcInvalid);
+		hr = OnDrawImpl(graphics, rcInvalid);
 	}
-	if (bIntersection || *spStrLimit == "0") {
-		for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
-			it->second->Draw(graphics, rcInvalid, it->second);
-		}
+
+	for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
+		it->second->Draw(graphics, rcInvalid, it->second);
 	}
-	return ret;
+	return hr;
 }
 #endif

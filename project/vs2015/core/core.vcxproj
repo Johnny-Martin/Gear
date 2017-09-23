@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\..\source\core\GearEnv.cpp" />
     <ClCompile Include="..\..\..\source\core\Log.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIBitmap.cpp" />
+    <ClCompile Include="..\..\..\source\core\metaobject\UIControl.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UICurve.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIRectangle.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIString.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="..\..\..\source\core\GearEnv.h" />
     <ClInclude Include="..\..\..\source\core\Log.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIBitmap.h" />
+    <ClInclude Include="..\..\..\source\core\metaobject\UIControl.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UICurve.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIRectangle.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIString.h" />

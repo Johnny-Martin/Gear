@@ -45,9 +45,6 @@
     <ClCompile Include="..\..\..\source\core\resource\ResManage.cpp">
       <Filter>resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\resource\UIResource.cpp">
-      <Filter>resource</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp">
       <Filter>resource</Filter>
     </ClCompile>
@@ -90,6 +87,9 @@
     <ClCompile Include="..\..\..\source\core\entry\UIFactory.cpp">
       <Filter>entry</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResText.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -105,9 +105,6 @@
       <Filter>resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResManager.h">
-      <Filter>resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\core\resource\UIResource.h">
       <Filter>resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResFont.h">
@@ -157,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\utils\UIError.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\ResText.h">
+      <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

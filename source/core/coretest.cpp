@@ -7,7 +7,6 @@
 #include <windows.h>
 #include <assert.h>
 
-#include "resource/UIResource.h"
 #include "resource/ResManager.h"
 #include "entry/GearEnv.h"
 //#include "..\luabridge\LuaBridge.h"

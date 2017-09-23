@@ -182,8 +182,11 @@
     <ClCompile Include="..\..\..\source\core\metaobject\UIWindow.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp" />
+    <ClCompile Include="..\..\..\source\core\resource\ResImage.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResManage.cpp" />
+    <ClCompile Include="..\..\..\source\core\resource\ResPicture.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResText.cpp" />
+    <ClCompile Include="..\..\..\source\core\resource\ResTexture.cpp" />
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -205,8 +208,11 @@
     <ClInclude Include="..\..\..\source\core\metaobject\UIWindow.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResFont.h" />
+    <ClInclude Include="..\..\..\source\core\resource\ResImage.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResManager.h" />
+    <ClInclude Include="..\..\..\source\core\resource\ResPicture.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResText.h" />
+    <ClInclude Include="..\..\..\source\core\resource\Restexture.h" />
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />
     <ClInclude Include="..\..\..\source\core\utils\Log.h" />

@@ -90,6 +90,15 @@
     <ClCompile Include="..\..\..\source\core\resource\ResText.cpp">
       <Filter>resource</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResPicture.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResImage.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResTexture.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -156,6 +165,15 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResText.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\ResPicture.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\ResImage.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\Restexture.h">
       <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>

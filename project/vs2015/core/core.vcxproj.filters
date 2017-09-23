@@ -19,6 +19,9 @@
     <Filter Include="base">
       <UniqueIdentifier>{05d7f9bf-c33b-4c2b-b182-5f4cb5d963a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="metaobject">
+      <UniqueIdentifier>{229179e6-88ae-4d43-8437-689799c03c62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp">
@@ -48,9 +51,6 @@
     <ClCompile Include="..\..\..\source\core\UIWindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\UIRectangle.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\RenderManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -71,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp">
       <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\metaobject\UIRectangle.cpp">
+      <Filter>metaobject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -104,9 +107,6 @@
     <ClInclude Include="..\..\..\source\core\UIWindow.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\UIRectangle.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\core\RenderManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -130,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResFont.h">
       <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\metaobject\UIRectangle.h">
+      <Filter>metaobject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

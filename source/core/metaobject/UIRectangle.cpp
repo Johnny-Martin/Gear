@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIRectangle.h"
-#include "resource/ResManager.h"
+#include "../resource/ResManager.h"
 
 using namespace Gear::Res;
 #ifdef USE_D2D_RENDER_MODE

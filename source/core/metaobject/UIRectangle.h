@@ -5,9 +5,9 @@ Date:				2017.9.17
 Description:		界面中的矩形图元
 *****************************************************/
 #pragma once
-#include "stdafx.h"
-#include "UIObject.h"
-#include "RenderManager.h"
+#include "../stdafx.h"
+#include "../UIObject.h"
+#include "../RenderManager.h"
 
 class UIRectangle :public UIObject
 {

@@ -48,9 +48,6 @@
     <ClCompile Include="..\..\..\source\core\Util.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\UIWindow.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\RenderManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -73,6 +70,18 @@
       <Filter>resource</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\metaobject\UIRectangle.cpp">
+      <Filter>metaobject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\metaobject\UIBitmap.cpp">
+      <Filter>metaobject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\metaobject\UICurve.cpp">
+      <Filter>metaobject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\metaobject\UIString.cpp">
+      <Filter>metaobject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\metaobject\UIWindow.cpp">
       <Filter>metaobject</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,9 +113,6 @@
     <ClInclude Include="..\..\..\source\core\Util.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\UIWindow.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\core\RenderManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -132,6 +138,18 @@
       <Filter>resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\metaobject\UIRectangle.h">
+      <Filter>metaobject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\metaobject\UIBitmap.h">
+      <Filter>metaobject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\metaobject\UICurve.h">
+      <Filter>metaobject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\metaobject\UIString.h">
+      <Filter>metaobject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\metaobject\UIWindow.h">
       <Filter>metaobject</Filter>
     </ClInclude>
   </ItemGroup>

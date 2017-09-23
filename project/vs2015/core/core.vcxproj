@@ -171,7 +171,11 @@
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
     <ClCompile Include="..\..\..\source\core\GearEnv.cpp" />
     <ClCompile Include="..\..\..\source\core\Log.cpp" />
+    <ClCompile Include="..\..\..\source\core\metaobject\UIBitmap.cpp" />
+    <ClCompile Include="..\..\..\source\core\metaobject\UICurve.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIRectangle.cpp" />
+    <ClCompile Include="..\..\..\source\core\metaobject\UIString.cpp" />
+    <ClCompile Include="..\..\..\source\core\metaobject\UIWindow.cpp" />
     <ClCompile Include="..\..\..\source\core\RenderManager.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp" />
@@ -183,7 +187,6 @@
     <ClCompile Include="..\..\..\source\core\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
     <ClCompile Include="..\..\..\source\core\UIObject.cpp" />
-    <ClCompile Include="..\..\..\source\core\UIWindow.cpp" />
     <ClCompile Include="..\..\..\source\core\Util.cpp" />
     <ClCompile Include="..\..\..\source\core\XmlAgent.cpp" />
   </ItemGroup>
@@ -191,7 +194,11 @@
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h" />
     <ClInclude Include="..\..\..\source\core\GearEnv.h" />
     <ClInclude Include="..\..\..\source\core\Log.h" />
+    <ClInclude Include="..\..\..\source\core\metaobject\UIBitmap.h" />
+    <ClInclude Include="..\..\..\source\core\metaobject\UICurve.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIRectangle.h" />
+    <ClInclude Include="..\..\..\source\core\metaobject\UIString.h" />
+    <ClInclude Include="..\..\..\source\core\metaobject\UIWindow.h" />
     <ClInclude Include="..\..\..\source\core\Micros.h" />
     <ClInclude Include="..\..\..\source\core\RenderManager.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h" />
@@ -204,7 +211,6 @@
     <ClInclude Include="..\..\..\source\core\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
     <ClInclude Include="..\..\..\source\core\UIObject.h" />
-    <ClInclude Include="..\..\..\source\core\UIWindow.h" />
     <ClInclude Include="..\..\..\source\core\Util.h" />
     <ClInclude Include="..\..\..\source\core\XmlAgent.h" />
   </ItemGroup>

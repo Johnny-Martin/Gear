@@ -6,8 +6,8 @@ Date:				2017.9.5
 Description:		UI´°¿Ú£¬ÖØ¹¹UIFrameWnd
 *****************************************************/
 
-#include "stdafx.h"
-#include "UIObject.h"
+#include "../stdafx.h"
+#include "../UIObject.h"
 #include <list>
 #include <xstring>
 

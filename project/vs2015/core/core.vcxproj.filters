@@ -36,9 +36,6 @@
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\UIFactory.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -93,15 +90,15 @@
     <ClCompile Include="..\..\..\source\core\entry\XmlAgent.cpp">
       <Filter>entry</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\entry\UIFactory.cpp">
+      <Filter>entry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\core\UIFactory.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h">
@@ -162,6 +159,9 @@
       <Filter>entry</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\entry\XmlAgent.h">
+      <Filter>entry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\entry\UIFactory.h">
       <Filter>entry</Filter>
     </ClInclude>
   </ItemGroup>

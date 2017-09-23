@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIObject.h"
-#include "../UIFactory.h"
+#include "../entry/UIFactory.h"
 #include <sstream>
 
 //不可识别的字符转义序列（正则表达式中的\s）

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "XmlAgent.h"
-#include "../UIFactory.h"
+#include "UIFactory.h"
 #include "../base/UIObject.h"
 #include "../entry/GearEnv.h"
 

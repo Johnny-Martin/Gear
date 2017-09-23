@@ -172,6 +172,7 @@
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
     <ClCompile Include="..\..\..\source\core\entry\GearEnv.cpp" />
     <ClCompile Include="..\..\..\source\core\entry\RenderManager.cpp" />
+    <ClCompile Include="..\..\..\source\core\entry\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\entry\XmlAgent.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIBitmap.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIControl.cpp" />
@@ -186,7 +187,6 @@
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
     <ClCompile Include="..\..\..\source\core\utils\Log.cpp" />
     <ClCompile Include="..\..\..\source\core\utils\Util.cpp" />
@@ -196,6 +196,7 @@
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h" />
     <ClInclude Include="..\..\..\source\core\entry\GearEnv.h" />
     <ClInclude Include="..\..\..\source\core\entry\RenderManager.h" />
+    <ClInclude Include="..\..\..\source\core\entry\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\entry\XmlAgent.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIBitmap.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIControl.h" />
@@ -210,7 +211,6 @@
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />
     <ClInclude Include="..\..\..\source\core\UIError.h" />
-    <ClInclude Include="..\..\..\source\core\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
     <ClInclude Include="..\..\..\source\core\utils\Log.h" />
     <ClInclude Include="..\..\..\source\core\utils\Micros.h" />

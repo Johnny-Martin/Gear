@@ -300,11 +300,10 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 #else
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(&ps);
-	RECT rect;
 	Graphics graphics(hdc);
 	for (auto it=m_pVecChildrenPair->begin(); it!=m_pVecChildrenPair->end(); ++it)
 	{
-		it->second->Draw(graphics, rect, it->second);
+		it->second->Draw(graphics, ps.rcPaint, it->second);
 	}
 	EndPaint(&ps);
 #endif

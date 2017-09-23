@@ -15,11 +15,12 @@ namespace Gear {
 
 struct UIPos
 {
-	UIPos() :left(0), top(0), width(0), height(0) {};
+	UIPos();
 	int			 left;
 	int			 top;
 	unsigned int width;
 	unsigned int height;
+	RECT GetWndRECT() const;
 };
 class UIEvent
 {

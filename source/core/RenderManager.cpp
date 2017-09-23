@@ -38,8 +38,11 @@ HRESULT RenderManager::UnInit()
 }
 bool CalcIntersection(const RECT& rcInvalid, const UIPos& curObjWndPos)
 {
-	//IntersectRect();
-	return true;
+	RECT curObjWndRECT = curObjWndPos.GetWndRECT();
+	RECT retRc{0};
+	IntersectRect(&retRc, &rcInvalid, &curObjWndRECT);
+
+	return (retRc.right > retRc.left) && (retRc.bottom > retRc.top);
 }
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
@@ -47,6 +50,19 @@ bool CalcIntersection(const RECT& rcInvalid, const UIPos& curObjWndPos)
 HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid, UIObject* pTargetObject/*= nullptr*/)
 {
 	HRESULT hr = S_OK;
+	auto visible = pTargetObject->GetAttrValue("visible");
+	if (*visible == "0") { 
+		return S_OK; 
+	}
+
+	UIPos curObjWndPos = pTargetObject->GetWndCoordinatePos();
+	auto bIntersection = CalcIntersection(rcInvalid, curObjWndPos);
+	auto spStrLimit = pTargetObject->GetAttrValue("limit");
+	//父节点不在绘制区域，且子节点被限定在父亲范围内，则不进行任何绘制
+	if (!bIntersection && *spStrLimit == "1") {
+		return S_OK;
+	}
+
 	hr = CreateDeviceDependentResources(pRenderTarget);
 	if (FAILED(hr)){
 		ERR("Fatal error in RenderTarget::Draw， CreateDeviceDependentResources failed! hr: {}", hr);
@@ -59,21 +75,15 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 		pRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 	}
 
-	UIPos curObjWndPos = pTargetObject->GetWndCoordinatePos();
-	auto bIntersection = CalcIntersection(rcInvalid, curObjWndPos);
-	auto spStrLimit = pTargetObject->GetAttrValue("limit");
-	auto ret = S_OK;
-
 	if (bIntersection) {
-		ret = OnDrawImpl(pRenderTarget, rcInvalid);
+		hr = OnDrawImpl(pRenderTarget, rcInvalid);
 	}
-
-	if (bIntersection || *spStrLimit == "0") {
-		for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
-			it->second->Draw(pRenderTarget, rcInvalid, it->second);
-		}
+	
+	for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
+		it->second->Draw(pRenderTarget, rcInvalid, it->second);
 	}
-	return ret;
+	
+	return hr;
 
 	//	窗口内在OnPaint中hr = m_pRenderTarget->EndDraw();后，需要判断是否丢弃设备相关资源
 	//	DiscardDeviceDependentResources();

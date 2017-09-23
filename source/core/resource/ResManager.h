@@ -10,7 +10,7 @@ Description:		界面图片资源管理器
 #include "png.h"
 #include "../UIError.h"
 #include "../base/UIObject.h"
-#include "../RenderManager.h"
+#include "../entry/RenderManager.h"
 #include "ResColor.h"
 
 using namespace std;

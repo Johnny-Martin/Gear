@@ -2,7 +2,7 @@
 #include "../stdafx.h"
 #include "../utils/Micros.h"
 #include "XmlUIElement.h"
-#include "../RenderManager.h"
+#include "../entry/RenderManager.h"
 
 using namespace std;
 using namespace tinyxml2;

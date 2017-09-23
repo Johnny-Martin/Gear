@@ -5,7 +5,7 @@ Date:				2017.9.17
 Description:		äÖÈ¾²ßÂÔ¹ÜÀíÆ÷
 *****************************************************/
 #pragma once
-#include "stdafx.h"
+#include "../stdafx.h"
 
 class RenderManager
 {

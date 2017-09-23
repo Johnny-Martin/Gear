@@ -7,7 +7,7 @@ Description:		界面中的矩形图元
 #pragma once
 #include "../stdafx.h"
 #include "../base/UIObject.h"
-#include "../RenderManager.h"
+#include "../entry/RenderManager.h"
 
 class UIRectangle :public UIObject
 {

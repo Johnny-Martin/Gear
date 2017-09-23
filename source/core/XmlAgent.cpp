@@ -3,7 +3,7 @@
 #include "tinyxml2.h"
 #include "UIFactory.h"
 #include "base/UIObject.h"
-#include "GearEnv.h"
+#include "entry/GearEnv.h"
 
 using namespace std;
 using namespace Gear::Xml;

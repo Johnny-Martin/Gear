@@ -10,7 +10,7 @@
 #include "resource/UIResource.h"
 #include "resource/ResManager.h"
 #include "UIFrameWnd.h"
-#include "GearEnv.h"
+#include "entry/GearEnv.h"
 //#include "..\luabridge\LuaBridge.h"
 //#include "zlib.h"
 

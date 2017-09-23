@@ -170,7 +170,7 @@
     <ClCompile Include="..\..\..\source\core\base\UIObject.cpp" />
     <ClCompile Include="..\..\..\source\core\base\XmlUIElement.cpp" />
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
-    <ClCompile Include="..\..\..\source\core\GearEnv.cpp" />
+    <ClCompile Include="..\..\..\source\core\entry\GearEnv.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIBitmap.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIControl.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UICurve.cpp" />
@@ -194,7 +194,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\base\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h" />
-    <ClInclude Include="..\..\..\source\core\GearEnv.h" />
+    <ClInclude Include="..\..\..\source\core\entry\GearEnv.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIBitmap.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIControl.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UICurve.h" />

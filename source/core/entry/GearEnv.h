@@ -5,8 +5,8 @@ Date:				2017.9.22
 Description:		环境初始化、根对象生命周期管理
 *****************************************************/
 #pragma once
-#include "stdafx.h"
-#include "base/UIObject.h"
+#include "../stdafx.h"
+#include "../base/UIObject.h"
 
 class GearEnv
 {

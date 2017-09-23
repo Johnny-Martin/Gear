@@ -25,6 +25,9 @@
     <Filter Include="utils">
       <UniqueIdentifier>{81580757-e506-4ed2-88e0-4bc3cb863ec7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="entry">
+      <UniqueIdentifier>{b6c483a4-2e79-4769-89eb-3cc1beddafa4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp">
@@ -57,9 +60,6 @@
     <ClCompile Include="..\..\..\source\core\resource\UIResource.cpp">
       <Filter>resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\GearEnv.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp">
       <Filter>resource</Filter>
     </ClCompile>
@@ -89,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\utils\Util.cpp">
       <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\entry\GearEnv.cpp">
+      <Filter>entry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +128,6 @@
     <ClInclude Include="..\..\..\source\core\resource\UIResource.h">
       <Filter>resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\GearEnv.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResFont.h">
       <Filter>resource</Filter>
     </ClInclude>
@@ -160,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\utils\Micros.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\entry\GearEnv.h">
+      <Filter>entry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

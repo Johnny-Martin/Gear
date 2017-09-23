@@ -36,9 +36,6 @@
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\UIObject.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\XmlAgent.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -84,6 +81,9 @@
     <ClCompile Include="..\..\..\source\core\metaobject\UIWindow.cpp">
       <Filter>metaobject</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\base\UIObject.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -96,9 +96,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\core\UIObject.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\UIError.h">
@@ -151,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\metaobject\UIWindow.h">
       <Filter>metaobject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\base\UIObject.h">
+      <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

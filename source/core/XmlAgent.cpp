@@ -2,7 +2,7 @@
 #include "XmlAgent.h"
 #include "tinyxml2.h"
 #include "UIFactory.h"
-#include "UIObject.h"
+#include "base/UIObject.h"
 #include "Log.h"
 #include "GearEnv.h"
 

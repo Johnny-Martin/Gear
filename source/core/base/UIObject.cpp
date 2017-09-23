@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UIObject.h"
-#include "UIFactory.h"
+#include "../UIFactory.h"
 #include <sstream>
-#include "Util.h"
+#include "../Util.h"
 
 //不可识别的字符转义序列（正则表达式中的\s）
 #pragma warning(disable:4129)

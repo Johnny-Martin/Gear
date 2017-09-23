@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\source\core\base\UIObject.cpp" />
     <ClCompile Include="..\..\..\source\core\base\XmlUIElement.cpp" />
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
     <ClCompile Include="..\..\..\source\core\GearEnv.cpp" />
@@ -186,11 +187,11 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
-    <ClCompile Include="..\..\..\source\core\UIObject.cpp" />
     <ClCompile Include="..\..\..\source\core\Util.cpp" />
     <ClCompile Include="..\..\..\source\core\XmlAgent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\source\core\base\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h" />
     <ClInclude Include="..\..\..\source\core\GearEnv.h" />
     <ClInclude Include="..\..\..\source\core\Log.h" />
@@ -210,7 +211,6 @@
     <ClInclude Include="..\..\..\source\core\UIError.h" />
     <ClInclude Include="..\..\..\source\core\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
-    <ClInclude Include="..\..\..\source\core\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\Util.h" />
     <ClInclude Include="..\..\..\source\core\XmlAgent.h" />
   </ItemGroup>

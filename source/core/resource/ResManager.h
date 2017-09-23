@@ -10,7 +10,7 @@ Description:		界面图片资源管理器
 #include "png.h"
 #include "../Log.h"
 #include "../UIError.h"
-#include "../UIObject.h"
+#include "../base/UIObject.h"
 #include "../RenderManager.h"
 #include "ResColor.h"
 

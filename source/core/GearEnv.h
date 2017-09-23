@@ -6,7 +6,7 @@ Description:		环境初始化、根对象生命周期管理
 *****************************************************/
 #pragma once
 #include "stdafx.h"
-#include "UIObject.h"
+#include "base/UIObject.h"
 
 class GearEnv
 {

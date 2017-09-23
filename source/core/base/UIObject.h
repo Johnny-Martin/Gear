@@ -1,8 +1,8 @@
 #pragma once
-#include "stdafx.h"
-#include "Micros.h"
-#include "base/XmlUIElement.h"
-#include "RenderManager.h"
+#include "../stdafx.h"
+#include "../Micros.h"
+#include "XmlUIElement.h"
+#include "../RenderManager.h"
 
 using namespace std;
 using namespace tinyxml2;

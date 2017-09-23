@@ -2,7 +2,7 @@
 #define UIFRAMEWND_H
 
 #include "stdafx.h"
-#include "UIObject.h"
+#include "base/UIObject.h"
 #include <list>
 #include <xstring>
 

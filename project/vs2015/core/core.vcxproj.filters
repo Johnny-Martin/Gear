@@ -116,9 +116,6 @@
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\Micros.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h">
       <Filter>resource</Filter>
     </ClInclude>
@@ -159,6 +156,9 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\utils\Util.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\utils\Micros.h">
       <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>

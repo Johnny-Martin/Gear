@@ -201,7 +201,6 @@
     <ClInclude Include="..\..\..\source\core\metaobject\UIRectangle.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIString.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIWindow.h" />
-    <ClInclude Include="..\..\..\source\core\Micros.h" />
     <ClInclude Include="..\..\..\source\core\RenderManager.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResFont.h" />
@@ -213,6 +212,7 @@
     <ClInclude Include="..\..\..\source\core\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
     <ClInclude Include="..\..\..\source\core\utils\Log.h" />
+    <ClInclude Include="..\..\..\source\core\utils\Micros.h" />
     <ClInclude Include="..\..\..\source\core\utils\Util.h" />
     <ClInclude Include="..\..\..\source\core\XmlAgent.h" />
   </ItemGroup>

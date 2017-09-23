@@ -18,7 +18,6 @@
 //#define PNG_VERSION_INFO_ONLY
 #include "png.h"
 #include "spdlog.h"
-#include "Log.h"
 #include "tinyxml2.h"
 #include "XmlAgent.h"
 

@@ -171,7 +171,6 @@
     <ClCompile Include="..\..\..\source\core\base\XmlUIElement.cpp" />
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
     <ClCompile Include="..\..\..\source\core\GearEnv.cpp" />
-    <ClCompile Include="..\..\..\source\core\Log.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIBitmap.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIControl.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UICurve.cpp" />
@@ -189,13 +188,13 @@
     <ClCompile Include="..\..\..\source\core\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
     <ClCompile Include="..\..\..\source\core\Util.cpp" />
+    <ClCompile Include="..\..\..\source\core\utils\Log.cpp" />
     <ClCompile Include="..\..\..\source\core\XmlAgent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\base\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h" />
     <ClInclude Include="..\..\..\source\core\GearEnv.h" />
-    <ClInclude Include="..\..\..\source\core\Log.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIBitmap.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIControl.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UICurve.h" />
@@ -214,6 +213,7 @@
     <ClInclude Include="..\..\..\source\core\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
     <ClInclude Include="..\..\..\source\core\Util.h" />
+    <ClInclude Include="..\..\..\source\core\utils\Log.h" />
     <ClInclude Include="..\..\..\source\core\XmlAgent.h" />
   </ItemGroup>
   <ItemGroup>

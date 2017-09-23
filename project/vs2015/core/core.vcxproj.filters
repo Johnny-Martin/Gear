@@ -22,6 +22,9 @@
     <Filter Include="metaobject">
       <UniqueIdentifier>{229179e6-88ae-4d43-8437-689799c03c62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{81580757-e506-4ed2-88e0-4bc3cb863ec7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp">
@@ -37,9 +40,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\XmlAgent.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\core\Log.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\Util.cpp">
@@ -87,6 +87,9 @@
     <ClCompile Include="..\..\..\source\core\metaobject\UIControl.cpp">
       <Filter>metaobject</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\utils\Log.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -105,9 +108,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\XmlAgent.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\core\Log.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\Util.h">
@@ -157,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\metaobject\UIControl.h">
       <Filter>metaobject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\utils\Log.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

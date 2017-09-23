@@ -3,7 +3,6 @@
 #include "tinyxml2.h"
 #include "UIFactory.h"
 #include "base/UIObject.h"
-#include "Log.h"
 #include "GearEnv.h"
 
 using namespace std;

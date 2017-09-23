@@ -187,7 +187,6 @@
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp" />
     <ClCompile Include="..\..\..\source\core\utils\Log.cpp" />
     <ClCompile Include="..\..\..\source\core\utils\Util.cpp" />
   </ItemGroup>
@@ -210,7 +209,6 @@
     <ClInclude Include="..\..\..\source\core\resource\UIResource.h" />
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />
-    <ClInclude Include="..\..\..\source\core\UIFrameWnd.h" />
     <ClInclude Include="..\..\..\source\core\utils\Log.h" />
     <ClInclude Include="..\..\..\source\core\utils\Micros.h" />
     <ClInclude Include="..\..\..\source\core\utils\UIError.h" />

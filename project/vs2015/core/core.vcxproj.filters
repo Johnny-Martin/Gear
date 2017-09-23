@@ -36,9 +36,6 @@
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\UIFrameWnd.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\base\XmlUIElement.cpp">
       <Filter>base</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\core\UIFrameWnd.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h">

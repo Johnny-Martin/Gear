@@ -69,6 +69,9 @@
     <ClCompile Include="..\..\..\source\core\GearEnv.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -124,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\GearEnv.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\ResFont.h">
+      <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

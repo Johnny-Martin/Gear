@@ -17,6 +17,18 @@ bool XmlUIElement::Init(const XMLElement* pElement)
 	m_bInit = InitImpl(pElement);
 	return m_bInit;
 }
+bool XmlUIElement::InitImpl(const XMLElement* pElement)
+{
+	//±£´æelementµÄÊôÐÔ
+	auto pAttr = pElement->FirstAttribute();
+	while (pAttr) {
+		auto attrName = pAttr->Name();
+		SetAttrValue(attrName, pAttr->Value());
+		pAttr = pAttr->Next();
+	}
+
+	return true;
+}
 void XmlUIElement::InitAttrMap()
 {
 	ADD_ATTR("id", "")

@@ -15,7 +15,7 @@ protected:
 	void										InitAttrValueParserMap();
 public:
 	virtual bool								Init(const XMLElement* pElement);
-	virtual bool								InitImpl(const XMLElement* pElement) = 0;
+	virtual bool								InitImpl(const XMLElement* pElement);
 	shared_ptr<const string>					GetObjectID();
 	shared_ptr<const string>					GetObjectName();
 	bool										CheckAttrName(const string& sAttrName);

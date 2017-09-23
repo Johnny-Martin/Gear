@@ -26,18 +26,6 @@ ResColor::ResColor(const string& sColorHexValue) : m_R(0), m_G(0), m_B(0), m_A(2
 	SetAttrValue("id", CreateGUIDAsResID());
 	SetAttrValue("value", sColorHexValue);
 }
-bool ResColor::InitImpl(const XMLElement* pElement)
-{
-	//±£´æelementµÄÊôÐÔ
-	auto pAttr = pElement->FirstAttribute();
-	while (pAttr) {
-		auto attrName = pAttr->Name();
-		SetAttrValue(attrName, pAttr->Value());
-		pAttr = pAttr->Next();
-	}
-
-	return true;
-}
 
 void ResColor::InitAttrMap()
 {

@@ -355,7 +355,7 @@ LRESULT UIWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 }
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-HRESULT	UIWindow::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, const RECT* rcInvalidPtr/* = nullptr*/)
+HRESULT	UIWindow::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
 {
 	return S_OK;
 }

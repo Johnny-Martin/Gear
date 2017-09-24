@@ -34,6 +34,9 @@
 ///////常用函数////////
 #include "utils/Util.h"
 
+///////宏定义////////
+#include "utils/Micros.h"
+#include "utils/UIError.h"
 
 #define RGBA(r,g,b,a)  ((COLORREF) (((DWORD)(BYTE)(a))<<24 | (RGB(r,g,b))))
 

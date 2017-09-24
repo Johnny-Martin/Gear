@@ -38,6 +38,8 @@ public:
 									ResManager(LPWSTR szResPath);
 									~ResManager();
 	RESERROR						AddResPath(const wstring& cwstrPath);
+	wstring							GetResFilePathByName(const wstring& cwstrName);
+	wstring							GetResFilePathByName(const string& cstrName);
 	static ResManager&				GetInstance();
 	//主要接口
 	ResPicture*						GetResObject(const string& strResID);

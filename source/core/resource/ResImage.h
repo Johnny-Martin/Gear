@@ -1,20 +1,31 @@
 #pragma once
 #include "../stdafx.h"
-#include "png.h"
+#include "../entry/RenderManager.h"
+#include "../base/XmlUIElement.h"
 #include "ResPicture.h"
+#include "png.h"
 
 namespace Gear {
 	namespace Res {
 
-class ResImage :public ResPicture
+class ResImage :public XmlUIElement, public ResPicture
 {
 public:
-	ResImage(const wstring& wstrFilePath);
+	ResImage();
+	ResImage(const string& strImageDesc);
+	ResImage(const wstring& strImageDesc);
 #ifdef USE_D2D_RENDER_MODE
-	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
+public:
+	virtual ID2D1Bitmap*						GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height);
 #else
-	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
+public:
+	//virtual HRESULT								OnDrawImpl(Graphics& graphics, const RECT& rcInvalid);
+	virtual Gdiplus::Bitmap*					GetGDIBitmap(unsigned int width, unsigned int height);
 #endif
+protected:
+	void										InitAttrMap();
+	void										InitAttrValuePatternMap();
+	void										InitAttrValueParserMap();
 };
 
 	}//end of namespace Res

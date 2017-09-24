@@ -79,6 +79,7 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 		hr = OnDrawImpl(pRenderTarget, rcInvalid);
 	}
 	
+	ATLASSERT(pTargetObject->m_pVecChildrenPair != nullptr);
 	for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {
 		it->second->Draw(pRenderTarget, rcInvalid, it->second);
 	}

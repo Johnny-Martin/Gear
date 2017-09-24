@@ -476,6 +476,7 @@ void UIObject::SortChildrenByZorder()
 		m_pVecChildrenPair = nullptr;
 	}
 	m_pVecChildrenPair = new vector<PAIR>(m_childrenMap.begin(), m_childrenMap.end());
+	ATLASSERT(m_pVecChildrenPair != nullptr);
 	std::sort(m_pVecChildrenPair->begin(), m_pVecChildrenPair->end(), CmpByZorder());
 }
 UIPos UIObject::GetWndCoordinatePos()

@@ -8,15 +8,15 @@ Description:		界面图片资源管理
 #include "../stdafx.h"
 #include "../base/UIObject.h"
 #include "../resource/ResPicture.h"
+#include "../entry/RenderManager.h"
 
-class UIBitmap :public UIObject, public Gear::Res::ResPicture
+class UIBitmap :public UIObject
 {
 public:
 	UIBitmap();
 #ifdef USE_D2D_RENDER_MODE
 public:
 	virtual HRESULT					OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid);
-	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height);
 protected:
 	virtual HRESULT					CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
 	virtual HRESULT					DiscardDeviceDependentResources();
@@ -31,5 +31,5 @@ protected:
 	void							InitAttrValuePatternMap();
 	void							InitAttrValueParserMap();
 private:
-	ResPicture*						m_picObject;
+	Gear::Res::ResPicture*			m_picObject;
 };

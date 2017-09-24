@@ -5,7 +5,6 @@ using namespace Gear::Res;
 
 ResPicture::ResPicture() :
 	m_purpleLineColor(RGB(127, 0, 127)),
-	m_bPngFileLoaded(false),
 	m_wstrFilePath(L""),
 	m_pngWidth(0),
 	m_pngHeight(0),
@@ -15,6 +14,9 @@ ResPicture::ResPicture() :
 	m_rowPointers(nullptr),
 	m_pngStructPtr(nullptr),
 	m_pngInfoPtr(nullptr)
+#ifdef USE_D2D_RENDER_MODE
+	,m_d2d1BitMapPtr(nullptr)
+#endif
 {
 
 }
@@ -34,20 +36,22 @@ ResPicture::~ResPicture()
 	if (m_pngStructPtr && m_pngInfoPtr)
 		png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, NULL);
 }
-ResPicture::ResPicture(const wstring& wstrFilePath) :
-	m_purpleLineColor(RGB(127, 0, 127)),
-	m_bPngFileLoaded(false),
-	m_wstrFilePath(L""),
-	m_pngWidth(0),
-	m_pngHeight(0),
-	m_colorType(0),
-	m_bitDepth(0),
-	m_rowPointers(nullptr),
-	m_pngStructPtr(nullptr),
-	m_pngInfoPtr(nullptr)
+ResPicture::ResPicture(const wstring& wstrFilePath) 
+	:m_purpleLineColor(RGB(127, 0, 127))
+	,m_wstrFilePath(L"")
+	,m_pngWidth(0)
+	,m_pngHeight(0)
+	,m_colorType(0)
+	,m_bitDepth(0)
+	,m_rowPointers(nullptr)
+	,m_pngStructPtr(nullptr)
+	,m_pngInfoPtr(nullptr)
+#ifdef USE_D2D_RENDER_MODE
+	, m_d2d1BitMapPtr(nullptr)
+#endif
 {
 	m_wstrFilePath = wstrFilePath;
-	ReadPngFile(wstrFilePath);
+	//ReadPngFile(wstrFilePath);
 }
 bool ResPicture::ReadPngFile(const wstring& wstrFilePath)
 {
@@ -214,3 +218,22 @@ RESERROR ResPicture::DetectHorizontalLine()
 	}
 	return RES_SUCCESS;
 }
+///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
+#ifdef USE_D2D_RENDER_MODE
+HRESULT ResPicture::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
+{
+	return S_OK;
+}	    
+HRESULT ResPicture::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
+{
+
+	return S_OK;
+}	    
+HRESULT ResPicture::DiscardDeviceDependentResources()
+{
+	return S_OK;
+}
+/////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
+#else
+
+#endif

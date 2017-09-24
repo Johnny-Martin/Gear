@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "../utils/Micros.h"
-
 #include "XmlUIElement.h"
 
 //不可识别的字符转义序列（正则表达式中的\s）

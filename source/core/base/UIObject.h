@@ -1,6 +1,5 @@
 #pragma once
 #include "../stdafx.h"
-#include "../utils/Micros.h"
 #include "XmlUIElement.h"
 #include "../entry/RenderManager.h"
 

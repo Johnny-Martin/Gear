@@ -36,12 +36,12 @@ RESERROR ResManager::AddResPath(const wstring& cwstrPath)
 
 	//传的是相对路径，则要将相对路径做处理，以exe目录为基础，转成绝对路径
 	if (wstrPath.find(L":") == wstring::npos) {
-		TCHAR szFilePath[MAX_PATH + 1] = { 0 };
-		GetModuleFileName(NULL, szFilePath, MAX_PATH);
-		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; //从文件名处截断，只获得路径字串
+		TCHAR wszFilePath[MAX_PATH + 1] = { 0 };
+		GetModuleFileName(NULL, wszFilePath, MAX_PATH);
+		(_tcsrchr(wszFilePath, _T('\\')))[1] = 0; //从文件名处截断，只获得路径字串
 		
-		::PathAppend(szFilePath, wstrPath.c_str());
-		wstrPath = wstring(szFilePath);
+		::PathAppend(wszFilePath, wstrPath.c_str());
+		wstrPath = wstring(wszFilePath);
 	}
 	//if (!::PathFileExists(wstrPath.c_str())) {
 	//	ERR("AddResPath error: path file not exisit, wstrPath: {}", string(wstrPath.begin(), wstrPath.end()));
@@ -55,7 +55,22 @@ RESERROR ResManager::AddResPath(const wstring& cwstrPath)
 	m_resPathVec.push_back(wstrPath);
 	return RES_SUCCESS;
 }
-
+wstring ResManager::GetResFilePathByName(const wstring& cwstrName)
+{
+	for (auto it = m_resPathVec.begin(); it != m_resPathVec.end(); ++it) {
+		TCHAR wszFilePath[MAX_PATH + 1] = { 0 };
+		::PathAppend(wszFilePath, cwstrName.c_str());
+		if (::PathFileExists(wszFilePath)) {
+			return wstring(wszFilePath);
+		}
+	}
+	return L"";
+}
+wstring ResManager::GetResFilePathByName(const string& cstrName)
+{
+	wstring wstrName = StringToWString(cstrName);;
+	return GetResFilePathByName(wstrName);
+}
 ResManager& ResManager::GetInstance()
 {
 	static ResManager resMgr{};
@@ -150,10 +165,10 @@ bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strR
 		ResPicture* pResPic = new ResImage(wstrFilePath);
 		m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_TEXTURE) {
-		ResPicture* pResPic = new ResTexture(wstrFilePath);
-		m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
+		//ResPicture* pResPic = new ResTexture(wstrFilePath);
+		//m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_IMAGELIST) {
-		PicListDivider divider(wstrFilePath);
+		//PicListDivider divider(wstrFilePath);
 		//vector<ResPicture*> vec = divider.DividePic();
 		//for (auto it = vec.begin(); it != vec.end(); ++it) {
 			//初始化资源
@@ -161,7 +176,7 @@ bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strR
 			//将资源存入m_resMap
 		//}
 	} else if (resType == RES_TEXTURELIST) {
-		PicListDivider divider(wstrFilePath);
+		//PicListDivider divider(wstrFilePath);
 		//vector<ResPicture*> vec = divider.DividePic();
 		///for (auto it = vec.begin(); it != vec.end(); ++it) {
 			//初始化资源

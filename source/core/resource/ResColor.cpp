@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../utils/Micros.h"
 #include "ResColor.h"
 
 #ifdef USE_D2D_RENDER_MODE

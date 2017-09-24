@@ -50,22 +50,23 @@ void UIBitmap::InitAttrValueParserMap()
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-ID2D1Bitmap* UIBitmap::GetD2D1Bitmap(unsigned int width, unsigned int height)
-{
-	return nullptr;
-}
 HRESULT	UIBitmap::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
 {
-	return S_OK;
+	HRESULT hr = S_OK;
+
+	return hr;
 }
 HRESULT	UIBitmap::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
 {
+	HRESULT hr = S_OK;
 
-	return S_OK;
+	return hr;
 }
-HRESULT	UIBitmap::DiscardDeviceDependentResources()
+HRESULT	UIBitmap::DiscardDeviceDependentResources() 
 {
-	return S_OK;
+	HRESULT hr = S_OK;
+
+	return hr;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else

@@ -37,7 +37,7 @@ void ResImage::InitAttrValueParserMap()
 }
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-ID2D1Bitmap* ResImage::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height)
+ID2D1Bitmap* ResImage::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
 	if (m_d2d1BitmapPtr) { return m_d2d1BitmapPtr; }
 	//尚未加载png
@@ -51,8 +51,12 @@ ID2D1Bitmap* ResImage::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned 
 	D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
 	D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
 	HRESULT hr = pRenderTarget->CreateBitmap(size, (void*)m_rowPointers[0], m_pngWidth*m_colorChannels, properties, &m_d2d1BitmapPtr);
-
-	return SUCCEEDED(hr) ? m_d2d1BitmapPtr : nullptr;
+	if (SUCCEEDED(hr)){
+		retWidth  = m_pngWidth;
+		retHeight = m_pngHeight;
+		return m_d2d1BitmapPtr;
+	}
+	return nullptr;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else

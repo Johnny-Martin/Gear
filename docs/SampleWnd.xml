@@ -61,6 +61,6 @@
 		</rectangle>
 	</window>
 	<window id="TestLayout3" pos="400, 300, 100, 100" title="测试布局对象">
-		<bitmap id="wnd.content.icon" pos="0, 0, 44, 44" res="image.settingIcon" />
+		<bitmap id="wnd.content.icon" pos="0, 0, 100, 100" res="image.settingIcon" stretch="0"/>
 		<!-- <bitmap id="wnd.content.icon2" pos="15, 15, 15, 15" res="imagelist.frameBkg.3" /> -->
 	</window>

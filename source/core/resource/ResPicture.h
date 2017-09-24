@@ -13,7 +13,7 @@ public:
 	ResPicture(const wstring& wstrFilePath);
 #ifdef USE_D2D_RENDER_MODE
 public:
-	virtual ID2D1Bitmap*			GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height) = 0;
+	virtual ID2D1Bitmap*			GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight) = 0;
 	virtual HRESULT					DiscardD2D1Bitmap();
 protected:
 	ID2D1Bitmap*					m_d2d1BitmapPtr;

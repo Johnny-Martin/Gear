@@ -13,8 +13,8 @@ UIBitmap::UIBitmap() :m_picObject(nullptr)
 }
 void UIBitmap::InitAttrMap()
 {
-	ADD_ATTR("fill", "1")
-		ADD_ATTR("res", "")
+	ADD_ATTR("stretch", "1")
+	ADD_ATTR("res", "")
 }
 
 void UIBitmap::InitEventMap()
@@ -41,7 +41,7 @@ bool UIBitmap::InitImpl(const XMLElement* pElement)
 **************************************************************************/
 void UIBitmap::InitAttrValuePatternMap()
 {
-	ADD_ATTR_PATTERN("fill", R_CHECK_BOOL);
+	ADD_ATTR_PATTERN("stretch", R_CHECK_BOOL);
 }
 void UIBitmap::InitAttrValueParserMap()
 {
@@ -61,12 +61,23 @@ HRESULT	UIBitmap::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F
 		ATLASSERT(FALSE);
 		return S_FALSE;
 	}
-	ID2D1Bitmap* bitmapPtr = m_picObject->GetD2D1Bitmap(pRenderTarget,m_pos.width, m_pos.height);
+	unsigned int realWidth{ 0 };
+	unsigned int realHeight{ 0 };
+	ID2D1Bitmap* bitmapPtr = m_picObject->GetD2D1Bitmap(pRenderTarget,m_pos.width, m_pos.height, realWidth, realHeight);
 	if (!bitmapPtr){
 		ATLASSERT(FALSE);
 		return S_FALSE;
 	}
-	pRenderTarget->DrawBitmap(bitmapPtr, rcWndPos);
+	auto spStretch = m_attrMap["stretch"];
+	if (spStretch == "0") {
+		D2D1_RECT_F realRect(rcWndPos);
+		realRect.right	= realRect.left + realWidth;
+		realRect.bottom = realRect.top + realHeight;
+		pRenderTarget->DrawBitmap(bitmapPtr, realRect);
+	} else {
+		pRenderTarget->DrawBitmap(bitmapPtr, rcWndPos);
+	}
+	
 
 	return hr;
 }

@@ -219,19 +219,8 @@ RESERROR ResPicture::DetectHorizontalLine()
 	return RES_SUCCESS;
 }
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
-#ifdef USE_D2D_RENDER_MODE
-HRESULT ResPicture::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, const RECT* rcInvalidPtr/* = nullptr*/)
-{
-	//--//设置额外的属性
-	pRenderTarget->DrawBitmap(m_d2d1BitmapPtr, rcWndPos);
-	return S_OK;
-}	    
-HRESULT ResPicture::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
-{
-	ID2D1Bitmap* pBitmap = GetD2D1Bitmap(pRenderTarget, m_pngWidth, m_pngHeight);
-	return pBitmap ? S_OK : S_FALSE;
-}	    
-HRESULT ResPicture::DiscardDeviceDependentResources()
+#ifdef USE_D2D_RENDER_MODE	    
+HRESULT ResPicture::DiscardD2D1Bitmap()
 {
 	SafeRelease(&m_d2d1BitmapPtr);
 	return S_OK;

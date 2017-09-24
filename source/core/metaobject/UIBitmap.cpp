@@ -61,8 +61,13 @@ HRESULT	UIBitmap::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F
 		ATLASSERT(FALSE);
 		return S_FALSE;
 	}
+	ID2D1Bitmap* bitmapPtr = m_picObject->GetD2D1Bitmap(pRenderTarget,m_pos.width, m_pos.height);
+	if (!bitmapPtr){
+		ATLASSERT(FALSE);
+		return S_FALSE;
+	}
+	pRenderTarget->DrawBitmap(bitmapPtr, rcWndPos);
 
-	//return m_picObject->Draw(pRenderTarget, *rcInvalidPtr, m_picObject);
 	return hr;
 }
 HRESULT	UIBitmap::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
@@ -74,7 +79,9 @@ HRESULT	UIBitmap::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarge
 HRESULT	UIBitmap::DiscardDeviceDependentResources() 
 {
 	HRESULT hr = S_OK;
-
+	if (m_picObject){
+		m_picObject->DiscardD2D1Bitmap();
+	}
 	return hr;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////

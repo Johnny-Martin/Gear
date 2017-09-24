@@ -79,10 +79,10 @@ ResManager& ResManager::GetInstance()
 
 ResPicture*	ResManager::GetPicObject(const string& strResID)
 {
-	auto pRes = m_resMap[strResID];
-	if (pRes) { return pRes; }
+	auto it = m_resMap.find(strResID);
+	if (it != m_resMap.end()) { return it->second; }
+
 	//map里不存在，就尝试从m_resPathVec里的目录里加载、解析
-	
 	if (LoadResource(strResID) && m_resMap[strResID] != nullptr) {
 		return m_resMap[strResID];
 	}

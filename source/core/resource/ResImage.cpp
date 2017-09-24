@@ -19,9 +19,9 @@ ResImage::ResImage(const string& strImageDesc)
 		return;
 	}
 }
-ResImage::ResImage(const wstring& strImageDesc)
+ResImage::ResImage(const wstring& wstrPath)
 {
-
+	m_wstrFilePath = wstrPath;
 }
 void ResImage::InitAttrMap()
 {

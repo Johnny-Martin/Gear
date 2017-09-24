@@ -77,8 +77,6 @@ HRESULT	UIBitmap::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F
 	} else {
 		pRenderTarget->DrawBitmap(bitmapPtr, rcWndPos);
 	}
-	
-
 	return hr;
 }
 HRESULT	UIBitmap::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
@@ -97,10 +95,6 @@ HRESULT	UIBitmap::DiscardDeviceDependentResources()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-Gdiplus::Bitmap* UIBitmap::GetGDIBitmap(unsigned int width, unsigned int height)
-{
-	return nullptr;
-}
 HRESULT	UIBitmap::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
 	HRESULT hr = S_OK;

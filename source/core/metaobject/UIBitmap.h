@@ -22,7 +22,6 @@ protected:
 	virtual HRESULT					DiscardDeviceDependentResources();
 #else
 	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
-	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height);
 #endif
 	bool							InitImpl(const XMLElement* pElement);
 protected:

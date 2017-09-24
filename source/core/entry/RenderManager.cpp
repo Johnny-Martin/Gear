@@ -76,7 +76,13 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 	}
 
 	if (bIntersection) {
-		hr = OnDrawImpl(pRenderTarget, rcInvalid);
+		UIPos toWndPos = pTargetObject->GetWndCoordinatePos();
+		D2D1_RECT_F rcWndPos;
+		rcWndPos.left = static_cast<FLOAT>(toWndPos.left);
+		rcWndPos.top = static_cast<FLOAT>(toWndPos.top);
+		rcWndPos.right = static_cast<FLOAT>(toWndPos.width + toWndPos.left);
+		rcWndPos.bottom = static_cast<FLOAT>(toWndPos.height + toWndPos.top);
+		hr = OnDrawImpl(pRenderTarget, rcWndPos);
 	}
 	
 	ATLASSERT(pTargetObject->m_pVecChildrenPair != nullptr);

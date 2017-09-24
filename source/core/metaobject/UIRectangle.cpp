@@ -41,23 +41,13 @@ void UIRectangle::InitAttrValueParserMap()
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-HRESULT	UIRectangle::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
+HRESULT	UIRectangle::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
 {
-	if (m_attrMap["visible"] == "0") return S_OK;
-	//窗口在重绘时，应该只通知处于rcInvalid区域的UI对象
-	
-	UIPos toWndPos = GetWndCoordinatePos();
-	D2D1_RECT_F rectF;
-	rectF.left	 = static_cast<FLOAT>(toWndPos.left);
-	rectF.top	 = static_cast<FLOAT>(toWndPos.top);
-	rectF.right  = static_cast<FLOAT>(toWndPos.width + toWndPos.left);
-	rectF.bottom = static_cast<FLOAT>(toWndPos.height + toWndPos.top);
-
 	int cornerRadius = static_cast<int>(atoi(m_attrMap["corner"].c_str()));
 	if (cornerRadius == 0) {
-		pRenderTarget->FillRectangle(rectF, m_pColorBrush);
+		pRenderTarget->FillRectangle(rcWndPos, m_pColorBrush);
 	}else{
-		D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rectF, (FLOAT)cornerRadius, (FLOAT)cornerRadius);
+		D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rcWndPos, (FLOAT)cornerRadius, (FLOAT)cornerRadius);
 		pRenderTarget->FillRoundedRectangle(roundedRect, m_pColorBrush);
 	}
 	
@@ -65,9 +55,9 @@ HRESULT	UIRectangle::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rc
 		FLOAT borderWidth = static_cast<FLOAT>(atoi(m_attrMap["border"].c_str()));
 		FLOAT cornerRadius = static_cast<FLOAT>(atoi(m_attrMap["corner"].c_str()));
 		if (cornerRadius == 0) {
-			pRenderTarget->DrawRectangle(rectF, m_pBorderColorBrush);
+			pRenderTarget->DrawRectangle(rcWndPos, m_pBorderColorBrush);
 		} else {
-			D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rectF, (FLOAT)cornerRadius, (FLOAT)cornerRadius);
+			D2D1_ROUNDED_RECT roundedRect = D2D1::RoundedRect(rcWndPos, (FLOAT)cornerRadius, (FLOAT)cornerRadius);
 			pRenderTarget->DrawRoundedRectangle(roundedRect, m_pBorderColorBrush, borderWidth);
 		}
 		

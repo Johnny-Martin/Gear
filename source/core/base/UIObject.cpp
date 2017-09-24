@@ -514,7 +514,7 @@ void LayoutObject::InitEventMap()
 }
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-HRESULT	LayoutObject::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid)
+HRESULT	LayoutObject::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
 {
 	return S_OK;
 }

@@ -15,12 +15,12 @@ public:
 #ifdef USE_D2D_RENDER_MODE
 public:
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height) = 0;
-	virtual HRESULT					OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const RECT& rcInvalid);
+	virtual HRESULT					OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos);
 protected:
 	virtual HRESULT					CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
 	virtual HRESULT					DiscardDeviceDependentResources();
 protected:
-	ID2D1Bitmap*					m_d2d1BitMapPtr;
+	ID2D1Bitmap*					m_d2d1BitmapPtr;
 #else
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) = 0;
 #endif

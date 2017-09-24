@@ -22,6 +22,7 @@ protected:
 protected:
 	ID2D1Bitmap*					m_d2d1BitmapPtr;
 #else
+	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
 	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) = 0;
 #endif
 protected:

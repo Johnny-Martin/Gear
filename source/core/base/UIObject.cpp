@@ -6,18 +6,6 @@
 //不可识别的字符转义序列（正则表达式中的\s）
 #pragma warning(disable:4129)
 
-UIPos::UIPos() :left(0), top(0), width(0), height(0)
-{
-}
-RECT UIPos::GetWndRECT() const
-{
-	RECT rc;
-	rc.left   = left;
-	rc.top	  = top;
-	rc.right  = left + width;
-	rc.bottom = height + top;
-	return rc;
-}
 bool UIEvent::SetEventHandlerFilePath(const string& sPath)
 {
 	m_filePath = sPath;
@@ -514,7 +502,7 @@ void LayoutObject::InitEventMap()
 }
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-HRESULT	LayoutObject::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
+HRESULT	LayoutObject::OnDrawImpl(ID2D1RenderTarget* pRenderTarget,const D2D1_RECT_F& rcWndPos)
 {
 	return S_OK;
 }
@@ -529,7 +517,7 @@ HRESULT	LayoutObject::DiscardDeviceDependentResources()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-HRESULT	LayoutObject::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
+HRESULT	LayoutObject::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
 	HRESULT hr = S_OK;
 

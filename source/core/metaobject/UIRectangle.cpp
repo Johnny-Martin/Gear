@@ -98,7 +98,7 @@ HRESULT	UIRectangle::DiscardDeviceDependentResources()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-HRESULT	UIRectangle::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
+HRESULT	UIRectangle::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
 	auto DrawRoundRectange = [](Gdiplus::Graphics &g, Gdiplus::Pen* pen, int x, int y, int width, int height, int corner){
 		//矩形上边  
@@ -155,13 +155,12 @@ HRESULT	UIRectangle::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 
 	Color rectColor = ResManager::GetInstance().GetColorObject(m_attrMap["color"])->GetGdiplusColor();
 	SolidBrush linGrBrush(rectColor);
-	//将m_pos（相对(父节点)坐标）转换成窗口坐标
-	UIPos toWndPos = GetWndCoordinatePos();
+	
 	int cornerRadius = static_cast<int>(atoi(m_attrMap["corner"].c_str()));
 	if (cornerRadius == 0) {
-		graphics.FillRectangle(&linGrBrush, toWndPos.left, toWndPos.top, toWndPos.width, toWndPos.height);
+		graphics.FillRectangle(&linGrBrush, rcWndPos.left, rcWndPos.top, rcWndPos.width, rcWndPos.height);
 	} else {
-		FillRoundRectangle(graphics, &linGrBrush, toWndPos.left, toWndPos.top, toWndPos.width, toWndPos.height, cornerRadius);
+		FillRoundRectangle(graphics, &linGrBrush, rcWndPos.left, rcWndPos.top, rcWndPos.width, rcWndPos.height, cornerRadius);
 	}
 	
 	if (m_attrMap["border"] != "0") {
@@ -170,9 +169,9 @@ HRESULT	UIRectangle::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
 		Pen pen(rectBorderColor, borderWidth);
 
 		if (cornerRadius == 0) {
-			graphics.DrawRectangle(&pen, toWndPos.left, toWndPos.top, toWndPos.width, toWndPos.height);
+			graphics.DrawRectangle(&pen, rcWndPos.left, rcWndPos.top, rcWndPos.width, rcWndPos.height);
 		} else {
-			DrawRoundRectange(graphics, &pen, toWndPos.left, toWndPos.top, toWndPos.width, toWndPos.height, cornerRadius);
+			DrawRoundRectange(graphics, &pen, rcWndPos.left, rcWndPos.top, rcWndPos.width, rcWndPos.height, cornerRadius);
 		}
 	}
 	

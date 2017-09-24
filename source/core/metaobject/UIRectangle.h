@@ -24,7 +24,7 @@ private:
 	ID2D1SolidColorBrush*			m_pBorderColorBrush;
 #else
 public:
-	virtual HRESULT					OnDrawImpl(Graphics& graphics, const RECT& rcInvalid);
+	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
 #endif
 protected:
 	void							InitAttrMap();

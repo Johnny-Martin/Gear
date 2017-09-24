@@ -121,7 +121,8 @@ HRESULT	RenderTarget::Draw(Graphics& graphics, const RECT& rcInvalid, UIObject* 
 	
 	HRESULT hr = S_OK;
 	if (bIntersection) {
-		hr = OnDrawImpl(graphics, rcInvalid);
+		UIPos rcWndPos = pTargetObject->GetWndCoordinatePos();
+		hr = OnDrawImpl(graphics, rcWndPos);
 	}
 
 	for (auto it = pTargetObject->m_pVecChildrenPair->begin(); it != pTargetObject->m_pVecChildrenPair->end(); ++it) {

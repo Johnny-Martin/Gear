@@ -23,6 +23,7 @@ private:
 };
 
 class UIObject;
+class UIPos;
 class RenderTarget
 {
 #ifdef USE_D2D_RENDER_MODE
@@ -36,7 +37,7 @@ protected:
 #else
 public:
 	virtual HRESULT					Draw(Graphics& graphics, const RECT& rcInvalid, UIObject* pTargetObject = nullptr);
-	virtual HRESULT					OnDrawImpl(Graphics& graphics, const RECT& rcInvalid) = 0;
+	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos) = 0;
 #endif // USE_D2D_RENDER_MODE
 
 };

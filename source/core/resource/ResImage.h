@@ -19,7 +19,7 @@ public:
 	virtual ID2D1Bitmap*						GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height);
 #else
 public:
-	//virtual HRESULT								OnDrawImpl(Graphics& graphics, const RECT& rcInvalid);
+	virtual HRESULT								OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
 	virtual Gdiplus::Bitmap*					GetGDIBitmap(unsigned int width, unsigned int height);
 #endif
 protected:

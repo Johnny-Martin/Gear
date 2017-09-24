@@ -237,5 +237,8 @@ HRESULT ResPicture::DiscardDeviceDependentResources()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-
+HRESULT ResPicture::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
+{
+	return S_OK;
+}
 #endif

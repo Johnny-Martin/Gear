@@ -12,15 +12,6 @@ namespace Gear {
 	}//namespace UI
 }//namespace Gear
 
-struct UIPos
-{
-	UIPos();
-	int			 left;
-	int			 top;
-	unsigned int width;
-	unsigned int height;
-	RECT GetWndRECT() const;
-};
 class UIEvent
 {
 public:
@@ -77,7 +68,7 @@ protected:
 	virtual HRESULT								DiscardDeviceDependentResources() = 0;
 #else
 public:
-	virtual HRESULT								OnDrawImpl(Graphics& graphics, const RECT& rcInvalid) = 0;
+	virtual HRESULT								OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos) = 0;
 #endif
 protected:
 	map<string, UIEvent*>						m_eventMap;//second成员存的是event对象
@@ -116,7 +107,7 @@ protected:
 	virtual HRESULT								CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
 	virtual HRESULT								DiscardDeviceDependentResources();
 #else
-	virtual HRESULT								OnDrawImpl(Graphics& graphics, const RECT& rcInvalid);
+	virtual HRESULT								OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
 #endif
 protected:
 	void										InitAttrMap();

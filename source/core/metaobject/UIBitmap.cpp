@@ -74,7 +74,7 @@ Gdiplus::Bitmap* UIBitmap::GetGDIBitmap(unsigned int width, unsigned int height)
 {
 	return nullptr;
 }
-HRESULT	UIBitmap::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
+HRESULT	UIBitmap::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
 	HRESULT hr = S_OK;
 

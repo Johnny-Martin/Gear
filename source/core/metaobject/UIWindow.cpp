@@ -382,7 +382,7 @@ HRESULT	UIWindow::DiscardDeviceDependentResources()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-HRESULT	UIWindow::OnDrawImpl(Graphics& graphics, const RECT& rcInvalid)
+HRESULT	UIWindow::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
 	HRESULT hr = S_OK;
 

@@ -56,7 +56,7 @@ ID2D1Bitmap* ResImage::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned 
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-RESULT ResImage::OnDrawImpl(Graphics& graphics, const D2D1_RECT_F& rcWndPos)
+HRESULT ResImage::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
 	HRESULT hr = S_OK;
 	return hr;

@@ -77,7 +77,7 @@ ResManager& ResManager::GetInstance()
 	return resMgr;
 }
 
-ResPicture*	ResManager::GetResObject(const string& strResID)
+ResPicture*	ResManager::GetPicObject(const string& strResID)
 {
 	auto pRes = m_resMap[strResID];
 	if (pRes) { return pRes; }

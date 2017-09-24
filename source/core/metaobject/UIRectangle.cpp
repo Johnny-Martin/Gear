@@ -41,7 +41,7 @@ void UIRectangle::InitAttrValueParserMap()
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-HRESULT	UIRectangle::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
+HRESULT	UIRectangle::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, const RECT* rcInvalidPtr/* = nullptr*/)
 {
 	int cornerRadius = static_cast<int>(atoi(m_attrMap["corner"].c_str()));
 	if (cornerRadius == 0) {

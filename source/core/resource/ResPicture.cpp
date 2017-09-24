@@ -220,9 +220,10 @@ RESERROR ResPicture::DetectHorizontalLine()
 }
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-HRESULT ResPicture::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
+HRESULT ResPicture::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, const RECT* rcInvalidPtr/* = nullptr*/)
 {
-
+	//--//设置额外的属性
+	pRenderTarget->DrawBitmap(m_d2d1BitmapPtr, rcWndPos);
 	return S_OK;
 }	    
 HRESULT ResPicture::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)

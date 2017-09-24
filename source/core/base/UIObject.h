@@ -62,7 +62,7 @@ public:
 	UIPos										GetWndCoordinatePos();
 #ifdef USE_D2D_RENDER_MODE
 public:
-	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos) = 0;
+	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, const RECT* rcInvalidPtr = nullptr) = 0;
 protected:
 	virtual HRESULT								CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget) = 0;
 	virtual HRESULT								DiscardDeviceDependentResources() = 0;
@@ -102,7 +102,7 @@ public:
 												LayoutObject();
 #ifdef USE_D2D_RENDER_MODE
 public:
-	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos);
+	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, const RECT* rcInvalidPtr = nullptr);
 protected:
 	virtual HRESULT								CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
 	virtual HRESULT								DiscardDeviceDependentResources();

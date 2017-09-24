@@ -82,7 +82,7 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 		rcWndPos.top = static_cast<FLOAT>(toWndPos.top);
 		rcWndPos.right = static_cast<FLOAT>(toWndPos.width + toWndPos.left);
 		rcWndPos.bottom = static_cast<FLOAT>(toWndPos.height + toWndPos.top);
-		hr = OnDrawImpl(pRenderTarget, rcWndPos);
+		hr = OnDrawImpl(pRenderTarget, rcWndPos, &rcInvalid);
 	}
 	
 	ATLASSERT(pTargetObject->m_pVecChildrenPair != nullptr);

@@ -42,7 +42,7 @@ public:
 	wstring							GetResFilePathByName(const string& cstrName);
 	static ResManager&				GetInstance();
 	//主要接口
-	ResPicture*						GetResObject(const string& strResID);
+	ResPicture*						GetPicObject(const string& strResID);
 	ResColor*						GetColorObject(const string& strColorValueOrID);
 	bool							LoadResource(const string& strResID);
 	bool							LoadResFromFile(const wstring& wstrFilePath, const string& strResID, ResType resType);

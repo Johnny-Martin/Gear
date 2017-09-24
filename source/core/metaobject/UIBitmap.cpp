@@ -27,8 +27,8 @@ bool UIBitmap::InitImpl(const XMLElement* pElement)
 	auto ret = UIObject::InitImpl(pElement);
 	if (ret && !m_attrMap["res"].empty()) {
 		//加载res属性对应的png
-		auto resID = m_attrMap["res"];
-		m_picObject = ResManager::GetInstance().GetResObject(resID);
+		//auto resID = m_attrMap["res"];
+		//m_picObject = ResManager::GetInstance().GetPicObject(resID);
 	}
 	return true;
 }
@@ -50,10 +50,19 @@ void UIBitmap::InitAttrValueParserMap()
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
-HRESULT	UIBitmap::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
+HRESULT	UIBitmap::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, const RECT* rcInvalidPtr/* = nullptr*/)
 {
 	HRESULT hr = S_OK;
+	if (!m_picObject){
+		auto resID = m_attrMap["res"];
+		m_picObject = ResManager::GetInstance().GetPicObject(resID); 
+	}
+	if (!m_picObject) {
+		ATLASSERT(FALSE);
+		return S_FALSE;
+	}
 
+	//return m_picObject->Draw(pRenderTarget, *rcInvalidPtr, m_picObject);
 	return hr;
 }
 HRESULT	UIBitmap::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)

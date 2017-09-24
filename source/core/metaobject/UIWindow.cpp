@@ -296,6 +296,9 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 		hr = S_OK;
 		DiscardDeviceDependentResources();
 		//通知所有孩子，丢弃设备相关资源
+		for (auto it = m_pVecChildrenPair->begin(); it != m_pVecChildrenPair->end(); ++it) {
+			it->second->DiscardDeviceDependentResources();
+		}
 	}
 #else
 	PAINTSTRUCT ps;

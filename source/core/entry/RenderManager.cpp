@@ -91,9 +91,6 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 	}
 	
 	return hr;
-
-	//	窗口内在OnPaint中hr = m_pRenderTarget->EndDraw();后，需要判断是否丢弃设备相关资源
-	//	DiscardDeviceDependentResources();
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else

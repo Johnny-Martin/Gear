@@ -60,8 +60,19 @@ ID2D1Bitmap* ResImage::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned 
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height)
+Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
-	return nullptr;
+	if (m_gdiplusBitmapPtr){ return m_gdiplusBitmapPtr; }
+	//尚未加载png
+	if (m_pngWidth == 0) {
+		auto ret = ReadPngFile(m_wstrFilePath);
+		if (!ret) { return nullptr; }
+	}
+	PixelFormat pixFormat = PixelFormat32bppARGB;
+	INT stride = m_pngWidth * m_colorChannels;
+	Gdiplus::Bitmap* pBitmap = new Gdiplus::Bitmap(m_pngWidth, m_pngHeight, stride, pixFormat, (BYTE*)m_rowPointers[0]);
+	retWidth = m_pngWidth;
+	retHeight = m_pngHeight;
+	return pBitmap;
 }
 #endif

@@ -19,7 +19,7 @@ public:
 	virtual ID2D1Bitmap*						GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight);
 #else
 public:
-	virtual Gdiplus::Bitmap*					GetGDIBitmap(unsigned int width, unsigned int height);
+	virtual Gdiplus::Bitmap*					GetGDIBitmap(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight);
 #endif
 protected:
 	void										InitAttrMap();

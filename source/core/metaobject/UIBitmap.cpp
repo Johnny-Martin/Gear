@@ -98,7 +98,23 @@ HRESULT	UIBitmap::DiscardDeviceDependentResources()
 HRESULT	UIBitmap::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
 	HRESULT hr = S_OK;
-
+	if (!m_picObject) {
+		auto resID = m_attrMap["res"];
+		m_picObject = ResManager::GetInstance().GetPicObject(resID);
+	}
+	if (!m_picObject) {
+		ATLASSERT(FALSE);
+		return S_FALSE;
+	}
+	unsigned int realWidth{ 0 };
+	unsigned int realHeight{ 0 };
+	Gdiplus::Bitmap* pBitmap = m_picObject->GetGDIBitmap(m_pos.width, m_pos.height, realWidth, realHeight);
+	if (pBitmap){
+		//Point
+		//graphics.DrawCachedBitmap();
+		Status status = graphics.DrawImage(pBitmap, rcWndPos.left, rcWndPos.top, realWidth, realHeight);
+		hr = status == Ok ? S_OK : S_FALSE;
+	}
 	return hr;
 }
 #endif

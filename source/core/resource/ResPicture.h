@@ -18,8 +18,9 @@ public:
 protected:
 	ID2D1Bitmap*					m_d2d1BitmapPtr;
 #else
-	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
-	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height) = 0;
+	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight) = 0;
+protected:
+	Gdiplus::Bitmap*				m_gdiplusBitmapPtr;
 #endif
 protected:
 	RESERROR						ReadPngFile(const string& strFilePath);

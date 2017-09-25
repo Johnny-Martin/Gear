@@ -16,6 +16,8 @@ ResPicture::ResPicture() :
 	m_pngInfoPtr(nullptr)
 #ifdef USE_D2D_RENDER_MODE
 	,m_d2d1BitmapPtr(nullptr)
+#else
+	,m_gdiplusBitmapPtr(nullptr)
 #endif
 {
 
@@ -35,6 +37,11 @@ ResPicture::~ResPicture()
 
 	if (m_pngStructPtr && m_pngInfoPtr)
 		png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, NULL);
+#ifdef USE_D2D_RENDER_MODE
+	SafeRelease(&m_d2d1BitmapPtr);
+#else
+	SafeDelete(&m_gdiplusBitmapPtr);
+#endif
 }
 ResPicture::ResPicture(const wstring& wstrFilePath) 
 	:m_purpleLineColor(RGB(127, 0, 127))
@@ -78,9 +85,10 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 	if (!fp)
 		return RES_ERROR_FILE_NOT_FOUND;
 
-	unsigned char header[8];    // 8 is the maximum size that can be checked
-	fread(header, 1, 8, fp);
-	if (png_sig_cmp(header, 0, 8))
+#define CHECK_PNG_FILE_HEADER 4
+	unsigned char header[CHECK_PNG_FILE_HEADER];    // 8 is the maximum size that can be checked
+	fread(header, 1, CHECK_PNG_FILE_HEADER, fp);
+	if (png_sig_cmp(header, 0, CHECK_PNG_FILE_HEADER))
 		return RES_ERROR_ILLEGAL_FILE_TYPE;
 
 
@@ -98,7 +106,7 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 		return RES_ERROR_PARSE_FILE_FALIED;
 
 	png_init_io(m_pngStructPtr, fp);
-	png_set_sig_bytes(m_pngStructPtr, 8);
+	png_set_sig_bytes(m_pngStructPtr, CHECK_PNG_FILE_HEADER);
 
 	png_read_info(m_pngStructPtr, m_pngInfoPtr);
 
@@ -106,15 +114,18 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 		&& png_get_color_type(m_pngStructPtr, m_pngInfoPtr) != PNG_COLOR_TYPE_RGBA)
 		return RES_ERROR_ILLEGAL_PNG_FILE;
 
-	m_pngWidth = png_get_image_width(m_pngStructPtr, m_pngInfoPtr);
-	m_pngHeight = png_get_image_height(m_pngStructPtr, m_pngInfoPtr);
-	m_colorType = png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
-	m_bitDepth = png_get_bit_depth(m_pngStructPtr, m_pngInfoPtr);
+	m_pngWidth		= png_get_image_width(m_pngStructPtr, m_pngInfoPtr);
+	m_pngHeight		= png_get_image_height(m_pngStructPtr, m_pngInfoPtr);
+	m_colorType		= png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
+	m_bitDepth		= png_get_bit_depth(m_pngStructPtr, m_pngInfoPtr);
 	m_colorChannels = png_get_channels(m_pngStructPtr, m_pngInfoPtr);
 
-	int number_of_passes = png_set_interlace_handling(m_pngStructPtr);
-	png_read_update_info(m_pngStructPtr, m_pngInfoPtr);
+	if (PNG_COLOR_TYPE_RGB_ALPHA == m_colorType) {
+		png_set_swap_alpha(m_pngStructPtr);
+	}
 
+	//int number_of_passes = png_set_interlace_handling(m_pngStructPtr);
+	png_read_update_info(m_pngStructPtr, m_pngInfoPtr);
 
 	/* read file */
 	if (setjmp(png_jmpbuf(m_pngStructPtr)))
@@ -141,8 +152,11 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 	//	m_rowPointers[rowIndex] = (png_byte*) malloc(size);
 	//}
 	png_read_image(m_pngStructPtr, m_rowPointers);
-
+	//png_process_data(m_pngStructPtr, m_pngInfoPtr, m_rowPointers[0], rowSize * m_pngHeight);
+	//m_colorType = png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
 	fclose(fp);
+	png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, nullptr);
+	
 	return RES_SUCCESS;
 }
 
@@ -227,8 +241,5 @@ HRESULT ResPicture::DiscardD2D1Bitmap()
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-HRESULT ResPicture::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
-{
-	return S_OK;
-}
+
 #endif

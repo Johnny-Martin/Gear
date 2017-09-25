@@ -66,6 +66,8 @@ HRESULT RenderTarget::Draw(ID2D1RenderTarget* pRenderTarget, const RECT& rcInval
 	hr = CreateDeviceDependentResources(pRenderTarget);
 	if (FAILED(hr)){
 		ERR("Fatal error in RenderTarget::Draw£¬ CreateDeviceDependentResources failed! hr: {}", hr);
+		ATLASSERT(FALSE);
+		PostQuitMessage(1);
 		return hr;
 	}
 	auto sAntialias = pTargetObject->GetAttrValue("antialias");

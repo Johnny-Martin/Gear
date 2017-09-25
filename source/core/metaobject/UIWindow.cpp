@@ -299,6 +299,8 @@ LRESULT UIWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 		for (auto it = m_pVecChildrenPair->begin(); it != m_pVecChildrenPair->end(); ++it) {
 			it->second->DiscardDeviceDependentResources();
 		}
+		//重新創建HwndRenderTarget，子节点会在绘制前重新创建设备相关资源
+		CreateDeviceDependentResources(m_pHwndRenderTarget);
 	}
 #else
 	PAINTSTRUCT ps;
@@ -375,7 +377,11 @@ HRESULT	UIWindow::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarge
 		D2D1::HwndRenderTargetProperties(m_hWnd, size),
 		&m_pHwndRenderTarget);
 
-	ATLASSERT(SUCCEEDED(hr));
+	if (FAILED(hr)){
+		ATLASSERT(FALSE);
+		PostQuitMessage(1);
+	}
+	
 	return hr;
 }
 HRESULT	UIWindow::DiscardDeviceDependentResources()

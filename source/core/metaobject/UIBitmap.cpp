@@ -109,12 +109,19 @@ HRESULT	UIBitmap::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 	unsigned int realWidth{ 0 };
 	unsigned int realHeight{ 0 };
 	Gdiplus::Bitmap* pBitmap = m_picObject->GetGDIBitmap(m_pos.width, m_pos.height, realWidth, realHeight);
-	if (pBitmap){
-		//Point
-		//graphics.DrawCachedBitmap();
-		Status status = graphics.DrawImage(pBitmap, rcWndPos.left, rcWndPos.top, realWidth, realHeight);
-		hr = status == Ok ? S_OK : S_FALSE;
+	if (!pBitmap){
+		ATLASSERT(FALSE);
+		return S_FALSE;
 	}
-	return hr;
+
+	Status status = GenericError;
+	auto spStretch = m_attrMap["stretch"];
+	if (spStretch == "0") {
+		status = graphics.DrawImage(pBitmap, rcWndPos.left, rcWndPos.top, realWidth, realHeight);
+	} else {
+		status = graphics.DrawImage(pBitmap, rcWndPos.left, rcWndPos.top, rcWndPos.width, rcWndPos.height);
+	}
+
+	return status == Ok ? S_OK : S_FALSE;
 }
 #endif

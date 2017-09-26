@@ -72,12 +72,18 @@ Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height,
 		if (!ret) { return nullptr; }
 	}
 
+	//--//这个参数好像不管用，Bitmap是以BGRA的顺序来解析m_rowPointers中的像素数据的
 	PixelFormat pixFormat = PixelFormat32bppARGB;
 	INT stride = m_pngWidth*4;
-	Gdiplus::Bitmap* pBitmap = new Gdiplus::Bitmap(m_pngWidth, m_pngHeight, stride, pixFormat, (BYTE*)m_rowPointers[0]);
-
-	retWidth = m_pngWidth;
-	retHeight = m_pngHeight;
-	return pBitmap;
+	m_gdiplusBitmapPtr = new Gdiplus::Bitmap(m_pngWidth, m_pngHeight, stride, pixFormat, (BYTE*)m_rowPointers[0]);
+	Gdiplus::Status status = m_gdiplusBitmapPtr->GetLastStatus();
+	if (status == Ok){
+		retWidth = m_pngWidth;
+		retHeight = m_pngHeight;
+		return m_gdiplusBitmapPtr;
+	} 
+	//出错了
+	SafeDelete(&m_gdiplusBitmapPtr);
+	return nullptr;
 }
 #endif

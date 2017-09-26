@@ -94,7 +94,6 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 		return RES_ERROR_PARSE_FILE_FALIED;
 	}
 		
-
 	m_pngInfoPtr = png_create_info_struct(m_pngStructPtr);
 	if (!m_pngInfoPtr) {
 		fclose(fp);
@@ -124,10 +123,10 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 		return RES_ERROR_ILLEGAL_PNG_FILE;
 	}
 
-	if (PNG_COLOR_TYPE_RGB_ALPHA == m_colorType) {
-		//png_set_swap_alpha(m_pngStructPtr);
-	}
-
+#ifndef USE_D2D_RENDER_MODE
+	//GDI+的Image需要用BGRA格式的内存布局，Direct2D直接用的是libpng默认的ARGB布局
+	png_set_bgr(m_pngStructPtr);
+#endif
 	int number_of_passes = png_set_interlace_handling(m_pngStructPtr);
 	png_read_update_info(m_pngStructPtr, m_pngInfoPtr);
 

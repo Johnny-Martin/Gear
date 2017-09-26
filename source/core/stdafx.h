@@ -64,6 +64,7 @@ extern CAppModule _Module;
 	using namespace D2D1;
 #else
 	#include<gdiplus.h>
+	#include<Gdiplusheaders.h>
 	#include<gdiplusgraphics.h>
 	using namespace Gdiplus;
 	#pragma comment(lib, "GdiPlus.lib")

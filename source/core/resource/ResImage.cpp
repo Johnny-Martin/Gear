@@ -71,9 +71,11 @@ Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height,
 		auto ret = ReadPngFile(m_wstrFilePath);
 		if (!ret) { return nullptr; }
 	}
+
 	PixelFormat pixFormat = PixelFormat32bppARGB;
-	INT stride = m_pngWidth * m_colorChannels;
+	INT stride = m_pngWidth*4;
 	Gdiplus::Bitmap* pBitmap = new Gdiplus::Bitmap(m_pngWidth, m_pngHeight, stride, pixFormat, (BYTE*)m_rowPointers[0]);
+
 	retWidth = m_pngWidth;
 	retHeight = m_pngHeight;
 	return pBitmap;

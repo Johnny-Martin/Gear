@@ -18,6 +18,9 @@ public:
 protected:
 	virtual HRESULT					CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
 	virtual HRESULT					DiscardDeviceDependentResources();
+private:
+	ID2D1SolidColorBrush*			m_pColorBrush;
+	ID2D1StrokeStyle*				m_pStrokeStyle;
 #else
 public:
 	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);

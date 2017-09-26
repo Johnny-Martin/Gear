@@ -5,6 +5,12 @@
 using namespace Gear::Res;
 
 UICurve::UICurve()
+#ifdef USE_D2D_RENDER_MODE
+	:m_pColorBrush(nullptr)
+	, m_pStrokeStyle(nullptr)
+#else
+
+#endif
 {
 	InitAttrMap();
 	InitEventMap();
@@ -17,6 +23,7 @@ void UICurve::InitAttrMap()
 	ADD_ATTR("hline",	"0")
 	ADD_ATTR("vline", "0")
 	ADD_ATTR("linewidth", "1")
+	ADD_ATTR("style", "0")
 }
 void UICurve::InitEventMap()
 {
@@ -28,6 +35,7 @@ void UICurve::InitAttrValuePatternMap()
 	ADD_ATTR_PATTERN("hline",	R_CHECK_BOOL)
 	ADD_ATTR_PATTERN("vline", R_CHECK_BOOL)
 	ADD_ATTR_PATTERN("linewidth", R_CHECK_INT)
+	ADD_ATTR_PATTERN("style", R_CHECK_INT)
 }
 void UICurve::InitAttrValueParserMap()
 {
@@ -39,19 +47,56 @@ void UICurve::InitAttrValueParserMap()
 HRESULT	UICurve::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
 {
 	HRESULT hr = S_OK;
-
+	D2D1_POINT_2F pA, pB;
+	int lineWidth = atoi(m_attrMap["linewidth"].c_str());
+	
+	if (m_attrMap["hline"] == "1") {
+		pA.x = rcWndPos.left;
+		pA.y = rcWndPos.top;
+		pB.x = rcWndPos.right;
+		pB.y = rcWndPos.top;
+		pRenderTarget->DrawLine(pA, pB, m_pColorBrush, (FLOAT)lineWidth, m_pStrokeStyle);
+	} else if (m_attrMap["vline"] == "1") {
+		pA.x = rcWndPos.left;
+		pA.y = rcWndPos.top;
+		pB.x = rcWndPos.left;
+		pB.y = rcWndPos.bottom;
+		pRenderTarget->DrawLine(pA, pB, m_pColorBrush, (FLOAT)lineWidth, m_pStrokeStyle);
+	} else {//if(m_gdiPointsVer.size() > 0)
+		
+	}
 	return hr;
 }
 HRESULT	UICurve::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
 {
-	HRESULT hr = S_OK;
+	if (m_pColorBrush) return S_OK;
 
+	if (!pRenderTarget) {
+		ERR("fatal error in CreateDeviceDependentResources, nullptr! OnDrawImpl will abort");
+		return S_FALSE;
+	}
+
+	D2D1::ColorF curveColor = ResManager::GetInstance().GetColorObject(m_attrMap["color"])->GetD2D1ColorF();
+	HRESULT hr = pRenderTarget->CreateSolidColorBrush(curveColor, &m_pColorBrush);
+	if (FAILED(hr)) {
+		ERR("fatal error in CreateSolidColorBrush, nullptr! hr:{}", hr);
+		return hr;
+	}
+
+	D2D1_STROKE_STYLE_PROPERTIES prop = StrokeStyleProperties();
+	//prop.dashStyle = D2D1_DASH_STYLE_DOT;
+	hr = RenderManager::m_pD2DFactory->CreateStrokeStyle(prop,0,0,&m_pStrokeStyle);
+	if (FAILED(hr)) {
+		ERR("fatal error in m_pStrokeStyle, nullptr! hr:{}", hr);
+		return hr;
+	}
 	return hr;
 }
 HRESULT	UICurve::DiscardDeviceDependentResources()
 {
 	HRESULT hr = S_OK;
-
+	SafeRelease(&m_pColorBrush);
+	SafeRelease(&m_pStrokeStyle);
 	return hr;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////

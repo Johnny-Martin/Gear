@@ -64,6 +64,6 @@
 		<bitmap id="wnd.content.icon"  pos="0, 0, 100, 100" res="image.settingIcon" stretch="1" zorder="10"/>
 		<curve id="wnd.content.curve"  pos="0, #mid, #width, 2" color="FF00FF" hline="1" zorder="100"/>
 		<curve id="wnd.content.curve2" pos="#mid, 0, 2, #height" color="00FF00" vline="1" zorder="100"/>
-		<curve id="wnd.content.curve3" pos="0, 0, #width, #height" color="00FFFF" zorder="110"/>
+		<curve id="wnd.content.curve3" pos="0, 0, #width, #height" color="000000" zorder="110"/>
 		<!-- <bitmap id="wnd.content.icon2" pos="15, 15, 15, 15" res="imagelist.frameBkg.3" /> -->
 	</window>

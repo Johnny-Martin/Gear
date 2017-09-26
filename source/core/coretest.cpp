@@ -25,6 +25,74 @@ using namespace Gear::Res;
 
 CAppModule _Module;
 
+png_uint_32						m_pngWidth;
+png_uint_32						m_pngHeight;
+png_byte						m_colorType;
+png_byte						m_bitDepth;
+png_byte						m_colorChannels;
+png_bytep*						m_rowPointers; //In fact, m_rowPointers is a two-dimensional array
+png_structp						m_pngStructPtr;
+png_infop						m_pngInfoPtr;
+RESERROR ReadPngFile(const string& strFilePath)
+{
+	FILE *fp = fopen(strFilePath.c_str(), "rb");
+	if (!fp)
+		return RES_ERROR_FILE_NOT_FOUND;
+
+#define CHECK_PNG_FILE_HEADER 4
+	unsigned char header[CHECK_PNG_FILE_HEADER];    // 8 is the maximum size that can be checked
+	fread(header, 1, CHECK_PNG_FILE_HEADER, fp);
+	if (png_sig_cmp(header, 0, CHECK_PNG_FILE_HEADER))
+		return RES_ERROR_ILLEGAL_FILE_TYPE;
+
+
+	/* initialize stuff */
+	m_pngStructPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+	if (!m_pngStructPtr)
+		return RES_ERROR_PARSE_FILE_FALIED;
+
+	m_pngInfoPtr = png_create_info_struct(m_pngStructPtr);
+	if (!m_pngInfoPtr)
+		return RES_ERROR_PARSE_FILE_FALIED;
+
+	if (setjmp(png_jmpbuf(m_pngStructPtr)))
+		return RES_ERROR_PARSE_FILE_FALIED;
+
+	png_init_io(m_pngStructPtr, fp);
+	png_set_sig_bytes(m_pngStructPtr, CHECK_PNG_FILE_HEADER);
+
+	png_read_png(m_pngStructPtr, m_pngInfoPtr, PNG_TRANSFORM_SWAP_ALPHA, NULL);
+	//png_read_info(m_pngStructPtr, m_pngInfoPtr);
+
+	if (png_get_color_type(m_pngStructPtr, m_pngInfoPtr) != PNG_COLOR_TYPE_RGB
+		&& png_get_color_type(m_pngStructPtr, m_pngInfoPtr) != PNG_COLOR_TYPE_RGBA)
+		return RES_ERROR_ILLEGAL_PNG_FILE;
+
+	m_pngWidth = png_get_image_width(m_pngStructPtr, m_pngInfoPtr);
+	m_pngHeight = png_get_image_height(m_pngStructPtr, m_pngInfoPtr);
+	m_colorType = png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
+	m_bitDepth = png_get_bit_depth(m_pngStructPtr, m_pngInfoPtr);
+	m_colorChannels = png_get_channels(m_pngStructPtr, m_pngInfoPtr);
+
+
+	m_rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * m_pngHeight);
+	png_uint_32 rowSize = png_get_rowbytes(m_pngStructPtr, m_pngInfoPtr);
+	png_byte* pngPixelData = (png_byte*)malloc(rowSize * m_pngHeight);
+	for (unsigned int rowIndex = 0; rowIndex < m_pngHeight; ++rowIndex)
+	{
+		png_byte *rowHead = (png_byte*)((int)pngPixelData + rowIndex * rowSize);
+		m_rowPointers[rowIndex] = (png_byte*)rowHead;
+	}
+
+	png_set_rows(m_pngStructPtr, m_pngInfoPtr, m_rowPointers);
+
+	fclose(fp);
+	png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, nullptr);
+
+	return RES_SUCCESS;
+}
+
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	
@@ -38,6 +106,7 @@ void TestFunc()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int ShowCmd)
 //int _tmain(int argc, _TCHAR* argv[])
 {
+	//ReadPngFile("D:\\code\\temp\\Gear\\docs\\image.settingIcon.png");
 	HRESULT hRes = ::CoInitialize(NULL);
 	AtlInitCommonControls(ICC_BAR_CLASSES);	// add flags to support other controls
 	hRes = _Module.Init(NULL, hInstance);

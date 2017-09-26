@@ -9,7 +9,7 @@ class ResPicture
 {
 public:
 	ResPicture();
-	~ResPicture();
+	virtual ~ResPicture();
 	ResPicture(const wstring& wstrFilePath);
 #ifdef USE_D2D_RENDER_MODE
 public:

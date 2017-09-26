@@ -22,6 +22,9 @@ ResManager::~ResManager()
 	for (auto it = m_colorMap2.begin(); it != m_colorMap2.end(); ++it) {
 		delete it->second;
 	}
+	for (auto it=m_picMap.begin(); it!=m_picMap.end(); ++it){
+		delete it->second;
+	}
 }
 
 //设置资源文件夹，可以是相对路径(相对于exe),也可以是绝对路径.
@@ -79,12 +82,12 @@ ResManager& ResManager::GetInstance()
 
 ResPicture*	ResManager::GetPicObject(const string& strResID)
 {
-	auto it = m_resMap.find(strResID);
-	if (it != m_resMap.end()) { return it->second; }
+	auto it = m_picMap.find(strResID);
+	if (it != m_picMap.end()) { return it->second; }
 
 	//map里不存在，就尝试从m_resPathVec里的目录里加载、解析
-	if (LoadResource(strResID) && m_resMap[strResID] != nullptr) {
-		return m_resMap[strResID];
+	if (LoadResource(strResID) && m_picMap[strResID] != nullptr) {
+		return m_picMap[strResID];
 	}
 
 	ERR("GetResObject error: can not find ResObject, strResID: {}", strResID);
@@ -163,7 +166,7 @@ bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strR
 
 	if (resType == RES_IMAGE) {
 		ResPicture* pResPic = new ResImage(wstrFilePath);
-		m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
+		m_picMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_TEXTURE) {
 		//ResPicture* pResPic = new ResTexture(wstrFilePath);
 		//m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));

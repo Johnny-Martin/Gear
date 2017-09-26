@@ -11,9 +11,10 @@ namespace Gear {
 class ResImage :public XmlUIElement, public ResPicture
 {
 public:
-	ResImage();
-	ResImage(const string& strImageDesc);
-	ResImage(const wstring& strImageDesc);
+												ResImage();
+												ResImage(const string& strImageDesc);
+												ResImage(const wstring& strImageDesc);
+	virtual										~ResImage();
 #ifdef USE_D2D_RENDER_MODE
 public:
 	virtual ID2D1Bitmap*						GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight);

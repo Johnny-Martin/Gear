@@ -25,18 +25,12 @@ ResPicture::ResPicture() :
 
 ResPicture::~ResPicture()
 {
-	//m_rowPointers is allocated by malloc() in function png_create_read_struct(),
-	//thus release with free()
 	if (m_rowPointers)
 	{
-		//for (unsigned int rowIndex=0; rowIndex<m_pngHeight; ++rowIndex)
-		//free(m_rowPointers[rowIndex]);
-
 		free(m_rowPointers[0]);
+		free(m_rowPointers);
 	}
 
-	if (m_pngStructPtr && m_pngInfoPtr)
-		png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, NULL);
 #ifdef USE_D2D_RENDER_MODE
 	SafeRelease(&m_d2d1BitmapPtr);
 #else
@@ -85,34 +79,38 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 	if (!fp)
 		return RES_ERROR_FILE_NOT_FOUND;
 
-#define CHECK_PNG_FILE_HEADER 4
-	unsigned char header[CHECK_PNG_FILE_HEADER];    // 8 is the maximum size that can be checked
-	fread(header, 1, CHECK_PNG_FILE_HEADER, fp);
-	if (png_sig_cmp(header, 0, CHECK_PNG_FILE_HEADER))
+	unsigned char header[8];    // 8 is the maximum size that can be checked
+	fread(header, 1, 8, fp);
+	if (png_sig_cmp(header, 0, 8)) {
+		fclose(fp);
 		return RES_ERROR_ILLEGAL_FILE_TYPE;
-
-
+	}
+		
 	/* initialize stuff */
 	m_pngStructPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
-	if (!m_pngStructPtr)
+	if (!m_pngStructPtr) {
+		fclose(fp);
 		return RES_ERROR_PARSE_FILE_FALIED;
+	}
+		
 
 	m_pngInfoPtr = png_create_info_struct(m_pngStructPtr);
-	if (!m_pngInfoPtr)
+	if (!m_pngInfoPtr) {
+		fclose(fp);
+		png_destroy_read_struct(&m_pngStructPtr, nullptr, nullptr);
 		return RES_ERROR_PARSE_FILE_FALIED;
+	}
 
-	if (setjmp(png_jmpbuf(m_pngStructPtr)))
+	if (setjmp(png_jmpbuf(m_pngStructPtr))) {
+		fclose(fp);
+		png_destroy_read_struct(&m_pngStructPtr, nullptr, nullptr);
 		return RES_ERROR_PARSE_FILE_FALIED;
+	}
 
 	png_init_io(m_pngStructPtr, fp);
-	png_set_sig_bytes(m_pngStructPtr, CHECK_PNG_FILE_HEADER);
-
+	png_set_sig_bytes(m_pngStructPtr, 8);
 	png_read_info(m_pngStructPtr, m_pngInfoPtr);
-
-	if (png_get_color_type(m_pngStructPtr, m_pngInfoPtr) != PNG_COLOR_TYPE_RGB
-		&& png_get_color_type(m_pngStructPtr, m_pngInfoPtr) != PNG_COLOR_TYPE_RGBA)
-		return RES_ERROR_ILLEGAL_PNG_FILE;
 
 	m_pngWidth		= png_get_image_width(m_pngStructPtr, m_pngInfoPtr);
 	m_pngHeight		= png_get_image_height(m_pngStructPtr, m_pngInfoPtr);
@@ -120,23 +118,26 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 	m_bitDepth		= png_get_bit_depth(m_pngStructPtr, m_pngInfoPtr);
 	m_colorChannels = png_get_channels(m_pngStructPtr, m_pngInfoPtr);
 
-	if (PNG_COLOR_TYPE_RGB_ALPHA == m_colorType) {
-		png_set_swap_alpha(m_pngStructPtr);
+	if (m_colorType != PNG_COLOR_TYPE_RGB && m_colorType != PNG_COLOR_TYPE_RGBA) {
+		fclose(fp);
+		png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, nullptr);
+		return RES_ERROR_ILLEGAL_PNG_FILE;
 	}
 
-	//int number_of_passes = png_set_interlace_handling(m_pngStructPtr);
+	if (PNG_COLOR_TYPE_RGB_ALPHA == m_colorType) {
+		//png_set_swap_alpha(m_pngStructPtr);
+	}
+
+	int number_of_passes = png_set_interlace_handling(m_pngStructPtr);
 	png_read_update_info(m_pngStructPtr, m_pngInfoPtr);
 
-	/* read file */
-	if (setjmp(png_jmpbuf(m_pngStructPtr)))
+	if (setjmp(png_jmpbuf(m_pngStructPtr))) {
+		fclose(fp);
+		png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, nullptr);
 		return RES_ERROR_PARSE_FILE_FALIED;
+	}
 
 	m_rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * m_pngHeight);
-	//m_rowPointers = new png_bytep[(sizeof(png_bytep) * m_pngHeight)];
-
-	//ID2D1HwndRenderTarget::CreateBitmap only support continuous png pixel data in memory
-	//allocate a continuous memory for m_rowPointers so that class "Image"  can return 
-	//m_rowPointers directly in GetPngPixelArray
 	png_uint_32 rowSize = png_get_rowbytes(m_pngStructPtr, m_pngInfoPtr);
 	png_byte* pngPixelData = (png_byte*)malloc(rowSize * m_pngHeight);
 	for (unsigned int rowIndex = 0; rowIndex < m_pngHeight; ++rowIndex)
@@ -145,18 +146,11 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 		m_rowPointers[rowIndex] = (png_byte*)rowHead;
 	}
 
-	//Old memory allocation
-	//for (unsigned int rowIndex=0; rowIndex<m_pngHeight; ++rowIndex)
-	//{
-	//	png_uint_32 size = png_get_rowbytes(m_pngStructPtr,m_pngInfoPtr);
-	//	m_rowPointers[rowIndex] = (png_byte*) malloc(size);
-	//}
 	png_read_image(m_pngStructPtr, m_rowPointers);
-	//png_process_data(m_pngStructPtr, m_pngInfoPtr, m_rowPointers[0], rowSize * m_pngHeight);
-	//m_colorType = png_get_color_type(m_pngStructPtr, m_pngInfoPtr);
-	fclose(fp);
+	png_read_end(m_pngStructPtr, m_pngInfoPtr);
+
 	png_destroy_read_struct(&m_pngStructPtr, &m_pngInfoPtr, nullptr);
-	
+	fclose(fp);
 	return RES_SUCCESS;
 }
 

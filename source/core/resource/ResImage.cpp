@@ -10,7 +10,10 @@ ResImage::ResImage()
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
+ResImage::~ResImage()
+{
 
+}
 ResImage::ResImage(const string& strImageDesc)
 {
 	m_wstrFilePath = ResManager::GetInstance().GetResFilePathByName(strImageDesc);

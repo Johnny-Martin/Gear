@@ -22,16 +22,16 @@ void UIBitmap::InitEventMap()
 	//ADD_EVENT("OnCreate", nullptr)
 }
 
-bool UIBitmap::InitImpl(const XMLElement* pElement)
-{
-	auto ret = UIObject::InitImpl(pElement);
-	if (ret && !m_attrMap["res"].empty()) {
+//bool UIBitmap::InitImpl(const XMLElement* pElement)
+//{
+//	auto ret = UIObject::InitImpl(pElement);
+//	if (ret && !m_attrMap["res"].empty()) {
 		//加载res属性对应的png
 		//auto resID = m_attrMap["res"];
 		//m_picObject = ResManager::GetInstance().GetPicObject(resID);
-	}
-	return true;
-}
+//	}
+//	return true;
+//}
 
 /*************************************************************************
 *检查属性值是否合法

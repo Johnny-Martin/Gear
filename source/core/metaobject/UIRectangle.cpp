@@ -29,9 +29,9 @@ void UIRectangle::InitEventMap()
 }
 void UIRectangle::InitAttrValuePatternMap()
 {
-	ADD_ATTR_PATTERN("corner", R_CHECK_INT);
-	ADD_ATTR_PATTERN("border", R_CHECK_INT);
-	ADD_ATTR_PATTERN("color", R_CHECK_COLOR_VALUE);
+	ADD_ATTR_PATTERN("corner",		R_CHECK_INT);
+	ADD_ATTR_PATTERN("border",		R_CHECK_INT);
+	ADD_ATTR_PATTERN("color",		R_CHECK_COLOR_VALUE);
 	ADD_ATTR_PATTERN("bordercolor", R_CHECK_COLOR_VALUE);
 }
 void UIRectangle::InitAttrValueParserMap()

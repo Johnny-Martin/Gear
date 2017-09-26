@@ -23,7 +23,7 @@ protected:
 #else
 	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
 #endif
-	bool							InitImpl(const XMLElement* pElement);
+	//bool							InitImpl(const XMLElement* pElement);
 protected:
 	void							InitAttrMap();
 	void							InitEventMap();

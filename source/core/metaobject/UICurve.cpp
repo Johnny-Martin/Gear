@@ -95,7 +95,17 @@ HRESULT	UICurve::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F&
 		pB.y = rcWndPos.bottom;
 		pRenderTarget->DrawLine(pA, pB, m_pColorBrush, (FLOAT)lineWidth, m_pStrokeStyle);
 	} else {//if(m_gdiPointsVer.size() > 0)
+		m_pointsVer.push_back(D2D1_POINT_2F{ 0, 0 });
+		m_pointsVer.push_back(D2D1_POINT_2F{ 15, 5 });
+		m_pointsVer.push_back(D2D1_POINT_2F{ 70, 9 });
+		m_pointsVer.push_back(D2D1_POINT_2F{ 11, 50 });
+		std::size_t length = m_pointsVer.size();
 		
+		for (std::size_t i = 0; i < length - 1; ++i) {
+			pA = m_pointsVer[i];
+			pB = m_pointsVer[i + 1];
+			pRenderTarget->DrawLine(pA, pB, m_pColorBrush, (FLOAT)lineWidth, m_pStrokeStyle);
+		}
 	}
 	return hr;
 }
@@ -118,6 +128,7 @@ HRESULT	UICurve::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget
 	//默认是solid(实线)风格
 	D2D1_STROKE_STYLE_PROPERTIES prop = StrokeStyleProperties();
 	auto style = m_attrMap["style"];
+	auto cap = m_attrMap["cap"];
 	int length = 0;
 	FLOAT* floatVec = nullptr;
 	if (style == "solid") {
@@ -125,16 +136,12 @@ HRESULT	UICurve::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget
 	}else if (style == "dash") {
 		prop.dashStyle = D2D1_DASH_STYLE_DASH;
 	} else if (style == "dot") {
-		prop.dashCap = D2D1_CAP_STYLE_ROUND;
 		prop.dashStyle = D2D1_DASH_STYLE_DOT;
 	} else if (style == "dashdot") {
-		prop.dashCap = D2D1_CAP_STYLE_ROUND;
 		prop.dashStyle = D2D1_DASH_STYLE_DASH_DOT;
 	} else if (style == "dashdotdot") {
-		prop.dashCap = D2D1_CAP_STYLE_ROUND;
 		prop.dashStyle = D2D1_DASH_STYLE_DASH_DOT_DOT;
 	} else if (style == "custom" && m_dashesVec.size() > 0) {
-		prop.dashCap = D2D1_CAP_STYLE_ROUND;
 		prop.dashStyle = D2D1_DASH_STYLE_CUSTOM;
 		length = m_dashesVec.size();
 		floatVec = new FLOAT[length];
@@ -143,7 +150,17 @@ HRESULT	UICurve::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget
 			floatVec[i] = m_dashesVec[i];
 		}
 	}
-	
+
+	if (cap == "flat") {
+		prop.dashCap = D2D1_CAP_STYLE_FLAT;
+	} else if (cap == "square") {
+		prop.dashCap = D2D1_CAP_STYLE_SQUARE;
+	} else if (cap == "round") {
+		prop.dashCap = D2D1_CAP_STYLE_ROUND;
+	} else if (cap == "triangle") {
+		prop.dashCap = D2D1_CAP_STYLE_TRIANGLE;
+	}
+
 	hr = RenderManager::m_pD2DFactory->CreateStrokeStyle(prop, floatVec, length,&m_pStrokeStyle);
 	if (FAILED(hr)) {
 		ERR("fatal error in m_pStrokeStyle, nullptr! hr:{}", hr);
@@ -216,14 +233,14 @@ HRESULT	UICurve::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 		Gdiplus::Point pB(rcWndPos.left, rcWndPos.top + rcWndPos.height);
 		status = graphics.DrawLine(&pen, pA, pB);
 	} else  {//if(m_gdiPointsVer.size() > 0)
-		m_gdiPointsVer.push_back(PointF(0, 0));
-		m_gdiPointsVer.push_back(PointF(15, 5));
-		m_gdiPointsVer.push_back(PointF(70, 9));
-		m_gdiPointsVer.push_back(PointF(11, 50));
-		std::size_t length = m_gdiPointsVer.size();
+		m_pointsVer.push_back(PointF(0, 0));
+		m_pointsVer.push_back(PointF(15, 5));
+		m_pointsVer.push_back(PointF(70, 9));
+		m_pointsVer.push_back(PointF(11, 50));
+		std::size_t length = m_pointsVer.size();
 		Gdiplus::PointF* points = new Gdiplus::PointF[length];
 		for (std::size_t i=0; i<length; ++i){
-			points[i] = m_gdiPointsVer[i];
+			points[i] = m_pointsVer[i];
 		}
 		status = graphics.DrawLines(&pen, points, length);
 	}

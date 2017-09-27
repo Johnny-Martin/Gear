@@ -21,11 +21,12 @@ protected:
 private:
 	ID2D1SolidColorBrush*			m_pColorBrush;
 	ID2D1StrokeStyle*				m_pStrokeStyle;
+	vector<D2D1_POINT_2F>			m_pointsVer;
 #else
 public:
 	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
 private:
-	vector<Gdiplus::PointF>			m_gdiPointsVer;
+	vector<Gdiplus::PointF>			m_pointsVer;
 #endif
 protected:
 	void							InitAttrMap();

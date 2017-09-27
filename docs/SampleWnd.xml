@@ -62,7 +62,7 @@
 	</window>
 	<window id="TestLayout3" pos="0, 0, 400, 400" title="测试布局对象">
 		<bitmap id="wnd.content.icon"  pos="0, 0, 100, 100" res="image.settingIcon" stretch="1" zorder="10"/>
-		<curve id="wnd.content.curve"  pos="0, #mid, #width, 20" color="FF00FF" style="custom" cap="round" dashes="1, 2, 2, 8, 2, 2" hline="1" linewidth="3" zorder="100"/>
+		<curve id="wnd.content.curve"  pos="0, #mid, #width, 20" color="FF00FF" style="dashdotdot" dashes="1, 2, 2, 8, 2, 2" hline="1" linewidth="3" zorder="100"/>
 		<curve id="wnd.content.curve2" pos="#mid, 0, 20, #height" color="00FF00" style="dashdotdot" cap="triangle" vline="1" linewidth="3" zorder="100"/>
 		<curve id="wnd.content.curve3" pos="0, 0, #width, #height" color="000000"  zorder="110"/>
 		<!-- <bitmap id="wnd.content.icon2" pos="15, 15, 15, 15" res="imagelist.frameBkg.3" /> -->

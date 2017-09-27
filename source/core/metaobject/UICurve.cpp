@@ -94,11 +94,7 @@ HRESULT	UICurve::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F&
 		pB.x = rcWndPos.left;
 		pB.y = rcWndPos.bottom;
 		pRenderTarget->DrawLine(pA, pB, m_pColorBrush, (FLOAT)lineWidth, m_pStrokeStyle);
-	} else {//if(m_gdiPointsVer.size() > 0)
-		m_pointsVer.push_back(D2D1_POINT_2F{ 0, 0 });
-		m_pointsVer.push_back(D2D1_POINT_2F{ 15, 5 });
-		m_pointsVer.push_back(D2D1_POINT_2F{ 70, 9 });
-		m_pointsVer.push_back(D2D1_POINT_2F{ 11, 50 });
+	} else if (m_pointsVer.size() > 0) {//
 		std::size_t length = m_pointsVer.size();
 		
 		for (std::size_t i = 0; i < length - 1; ++i) {
@@ -232,11 +228,7 @@ HRESULT	UICurve::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 		Gdiplus::Point pA(rcWndPos.left, rcWndPos.top);
 		Gdiplus::Point pB(rcWndPos.left, rcWndPos.top + rcWndPos.height);
 		status = graphics.DrawLine(&pen, pA, pB);
-	} else  {//if(m_gdiPointsVer.size() > 0)
-		m_pointsVer.push_back(PointF(0, 0));
-		m_pointsVer.push_back(PointF(15, 5));
-		m_pointsVer.push_back(PointF(70, 9));
-		m_pointsVer.push_back(PointF(11, 50));
+	} else if (m_pointsVer.size() > 0) {//
 		std::size_t length = m_pointsVer.size();
 		Gdiplus::PointF* points = new Gdiplus::PointF[length];
 		for (std::size_t i=0; i<length; ++i){

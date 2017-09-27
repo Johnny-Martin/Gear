@@ -24,7 +24,8 @@ void UICurve::InitAttrMap()
 	ADD_ATTR("vline", "0")
 	ADD_ATTR("linewidth", "1")
 	ADD_ATTR("style", "solid")
-	ADD_ATTR("dashes", "")
+	ADD_ATTR("cap", "flat")
+	ADD_ATTR("dashes", "")//只有在style == custom的时候才会用到
 }
 void UICurve::InitEventMap()
 {
@@ -119,7 +120,9 @@ HRESULT	UICurve::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget
 	auto style = m_attrMap["style"];
 	int length = 0;
 	FLOAT* floatVec = nullptr;
-	if (style == "dash"){
+	if (style == "solid") {
+		prop.dashStyle = D2D1_DASH_STYLE_SOLID;
+	}else if (style == "dash") {
 		prop.dashStyle = D2D1_DASH_STYLE_DASH;
 	} else if (style == "dot") {
 		prop.dashCap = D2D1_CAP_STYLE_ROUND;
@@ -159,10 +162,49 @@ HRESULT	UICurve::DiscardDeviceDependentResources()
 #else
 HRESULT	UICurve::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
+	auto SetStyle = [&](Pen& pen) {
+		auto style = m_attrMap["style"];
+		if (style == "solid") {
+			pen.SetDashStyle(DashStyleSolid);
+		} else if (style == "dash") {
+			pen.SetDashStyle(DashStyleDash);
+		} else if (style == "dot") {
+			pen.SetDashStyle(DashStyleDot);
+		} else if (style == "dashdot") {
+			pen.SetDashStyle(DashStyleDashDot);
+		} else if (style == "dashdotdot") {
+			pen.SetDashStyle(DashStyleDashDotDot);
+		} else if (style == "custom") {
+			pen.SetDashStyle(DashStyleCustom);
+
+			int length = (int)m_dashesVec.size();
+			REAL* floatVec = new REAL[length];
+			for (auto i = 0; i < length; ++i)
+			{
+				floatVec[i] = m_dashesVec[i];
+			}
+			pen.SetDashPattern(floatVec, length);
+		}
+	};
+	
+	auto SetCap = [&](Pen& pen) {
+		auto cap = m_attrMap["cap"];
+		if (cap == "flat") {
+			pen.SetDashCap(Gdiplus::DashCapFlat);
+		} else if (cap == "round") {
+			pen.SetDashCap(Gdiplus::DashCapRound);
+		} else if (cap == "triangle") {
+			pen.SetDashCap(Gdiplus::DashCapTriangle);
+		}
+	};
+
 	ResColor* resColorObj = ResManager::GetInstance().GetColorObject(m_attrMap["color"]);
 	Color color = resColorObj->GetGdiplusColor();
 	int lineWidth = atoi(m_attrMap["linewidth"].c_str());
-	Pen pen(color, (REAL)lineWidth);
+	Gdiplus::Pen pen(color, (REAL)lineWidth);
+
+	SetStyle(pen);
+	SetCap(pen);
 
 	Status status = GenericError;
 	if (m_attrMap["hline"] == "1"){

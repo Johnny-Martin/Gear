@@ -8,14 +8,14 @@
 namespace Gear {
 	namespace Res {
 
-class ResImage :public XmlUIElement, public ResPicture
+class ResList :public XmlUIElement, public ResPicture
 {
 public:
-												ResImage();
-												ResImage(const string& strImageDesc);
-												ResImage(const wstring& strImageDesc);
-												//ResImage(png_bytep* rowPointers, png_uint_32 width, png_uint_32 height, );
-	virtual										~ResImage();
+	ResList();
+	ResList(const string& strImageDesc, const wstring& wstrPath);
+	ResList(const wstring& strImageDesc);
+	virtual										~ResList();
+	ResPicture*									GetSubPicObjByIndex(unsigned int posIndex);
 #ifdef USE_D2D_RENDER_MODE
 public:
 	virtual ID2D1Bitmap*						GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight);
@@ -27,6 +27,13 @@ protected:
 	void										InitAttrMap();
 	void										InitAttrValuePatternMap();
 	void										InitAttrValueParserMap();
+private:
+	png_uint_32								LoadSubPictures();
+	unsigned char								m_hCount;
+	unsigned char								m_vCount;
+	png_uint_32									m_subPicWidth;
+	png_uint_32									m_subPicHeight;
+	vector<ResPicture*>							m_subPicVec;
 };
 
 	}//end of namespace Res

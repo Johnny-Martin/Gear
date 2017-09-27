@@ -30,6 +30,7 @@ enum ResType
 	RES_IMAGELIST = 3,
 	RES_TEXTURELIST = 4,
 };
+ResType GetResType(const string& resID);
 
 class ResManager
 {

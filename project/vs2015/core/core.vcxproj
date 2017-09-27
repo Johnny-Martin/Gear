@@ -183,6 +183,7 @@
     <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResImage.cpp" />
+    <ClCompile Include="..\..\..\source\core\resource\ResList.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResManage.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResPicture.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResText.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResFont.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResImage.h" />
+    <ClInclude Include="..\..\..\source\core\resource\ResList.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResManager.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResPicture.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResText.h" />

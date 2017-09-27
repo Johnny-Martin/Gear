@@ -85,11 +85,13 @@ ResPicture*	ResManager::GetPicObject(const string& strResID)
 	auto it = m_picMap.find(strResID);
 	if (it != m_picMap.end()) { return it->second; }
 
-	//map里不存在，就尝试从m_resPathVec里的目录里加载、解析
-	if (LoadResource(strResID) && m_picMap[strResID] != nullptr) {
-		return m_picMap[strResID];
+	//map里不存在，就尝试从m_resPathVec里的目录里加载、解析。strResID头部需要带一个#号。
+	if (strResID.find("#") == 0) {
+		if (LoadResource(strResID) && m_picMap[strResID] != nullptr) {
+			return m_picMap[strResID];
+		}
 	}
-
+	//
 	ERR("GetResObject error: can not find ResObject, strResID: {}", strResID);
 	return nullptr;
 }
@@ -99,7 +101,7 @@ ResColor* ResManager::GetColorObject(const string& strColorValueOrID)
 		auto it = m_colorMap.find(strColorValueOrID);
 		return it == m_colorMap.end() ? nullptr : it->second;
 	} 
-	
+	//带#号的id,是一个色值，不是真正的ID
 	auto it = m_colorMap2.find(strColorValueOrID);
 	if (it != m_colorMap2.end()){
 		return it->second;
@@ -109,30 +111,34 @@ ResColor* ResManager::GetColorObject(const string& strColorValueOrID)
 	m_colorMap2[strColorValueOrID] = pColorObj;
 	return pColorObj;
 }
+
+ResType Gear::Res::GetResType(const string& resID)
+{
+	if (resID.find("image.") == 0) {
+		return RES_IMAGE;
+	} else if (resID.find("texture.") == 0) {
+		return RES_TEXTURE;
+	} else if (resID.find("imagelist.") == 0) {
+		return RES_IMAGELIST;
+	} else if (resID.find("texturelist.") == 0) {
+		return RES_TEXTURELIST;
+	}
+	return RES_INVALIDE_TYPE;
+};
+
 bool ResManager::LoadResource(const string& strResID)
 {
-	auto GetResType = [](const string& resID)->ResType {
-		if (resID.find("image.") == 0) {
-			return RES_IMAGE;
-		} else if (resID.find("texture.") == 0) {
-			return RES_TEXTURE;
-		} else if (resID.find("imagelist.") == 0) {
-			return RES_IMAGELIST;
-		} else if (resID.find("texturelist.") == 0) {
-			return RES_TEXTURELIST;
-		}
-		return RES_INVALIDE_TYPE;
-	};
-
 	auto GetResFileName = [](const string& resID)->string {
 		string fileName;
-		if (resID.find("image.") == 0 || resID.find("texture.") == 0) {
-			fileName = resID + ".png";
+		string tmpResID = resID.substr(1, resID.size() - 1);
+		
+		if (tmpResID.find("image.") == 0 || tmpResID.find("texture.") == 0) {
+			fileName = tmpResID + ".png";
 		}
-		else if (resID.find("imagelist.") == 0 || resID.find("texturelist.") == 0) {
-			auto pos = resID.find_last_of(".");
+		else if (tmpResID.find("imagelist.") == 0 || tmpResID.find("texturelist.") == 0) {
+			auto pos = tmpResID.find_last_of(".");
 			if (pos != string::npos) {
-				fileName = resID.substr(0, pos) + ".png";
+				fileName = tmpResID.substr(0, pos) + ".png";
 			}
 		}
 		return fileName;

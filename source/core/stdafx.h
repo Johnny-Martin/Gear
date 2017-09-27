@@ -23,6 +23,7 @@
 #include <stack>
 #include <map>
 #include <regex>
+#include <vector>
 
 ///////XML½âÎö////////
 #include "tinyxml2.h"

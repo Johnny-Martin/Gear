@@ -99,6 +99,9 @@
     <ClCompile Include="..\..\..\source\core\resource\ResTexture.cpp">
       <Filter>resource</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResList.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -174,6 +177,9 @@
       <Filter>resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\Restexture.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\ResList.h">
       <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>

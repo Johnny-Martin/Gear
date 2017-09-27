@@ -3,6 +3,7 @@
 #include "../entry/RenderManager.h"
 #include "../base/XmlUIElement.h"
 #include "ResPicture.h"
+#include "ResManager.h"
 #include "png.h"
 
 namespace Gear {
@@ -28,12 +29,13 @@ protected:
 	void										InitAttrValuePatternMap();
 	void										InitAttrValueParserMap();
 private:
-	png_uint_32								LoadSubPictures();
+	png_uint_32									LoadAllSubPictures();
 	unsigned char								m_hCount;
 	unsigned char								m_vCount;
 	png_uint_32									m_subPicWidth;
 	png_uint_32									m_subPicHeight;
 	vector<ResPicture*>							m_subPicVec;
+	Gear::Res::ResType							m_subPicType;
 };
 
 	}//end of namespace Res

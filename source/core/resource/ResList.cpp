@@ -9,6 +9,7 @@ ResList::ResList()
 	,m_vCount(1)
 	,m_subPicWidth(0)
 	,m_subPicHeight(0)
+	,m_subPicType(RES_IMAGE)
 {
 	InitAttrMap();
 	InitAttrValuePatternMap();
@@ -19,6 +20,11 @@ ResList::~ResList()
 
 }
 ResList::ResList(const string& strListDesc, const wstring& wstrPath)
+	:m_hCount(1)
+	, m_vCount(1)
+	, m_subPicWidth(0)
+	, m_subPicHeight(0)
+	, m_subPicType(RES_IMAGE)
 {
 	//从strListDesc（也就是ID）中解析出list的一些必要属性(ResList对象需要知道子图的类型、数量)
 	//"#imagelist.1x4.button.bkg.2
@@ -40,6 +46,15 @@ ResList::ResList(const string& strListDesc, const wstring& wstrPath)
 		m_hCount = atoi(sizeVec[1].c_str());
 	}
 
+	if (strListDesc.find("imagelist.") == 0 || strListDesc.find("#imagelist.") == 0){
+		m_subPicType = RES_IMAGE;
+	} else if (strListDesc.find("texturelist.") == 0 || strListDesc.find("#texturelist.") == 0) {
+		m_subPicType = RES_TEXTURE;
+	} else {
+		ERR("ResList error: can not parse resource type from strListDesc:{}", strListDesc);
+		return;
+	}
+
 	m_wstrFilePath = wstrPath;// ResManager::GetInstance().GetResFilePathByName(strListDesc);
 	if (m_wstrFilePath.empty()) {
 		ERR("Create ResImage failed! cannot find image file");
@@ -47,10 +62,15 @@ ResList::ResList(const string& strListDesc, const wstring& wstrPath)
 	}
 }
 ResList::ResList(const wstring& wstrPath)
+	:m_hCount(1)
+	, m_vCount(1)
+	, m_subPicWidth(0)
+	, m_subPicHeight(0)
+	, m_subPicType(RES_IMAGE)
 {
 	m_wstrFilePath = wstrPath;
 }
-png_uint_32 ResList::LoadSubPictures()
+png_uint_32 ResList::LoadAllSubPictures()
 {
 	if (m_pngWidth == 0) {
 		auto ret = ReadPngFile(m_wstrFilePath);
@@ -62,7 +82,19 @@ png_uint_32 ResList::LoadSubPictures()
 	m_subPicHeight = m_pngHeight / m_vCount;
 
 	//使用内存块创建ResImage 和 ResTexture
-	//--//ResImage(BYTE* memChunk, width, height, colorType, m_bitDepth, colorChannels)
+	if (m_subPicType == RES_IMAGE) {
+		for (int i=0; i<m_hCount*m_vCount; ++i){
+			//分配空间
+
+			//拷贝数据
+
+			//使用内存块创建Image对象
+			//ResPicture* picObjPtr = new ResImage();
+		}
+
+		//销毁本体内存空间??
+	}
+	
 	return 0;
 }
 ResPicture*	ResList::GetSubPicObjByIndex(unsigned int posIndex)

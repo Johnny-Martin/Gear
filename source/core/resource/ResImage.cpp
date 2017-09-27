@@ -26,6 +26,16 @@ ResImage::ResImage(const wstring& wstrPath)
 {
 	m_wstrFilePath = wstrPath;
 }
+ResImage::ResImage(png_bytep* rowPointers, png_uint_32 width, png_uint_32 height, png_byte colorType, png_byte colorChannels, png_byte bitDepth)
+{
+	m_rowPointers	= rowPointers;
+	m_pngWidth		= width;
+	m_pngHeight		= height;
+	m_colorType		= colorType;
+	m_colorChannels = colorChannels;
+	m_bitDepth		= bitDepth;
+}
+
 void ResImage::InitAttrMap()
 {
 	ADD_ATTR("file", "")

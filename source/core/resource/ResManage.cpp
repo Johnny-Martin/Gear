@@ -114,13 +114,13 @@ ResColor* ResManager::GetColorObject(const string& strColorValueOrID)
 
 ResType Gear::Res::GetResType(const string& resID)
 {
-	if (resID.find("image.") == 0) {
+	if (resID.find("image.") == 0 || resID.find("#image.") == 0) {
 		return RES_IMAGE;
-	} else if (resID.find("texture.") == 0) {
+	} else if (resID.find("texture.") == 0 || resID.find("#texture.") == 0) {
 		return RES_TEXTURE;
-	} else if (resID.find("imagelist.") == 0) {
+	} else if (resID.find("imagelist.") == 0 || resID.find("#imagelist.") == 0) {
 		return RES_IMAGELIST;
-	} else if (resID.find("texturelist.") == 0) {
+	} else if (resID.find("texturelist.") == 0 || resID.find("#texturelist.") == 0) {
 		return RES_TEXTURELIST;
 	}
 	return RES_INVALIDE_TYPE;

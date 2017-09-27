@@ -21,6 +21,7 @@ protected:
 private:
 	ID2D1SolidColorBrush*			m_pColorBrush;
 	ID2D1StrokeStyle*				m_pStrokeStyle;
+	vector<FLOAT>					m_dashesVec;
 #else
 public:
 	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);

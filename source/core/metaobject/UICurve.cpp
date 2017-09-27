@@ -23,7 +23,8 @@ void UICurve::InitAttrMap()
 	ADD_ATTR("hline",	"0")
 	ADD_ATTR("vline", "0")
 	ADD_ATTR("linewidth", "1")
-	ADD_ATTR("style", "0")
+	ADD_ATTR("style", "solid")
+	ADD_ATTR("dashes", "")
 }
 void UICurve::InitEventMap()
 {
@@ -35,11 +36,41 @@ void UICurve::InitAttrValuePatternMap()
 	ADD_ATTR_PATTERN("hline",	R_CHECK_BOOL)
 	ADD_ATTR_PATTERN("vline", R_CHECK_BOOL)
 	ADD_ATTR_PATTERN("linewidth", R_CHECK_INT)
-	ADD_ATTR_PATTERN("style", R_CHECK_INT)
 }
 void UICurve::InitAttrValueParserMap()
 {
+	auto ParseDashes = [&](const string& sAttrName)->bool {
+		string dashes = m_attrMap[sAttrName];
+		if (dashes.empty()){
+			return false;
+		}
+		EraseSpace(dashes);
+		string item = "";
+		for (std::size_t i=0; i<dashes.length(); ++i)
+		{
+			char num = dashes[i];
+			if (num >= '0' && num <= '9')
+			{
+				item += num;
+			} else if(num == ','){
+				float dash = (float)atoi(item.c_str());
+				item = "";
+				m_dashesVec.push_back(dash);
+				continue;
+			} else {
+				ERR("ParseDashes error: illegal character");
+				return false;
+			}
+		}
+		if (!item.empty())
+		{
+			float dash = (float)atoi(item.c_str());
+			m_dashesVec.push_back(dash);
+		}
+		return true;
+	};
 
+	ADD_ATTR_PARSER("dashes", ParseDashes)
 }
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
@@ -83,9 +114,34 @@ HRESULT	UICurve::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget
 		return hr;
 	}
 
+	//默认是solid(实线)风格
 	D2D1_STROKE_STYLE_PROPERTIES prop = StrokeStyleProperties();
-	//prop.dashStyle = D2D1_DASH_STYLE_DOT;
-	hr = RenderManager::m_pD2DFactory->CreateStrokeStyle(prop,0,0,&m_pStrokeStyle);
+	auto style = m_attrMap["style"];
+	int length = 0;
+	FLOAT* floatVec = nullptr;
+	if (style == "dash"){
+		prop.dashStyle = D2D1_DASH_STYLE_DASH;
+	} else if (style == "dot") {
+		prop.dashCap = D2D1_CAP_STYLE_ROUND;
+		prop.dashStyle = D2D1_DASH_STYLE_DOT;
+	} else if (style == "dashdot") {
+		prop.dashCap = D2D1_CAP_STYLE_ROUND;
+		prop.dashStyle = D2D1_DASH_STYLE_DASH_DOT;
+	} else if (style == "dashdotdot") {
+		prop.dashCap = D2D1_CAP_STYLE_ROUND;
+		prop.dashStyle = D2D1_DASH_STYLE_DASH_DOT_DOT;
+	} else if (style == "custom" && m_dashesVec.size() > 0) {
+		prop.dashCap = D2D1_CAP_STYLE_ROUND;
+		prop.dashStyle = D2D1_DASH_STYLE_CUSTOM;
+		length = m_dashesVec.size();
+		floatVec = new FLOAT[length];
+		for (auto i=0; i<length; ++i)
+		{
+			floatVec[i] = m_dashesVec[i];
+		}
+	}
+	
+	hr = RenderManager::m_pD2DFactory->CreateStrokeStyle(prop, floatVec, length,&m_pStrokeStyle);
 	if (FAILED(hr)) {
 		ERR("fatal error in m_pStrokeStyle, nullptr! hr:{}", hr);
 		return hr;

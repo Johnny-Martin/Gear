@@ -86,14 +86,13 @@ bool XmlUIElement::CheckAttrValue(const string& sAttrName, const string& sAttrVa
 {
 	map<string, string>::iterator it = m_attrValuePatternMap.find(sAttrName);
 	if (it == m_attrValuePatternMap.end()) {
-		INFO("CheckAttrValue Info: attribute value pattern not found.(do not need check), name: {}", sAttrName);
+		//INFO("CheckAttrValue Info: attribute value pattern not found.(do not need check), name: {}", sAttrName);
 		return true;
 	}
 	regex pattern(it->second.c_str());
 	if (regex_match(sAttrValue, pattern)) {
 		return true;
 	} else {
-		ERR("CheckAttrValue error: ilegal attribute value, name: {}, value: {}", sAttrName, sAttrValue);
 		return false;
 	}
 }
@@ -107,11 +106,11 @@ bool XmlUIElement::SetAttrValue(const string& sAttrName, const string& sAttrValu
 	//标签所有的attr的值，都会被剔除空格符
 #ifdef DEBUG
 	if (!CheckAttrName(sAttrName)) {
-		ERR("SetAttrValue error: Unsupported attribute, name: {}, value: {}.", sAttrName, sAttrValue);
+		ERR("SetAttrValue error: Unsupported attribute, name: {}, value: {}", sAttrName, sAttrValue);
 		return false;
 	}
 	if (!CheckAttrValue(sAttrName, sAttrValue)) {
-		ERR("SetAttrValue error: ilegal attribute value, name: {}, value: {}.", sAttrName, sAttrValue);
+		ERR("SetAttrValue error: ilegal attribute value, name: {}, value: {}", sAttrName, sAttrValue);
 		return false;
 	}
 #endif // DEBUG

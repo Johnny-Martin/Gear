@@ -11,6 +11,7 @@ public:
 	ResPicture();
 	virtual ~ResPicture();
 	ResPicture(const wstring& wstrFilePath);
+	ResPicture(png_bytep* rowPointers, png_uint_32 width, png_uint_32 height, png_byte colorType, png_byte colorChannels, png_byte bitDepth);
 #ifdef USE_D2D_RENDER_MODE
 public:
 	virtual ID2D1Bitmap*			GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight) = 0;

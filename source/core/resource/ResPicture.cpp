@@ -54,6 +54,27 @@ ResPicture::ResPicture(const wstring& wstrFilePath)
 	m_wstrFilePath = wstrFilePath;
 	//ReadPngFile(wstrFilePath);
 }
+ResPicture::ResPicture(png_bytep* rowPointers, png_uint_32 width, png_uint_32 height, png_byte colorType, png_byte colorChannels, png_byte bitDepth)
+	:m_purpleLineColor(RGB(127, 0, 127))
+	, m_wstrFilePath(L"")
+	, m_pngWidth(0)
+	, m_pngHeight(0)
+	, m_colorType(0)
+	, m_bitDepth(0)
+	, m_rowPointers(nullptr)
+	, m_pngStructPtr(nullptr)
+	, m_pngInfoPtr(nullptr)
+#ifdef USE_D2D_RENDER_MODE
+	, m_d2d1BitmapPtr(nullptr)
+#endif
+{
+	m_rowPointers = rowPointers;
+	m_pngWidth = width;
+	m_pngHeight = height;
+	m_colorType = colorType;
+	m_colorChannels = colorChannels;
+	m_bitDepth = bitDepth;
+}
 bool ResPicture::ReadPngFile(const wstring& wstrFilePath)
 {
 	string strFilePath = WStringToString(wstrFilePath);

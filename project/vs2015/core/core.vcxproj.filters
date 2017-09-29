@@ -176,10 +176,10 @@
     <ClInclude Include="..\..\..\source\core\resource\ResImage.h">
       <Filter>resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\resource\Restexture.h">
+    <ClInclude Include="..\..\..\source\core\resource\ResList.h">
       <Filter>resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\resource\ResList.h">
+    <ClInclude Include="..\..\..\source\core\resource\ResTexture.h">
       <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>

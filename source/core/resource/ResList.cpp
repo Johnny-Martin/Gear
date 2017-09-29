@@ -15,10 +15,29 @@ ResList::ResList()
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
 }
+void ResList::InitAttrMap()
+{
+	ADD_ATTR("file", "")
+	ADD_ATTR("type", "image")
+	ADD_ATTR("hcount", "1")
+	ADD_ATTR("vcount", "1")
+	//ADD_ATTR("split", "0")//List中的各个图片单元之间的分割用的是127，0，127
+}
+void ResList::InitAttrValuePatternMap()
+{
+	ADD_ATTR_PATTERN("hcount", R_CHECK_INT)
+	ADD_ATTR_PATTERN("vcount", R_CHECK_INT)
+	//ADD_ATTR_PATTERN("split", R_CHECK_BOOL)
+}
+void ResList::InitAttrValueParserMap()
+{
+
+}
 ResList::~ResList()
 {
 	//ResList析构时，无需析构，m_subPicVec里面的对象（由ResManager析构）
 }
+//非默认构造函数，没必要调用InitAttrMap()?
 ResList::ResList(const string& strListDesc, const wstring& wstrPath)
 	:m_hCount(1)
 	, m_vCount(1)
@@ -132,34 +151,19 @@ ResPicture*	ResList::GetSubPicObjByIndex(unsigned int posIndex)
 	}
 	return m_subPicVec[posIndex];
 }
-void ResList::InitAttrMap()
-{
-	ADD_ATTR("file", "")
-	ADD_ATTR("type", "image")
-	ADD_ATTR("hcount", "1")
-	ADD_ATTR("vcount", "1")
-	//ADD_ATTR("split", "0")//List中的各个图片单元之间的分割用的是127，0，127
-}
-void ResList::InitAttrValuePatternMap()
-{
-	ADD_ATTR_PATTERN("hcount", R_CHECK_INT)
-	ADD_ATTR_PATTERN("vcount", R_CHECK_INT)
-	//ADD_ATTR_PATTERN("split", R_CHECK_BOOL)
-}
-void ResList::InitAttrValueParserMap()
-{
-
-}
+//ResList无需获取整个图像，故GetD2D1Bitmap与GetGDIBitmap无需实现
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResList::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
+	ATLASSERT(FALSE);
 	return nullptr;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
 Gdiplus::Bitmap* ResList::GetGDIBitmap(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
+	ATLASSERT(FALSE);
 	return nullptr;
 }
 #endif

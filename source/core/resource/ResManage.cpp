@@ -177,7 +177,7 @@ bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strR
 	} else if (resType == RES_TEXTURE) {
 		//ResPicture* pResPic = new ResTexture(wstrFilePath);
 		//m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
-	} else if (resType == RES_IMAGELIST) {
+	} else if (resType == RES_IMAGELIST || resType == RES_TEXTURELIST) {
 		//此处的strResID是指imagelist中的一个subImage的ID,需要处理成imagelist的ID
 		auto pos = strResID.find_last_of(".");
 		ATLASSERT(pos != string::npos);
@@ -189,9 +189,7 @@ bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strR
 			ResPicture* picObjPtr = picList.GetSubPicObjByIndex(i);
 			string subPicID = listID + "." + NumToString(i);
 			m_picMap.insert(pair<string, ResPicture*>(subPicID, picObjPtr));
-		}
-	} else if (resType == RES_TEXTURELIST) {
-		
+		}	
 	}
 	return true;
 }

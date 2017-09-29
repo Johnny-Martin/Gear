@@ -214,7 +214,7 @@
     <ClInclude Include="..\..\..\source\core\resource\ResManager.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResPicture.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResText.h" />
-    <ClInclude Include="..\..\..\source\core\resource\Restexture.h" />
+    <ClInclude Include="..\..\..\source\core\resource\ResTexture.h" />
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />
     <ClInclude Include="..\..\..\source\core\utils\Log.h" />

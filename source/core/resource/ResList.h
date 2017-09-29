@@ -9,6 +9,7 @@
 namespace Gear {
 	namespace Res {
 
+enum ResType;
 class ResList :public XmlUIElement, public ResPicture
 {
 public:
@@ -16,6 +17,7 @@ public:
 	ResList(const string& strImageDesc, const wstring& wstrPath);
 	ResList(const wstring& strImageDesc);
 	virtual										~ResList();
+	png_uint_32									LoadAllSubPictures();
 	ResPicture*									GetSubPicObjByIndex(unsigned int posIndex);
 #ifdef USE_D2D_RENDER_MODE
 public:
@@ -29,13 +31,12 @@ protected:
 	void										InitAttrValuePatternMap();
 	void										InitAttrValueParserMap();
 private:
-	png_uint_32									LoadAllSubPictures();
 	unsigned char								m_hCount;
 	unsigned char								m_vCount;
 	png_uint_32									m_subPicWidth;
 	png_uint_32									m_subPicHeight;
 	vector<ResPicture*>							m_subPicVec;
-	Gear::Res::ResType							m_subPicType;
+	ResType										m_subPicType;
 };
 
 	}//end of namespace Res

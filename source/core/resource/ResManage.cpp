@@ -82,12 +82,13 @@ ResManager& ResManager::GetInstance()
 
 ResPicture*	ResManager::GetPicObject(const string& strResID)
 {
+	//不带#的id,要在XML配好，ResManager会在初始化时加载所有<resource>标签
 	auto it = m_picMap.find(strResID);
 	if (it != m_picMap.end()) { return it->second; }
 
 	//map里不存在，就尝试从m_resPathVec里的目录里加载、解析。strResID头部需要带一个#号。
 	if (strResID.find("#") == 0) {
-		if (LoadResource(strResID) && m_picMap[strResID] != nullptr) {
+		if (LoadResourceByID(strResID) && m_picMap[strResID] != nullptr) {
 			return m_picMap[strResID];
 		}
 	}
@@ -126,7 +127,7 @@ ResType Gear::Res::GetResType(const string& resID)
 	return RES_INVALIDE_TYPE;
 };
 
-bool ResManager::LoadResource(const string& strResID)
+bool ResManager::LoadResourceByID(const string& strResID)
 {
 	auto GetResFileName = [](const string& resID)->string {
 		string fileName;
@@ -177,21 +178,20 @@ bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strR
 		//ResPicture* pResPic = new ResTexture(wstrFilePath);
 		//m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_IMAGELIST) {
-		//PicListDivider divider(wstrFilePath);
-		//vector<ResPicture*> vec = divider.DividePic();
-		//for (auto it = vec.begin(); it != vec.end(); ++it) {
-			//初始化资源
-
-			//将资源存入m_resMap
-		//}
+		//此处的strResID是指imagelist中的一个subImage的ID,需要处理成imagelist的ID
+		auto pos = strResID.find_last_of(".");
+		ATLASSERT(pos != string::npos);
+		string listID = strResID.substr(0, pos);
+		
+		ResList picList(listID, wstrFilePath);
+		png_uint_32 picCount = picList.LoadAllSubPictures();
+		for (png_uint_32 i=0; i<picCount; ++i){
+			ResPicture* picObjPtr = picList.GetSubPicObjByIndex(i);
+			string subPicID = listID + "." + NumToString(i);
+			m_picMap.insert(pair<string, ResPicture*>(subPicID, picObjPtr));
+		}
 	} else if (resType == RES_TEXTURELIST) {
-		//PicListDivider divider(wstrFilePath);
-		//vector<ResPicture*> vec = divider.DividePic();
-		///for (auto it = vec.begin(); it != vec.end(); ++it) {
-			//初始化资源
-
-			//将资源存入m_resMap
-		//}
+		
 	}
 	return true;
 }

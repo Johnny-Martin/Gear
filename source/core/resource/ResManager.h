@@ -15,6 +15,7 @@ Description:		界面图片资源管理器
 #include "ResColor.h"
 #include "ResTexture.h"
 #include "ResImage.h"
+#include "ResList.h"
 
 using namespace std;
 
@@ -45,7 +46,7 @@ public:
 	//主要接口
 	ResPicture*						GetPicObject(const string& strResID);
 	ResColor*						GetColorObject(const string& strColorValueOrID);
-	bool							LoadResource(const string& strResID);
+	bool							LoadResourceByID(const string& strResID);
 	bool							LoadResFromFile(const wstring& wstrFilePath, const string& strResID, ResType resType);
 private:
 	

@@ -17,7 +17,7 @@ ResList::ResList()
 }
 ResList::~ResList()
 {
-
+	//ResList析构时，无需析构，m_subPicVec里面的对象（由ResManager析构）
 }
 ResList::ResList(const string& strListDesc, const wstring& wstrPath)
 	:m_hCount(1)
@@ -41,6 +41,7 @@ ResList::ResList(const string& strListDesc, const wstring& wstrPath)
 	}
 	if (sizeVec.size() == 1){
 		m_hCount = atoi(sizeVec[0].c_str());
+		m_vCount = 1;
 	}else {
 		m_vCount = atoi(sizeVec[0].c_str());
 		m_hCount = atoi(sizeVec[1].c_str());
@@ -55,7 +56,7 @@ ResList::ResList(const string& strListDesc, const wstring& wstrPath)
 		return;
 	}
 
-	m_wstrFilePath = wstrPath;// ResManager::GetInstance().GetResFilePathByName(strListDesc);
+	m_wstrFilePath = wstrPath;
 	if (m_wstrFilePath.empty()) {
 		ERR("Create ResImage failed! cannot find image file");
 		return;
@@ -77,39 +78,59 @@ png_uint_32 ResList::LoadAllSubPictures()
 		if (!ret) { return 0; }
 	}
 
-	ATLASSERT(m_hCount >= 0 && m_vCount > 0);
+	ATLASSERT(m_hCount > 0 && m_vCount > 0);
 	m_subPicWidth  = m_pngWidth / m_hCount;
 	m_subPicHeight = m_pngHeight / m_vCount;
+	ATLASSERT(m_subPicWidth > 0 && m_subPicHeight > 0);
 
 	//使用内存块创建ResImage 和 ResTexture
-	if (m_subPicType == RES_IMAGE) {
-		for (int i=0; i<m_hCount*m_vCount; ++i){
-			//分配空间
-
-			//拷贝数据
-
-			//使用内存块创建Image对象
-			//ResPicture* picObjPtr = new ResImage();
+	for (int i=0; i<m_hCount*m_vCount; ++i){
+		//分配空间
+		png_bytep* rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * m_subPicHeight);
+		png_uint_32 rowSize = m_subPicWidth * m_colorChannels;
+		png_byte* pngPixelData = (png_byte*)malloc(rowSize * m_pngHeight);
+		for (unsigned int rowIndex = 0; rowIndex < m_subPicHeight; ++rowIndex){
+			rowPointers[rowIndex] = (png_byte*)((int)pngPixelData + rowIndex * rowSize);
 		}
 
-		//销毁本体内存空间??
+		//拷贝数据
+		int subPicRowPos = i / m_hCount;
+		int subPicColPos = i % m_hCount;
+		png_uint_32 fatherRowSize = png_get_rowbytes(m_pngStructPtr, m_pngInfoPtr);
+		for (png_uint_32 row = 0; row < m_subPicHeight; ++row) {
+			//int fatherRow  = subPicRowPos * m_subPicHeight + row;
+			for (png_uint_32 col = 0; col < m_subPicWidth * m_colorChannels; ++col) {
+				//int fatherCol = subPicColPos * m_subPicWidth * m_colorChannels + col;
+				rowPointers[row][col] = m_rowPointers[subPicRowPos * m_subPicHeight + row][subPicColPos * m_subPicWidth * m_colorChannels + col];
+			}
+		}
+		
+		//使用内存块创建对象
+		if (m_subPicType == RES_IMAGE) {
+			ResPicture* picObjPtr = new ResImage(rowPointers, m_subPicWidth, m_subPicHeight, m_colorType, m_colorChannels, m_bitDepth);
+			m_subPicVec.push_back(picObjPtr);
+		} else if (m_subPicType == RES_TEXTURE){
+
+		} else {
+			ERR("ResList::LoadAllSubPictures error: illegal Resource type!");
+			free(rowPointers[0]);
+			free(rowPointers);
+			rowPointers = nullptr;
+			return 0;
+		}
 	}
-	
-	return 0;
+
+	//ResList析构时，~ResPicture会销毁m_rowPointers[0]以及m_rowPointers
+	return m_hCount*m_vCount;
 }
 ResPicture*	ResList::GetSubPicObjByIndex(unsigned int posIndex)
 {
 	unsigned int count = m_hCount*m_vCount;
-	if (posIndex >= count){
-		ERR("GetSubPicObjByIndex error: illegal posIndex:{}, m_hCount*m_vCount: {}", posIndex, m_hCount*m_vCount);
+	if (posIndex >= m_subPicVec.size()){
+		ERR("GetSubPicObjByIndex error: illegal posIndex:{}, m_subPicVec.size: {}", posIndex, m_subPicVec.size());
 		return nullptr;
 	}
-	//第一次使用的时候再加载
-	if (m_subPicVec.size() == 0){
-		
-	}
-
-	return nullptr;
+	return m_subPicVec[posIndex];
 }
 void ResList::InitAttrMap()
 {

@@ -105,13 +105,7 @@ png_uint_32 ResList::LoadAllSubPictures()
 	//使用内存块创建ResImage 和 ResTexture
 	for (int i=0; i<m_hCount*m_vCount; ++i){
 		//分配空间
-		png_bytep* rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * m_subPicHeight);
-		png_uint_32 rowSize = m_subPicWidth * m_colorChannels;
-		png_byte* pngPixelData = (png_byte*)malloc(rowSize * m_pngHeight);
-		for (unsigned int rowIndex = 0; rowIndex < m_subPicHeight; ++rowIndex){
-			rowPointers[rowIndex] = (png_byte*)((int)pngPixelData + rowIndex * rowSize);
-		}
-
+		png_bytep*  rowPointers = AllocPngDataMem(m_subPicWidth, m_subPicHeight, m_colorChannels);
 		//拷贝数据
 		int subPicRowPos = i / m_hCount;
 		int subPicColPos = i % m_hCount;

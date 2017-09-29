@@ -126,14 +126,19 @@ RESERROR ResTexture::DetectHorizontalLine()
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
 	auto CreateNineInOne = [&]()->ID2D1Bitmap* {
+		ATLASSERT(width > m_pngWidth && height > m_pngHeight);
+		png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
 		
+		//四个角无需拉伸，直接拷贝
 		return nullptr;
 	};
 	auto CreateThreeH = [&]()->ID2D1Bitmap* {
+		png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
 
 		return nullptr;
 	};
 	auto CreateThreeV = [&]()->ID2D1Bitmap* {
+		png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
 
 		return nullptr;
 	};
@@ -167,13 +172,10 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 		m_d2d1BitmapPtr = CreateThreeH();
 	}
 
-	if (m_d2d1BitmapPtr){
-		retWidth  = width;
-		retHeight = height;
-		return m_d2d1BitmapPtr;
+	if (!m_d2d1BitmapPtr){
+		ERR("GetD2D1Bitmap error: get null m_d2d1BitmapPtr");
 	}
-	ERR("GetD2D1Bitmap error: get illegal divied line count! hline count:{}, vline count:{}", m_arrHorizontalLinePos.size(),  m_arrVerticalLinePos.size());
-	return nullptr;
+	return m_d2d1BitmapPtr;
 }
 
 //与GetD2D1Bitmap方法返回单张图片不同，OnDrawImplEx会使用9个(或者3个)单独的bitmap绘制一张bitmap（拉伸、拼接）

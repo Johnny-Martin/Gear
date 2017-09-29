@@ -154,14 +154,7 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 		return RES_ERROR_PARSE_FILE_FALIED;
 	}
 
-	m_rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * m_pngHeight);
-	png_uint_32 rowSize = png_get_rowbytes(m_pngStructPtr, m_pngInfoPtr);
-	png_byte* pngPixelData = (png_byte*)malloc(rowSize * m_pngHeight);
-	for (unsigned int rowIndex = 0; rowIndex < m_pngHeight; ++rowIndex)
-	{
-		png_byte *rowHead = (png_byte*)((int)pngPixelData + rowIndex * rowSize);
-		m_rowPointers[rowIndex] = (png_byte*)rowHead;
-	}
+	m_rowPointers = AllocPngDataMem(m_pngWidth, m_pngHeight, m_colorChannels);
 
 	png_read_image(m_pngStructPtr, m_rowPointers);
 	png_read_end(m_pngStructPtr, m_pngInfoPtr);

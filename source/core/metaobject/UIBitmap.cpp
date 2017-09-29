@@ -37,7 +37,7 @@ void UIBitmap::InitAttrValueParserMap()
 		return true;
 	};
 
-	ADD_ATTR_PARSER("frequent", ParseFrequent)
+	//ADD_ATTR_PARSER("frequent", ParseFrequent)
 }
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////

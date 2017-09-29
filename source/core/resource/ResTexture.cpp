@@ -61,11 +61,9 @@ void ResTexture::InitAttrMap()
 }
 void ResTexture::InitAttrValuePatternMap()
 {
-
 }
 void ResTexture::InitAttrValueParserMap()
 {
-
 }
 
 bool ResTexture::IsVerticalLine(unsigned int horizontalPos, const COLORREF lineColor)
@@ -127,15 +125,15 @@ RESERROR ResTexture::DetectHorizontalLine()
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
-	auto CreateNineInOne = [&](unsigned int width, unsigned int height)->ID2D1Bitmap* {
+	auto CreateNineInOne = [&]()->ID2D1Bitmap* {
 		
 		return nullptr;
 	};
-	auto CreateThreeH = [&](unsigned int width, unsigned int height)->ID2D1Bitmap* {
+	auto CreateThreeH = [&]()->ID2D1Bitmap* {
 
 		return nullptr;
 	};
-	auto CreateThreeV = [&](unsigned int width, unsigned int height)->ID2D1Bitmap* {
+	auto CreateThreeV = [&]()->ID2D1Bitmap* {
 
 		return nullptr;
 	};
@@ -160,13 +158,13 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 
 	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2){
 		//NineInOne类型的texture
-		m_d2d1BitmapPtr = CreateNineInOne(width, height);
+		m_d2d1BitmapPtr = CreateNineInOne();
 	} else if (m_arrHorizontalLinePos.size() == 2) {
 		//ThreeV类型的texture，直接返回单张图片
-		m_d2d1BitmapPtr = CreateThreeV(width, height);
+		m_d2d1BitmapPtr = CreateThreeV();
 	}else if (m_arrVerticalLinePos.size() == 2){
 		//ThreeH类型的texture，直接返回单张图片
-		m_d2d1BitmapPtr = CreateThreeH(width, height);
+		m_d2d1BitmapPtr = CreateThreeH();
 	}
 
 	if (m_d2d1BitmapPtr){
@@ -177,11 +175,50 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 	ERR("GetD2D1Bitmap error: get illegal divied line count! hline count:{}, vline count:{}", m_arrHorizontalLinePos.size(),  m_arrVerticalLinePos.size());
 	return nullptr;
 }
+
+//与GetD2D1Bitmap方法返回单张图片不同，OnDrawImplEx会使用9个(或者3个)单独的bitmap绘制一张bitmap（拉伸、拼接）
 HRESULT ResTexture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, UIObject* obj /*= nullptr*/)
 {
-	//与GetD2D1Bitmap方法返回单张图片不同，OnDrawImplEx会使用9个单独的bitmap绘制一张bitmap（拉伸、拼接）
+	auto DrawNineInOne = [&]()->HRESULT {
 
-	return S_OK;
+		return S_OK;
+	};
+	auto DrawThreeH = [&]()->HRESULT {
+
+		return S_OK;
+	};
+	auto DrawThreeV = [&]()->HRESULT {
+
+		return S_OK;
+	};
+
+	//删掉旧的图片,使用新模式绘制
+	SafeRelease(&m_d2d1BitmapPtr);
+
+	if (m_pngWidth == 0) {
+		auto ret = ReadPngFile(m_wstrFilePath);
+		if (!ret) { return S_FALSE; }
+
+		//检测分割线（如何加快检测？ texture.ThreeH?）
+		DetectHorizontalLine();
+		DetectVerticalLine();
+
+		ATLASSERT(m_arrVerticalLinePos.size() == 2 || m_arrHorizontalLinePos.size() == 2);
+	}
+	
+	HRESULT hr = S_OK;
+	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
+		//NineInOne类型的texture
+		hr = DrawNineInOne();
+	} else if (m_arrHorizontalLinePos.size() == 2) {
+		//ThreeV类型的texture
+		hr = DrawThreeV();
+	} else if (m_arrVerticalLinePos.size() == 2) {
+		//ThreeH类型的texture
+		hr = DrawThreeH();
+	}
+
+	return hr;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else

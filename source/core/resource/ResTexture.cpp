@@ -2,6 +2,23 @@
 #include "ResTexture.h"
 #include "ResManager.h"
 
+/*//////////////////////////////////关于texture的使用/////////////////////////////////////////
+*texture有三种格式：ThreeH/ThreeV/NineInOne；两种渲染策略:单图策略/多图策略
+*
+*   1,单图策略。类似于ResImage, GetD2D1Bitmap根据参数里要求的尺寸，填充出一个bitmap的内存块，返
+*回给调用者一个Bitmap，调用者负责将改Bitmap绘制出来。该模式适合“静态大小”的控件。所谓的静态大
+*小，是指控件被创建之后，与用户交互过程中不会变更大小（或者变更的频率非常低），例如绝大部分的按
+*钮、滚动条的滑块、菜单的背景等。
+*
+*   2，多图策略。档texture用于窗口背景时，上述策略一般就不太合适了:窗口可能被用户频繁地变更大小，
+*窗口resize时会频繁调用GetD2D1Bitmap、填充出一个新尺寸的bitmap、销毁旧的bitmap——会出现频繁的内
+*存分配、销毁与拷贝。多图策略会在texture对象内部维护一个tile(瓦片)列表(NineInOne就是九个tiles)，
+*GetD2D1Bitmap直接返回null，调用者转而使用OnDrawImplEx绘制，该方法会根据传进来的矩形大小/位置，
+*拉伸适当的tile（每个tile都是一个单独的Bitmap）。省去了频繁内存分配的代码。
+*
+*UIBitmap有一个属性:frequent，默认值为0(使用单图策略)。由开发者者根据元素具体情况来设定。
+*//////////////////////////////////////////////////////////////////////////////////////////////
+
 using namespace Gear::Res;
 ResTexture::ResTexture()
 	: m_lastQueryWidth(0)
@@ -110,12 +127,25 @@ RESERROR ResTexture::DetectHorizontalLine()
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
+	auto CreateNineInOne = [&](unsigned int width, unsigned int height)->ID2D1Bitmap* {
+		
+		return nullptr;
+	};
+	auto CreateThreeH = [&](unsigned int width, unsigned int height)->ID2D1Bitmap* {
+
+		return nullptr;
+	};
+	auto CreateThreeV = [&](unsigned int width, unsigned int height)->ID2D1Bitmap* {
+
+		return nullptr;
+	};
+
 	if (m_d2d1BitmapPtr && width == m_lastQueryWidth && height == m_lastQueryHeight) { 
 		return m_d2d1BitmapPtr; 
 	}
 	//删掉旧尺寸的图片,重新填充一个
 	SafeRelease(&m_d2d1BitmapPtr);
-
+	
 	//尚未加载png
 	if (m_pngWidth == 0) {
 		auto ret = ReadPngFile(m_wstrFilePath);
@@ -130,14 +160,28 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 
 	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2){
 		//NineInOne类型的texture
+		m_d2d1BitmapPtr = CreateNineInOne(width, height);
 	} else if (m_arrHorizontalLinePos.size() == 2) {
-		//ThreeV类型的texture
+		//ThreeV类型的texture，直接返回单张图片
+		m_d2d1BitmapPtr = CreateThreeV(width, height);
 	}else if (m_arrVerticalLinePos.size() == 2){
-		//ThreeH类型的texture
-	} else {
-
+		//ThreeH类型的texture，直接返回单张图片
+		m_d2d1BitmapPtr = CreateThreeH(width, height);
 	}
+
+	if (m_d2d1BitmapPtr){
+		retWidth  = width;
+		retHeight = height;
+		return m_d2d1BitmapPtr;
+	}
+	ERR("GetD2D1Bitmap error: get illegal divied line count! hline count:{}, vline count:{}", m_arrHorizontalLinePos.size(),  m_arrVerticalLinePos.size());
 	return nullptr;
+}
+HRESULT ResTexture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, UIObject* obj /*= nullptr*/)
+{
+	//与GetD2D1Bitmap方法返回单张图片不同，OnDrawImplEx会使用9个单独的bitmap绘制一张bitmap（拉伸、拼接）
+
+	return S_OK;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else

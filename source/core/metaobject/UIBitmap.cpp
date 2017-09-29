@@ -14,38 +14,30 @@ UIBitmap::UIBitmap() :m_picObject(nullptr)
 void UIBitmap::InitAttrMap()
 {
 	ADD_ATTR("stretch", "1")
+	ADD_ATTR("frequent", "0")
 	ADD_ATTR("res", "")
 }
-
 void UIBitmap::InitEventMap()
 {
 	//ADD_EVENT("OnCreate", nullptr)
 }
-
-//bool UIBitmap::InitImpl(const XMLElement* pElement)
-//{
-//	auto ret = UIObject::InitImpl(pElement);
-//	if (ret && !m_attrMap["res"].empty()) {
-		//加载res属性对应的png
-		//auto resID = m_attrMap["res"];
-		//m_picObject = ResManager::GetInstance().GetPicObject(resID);
-//	}
-//	return true;
-//}
-
-/*************************************************************************
-*检查属性值是否合法
-*	pos="leftexp, topexp, widthexp, heightexp"
-*	leftexp、topexp    :支持0-9、#mid、#width、#height、()、+、-、*、/
-*	widthexp、heightexp:支持0-9、#width、#height、()、+、-、*、/
-**************************************************************************/
 void UIBitmap::InitAttrValuePatternMap()
 {
 	ADD_ATTR_PATTERN("stretch", R_CHECK_BOOL);
+	ADD_ATTR_PATTERN("frequent", R_CHECK_BOOL);
 }
 void UIBitmap::InitAttrValueParserMap()
 {
+	//frequent属性只能在初始化时(在xml中)指定，其他时候不得更改
+	auto ParseFrequent = [&](const string& sAttrName)->bool {
+		if (m_bInit == true){
+			ATLASSERT(FALSE);
+			return false;
+		}
+		return true;
+	};
 
+	ADD_ATTR_PARSER("frequent", ParseFrequent)
 }
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
@@ -61,22 +53,28 @@ HRESULT	UIBitmap::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F
 		ATLASSERT(FALSE);
 		return S_FALSE;
 	}
-	unsigned int realWidth{ 0 };
-	unsigned int realHeight{ 0 };
-	ID2D1Bitmap* bitmapPtr = m_picObject->GetD2D1Bitmap(pRenderTarget,m_pos.width, m_pos.height, realWidth, realHeight);
-	if (!bitmapPtr){
-		ATLASSERT(FALSE);
-		return S_FALSE;
-	}
-	auto spStretch = m_attrMap["stretch"];
-	if (spStretch == "0") {
+
+	auto sFrequent = m_attrMap["frequent"];
+	//frequent属性专为texture的优化而设计，对于经常变更大小的地方，如窗口背景，请将frequent置为“1”！！！！！！
+	if (sFrequent == "0"){
+		unsigned int realWidth{ 0 };
+		unsigned int realHeight{ 0 };
+		ID2D1Bitmap* bitmapPtr = m_picObject->GetD2D1Bitmap(pRenderTarget, m_pos.width, m_pos.height, realWidth, realHeight);
+		if (!bitmapPtr) {
+			ERR("GetD2D1Bitmap error: get nullptr!!!!");
+			return S_FALSE;
+		}
+		auto sStretch = m_attrMap["stretch"];
 		D2D1_RECT_F realRect(rcWndPos);
-		realRect.right	= realRect.left + realWidth;
-		realRect.bottom = realRect.top + realHeight;
+		if (sStretch == "0") {
+			realRect.right = realRect.left + realWidth;
+			realRect.bottom = realRect.top + realHeight;
+		}
 		pRenderTarget->DrawBitmap(bitmapPtr, realRect);
 	} else {
-		pRenderTarget->DrawBitmap(bitmapPtr, rcWndPos);
+		hr = m_picObject->OnDrawImplEx(pRenderTarget, rcWndPos, this);
 	}
+
 	return hr;
 }
 HRESULT	UIBitmap::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)

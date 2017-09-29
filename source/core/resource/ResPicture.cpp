@@ -178,7 +178,14 @@ HRESULT ResPicture::DiscardD2D1Bitmap()
 	SafeRelease(&m_d2d1BitmapPtr);
 	return S_OK;
 }
+HRESULT ResPicture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, UIObject* obj /*= nullptr*/)
+{
+	return S_OK;
+}
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-
+HRESULT	ResPicture::OnDrawImplEx(Graphics& graphics, const UIPos& rcWndPos, UIObject* obj/* = nullptr*/)
+{
+	return S_OK;
+}
 #endif

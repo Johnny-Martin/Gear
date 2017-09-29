@@ -125,22 +125,73 @@ RESERROR ResTexture::DetectHorizontalLine()
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
-	auto CreateNineInOne = [&]()->ID2D1Bitmap* {
+	D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
+	D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
+	D2D1_SIZE_U size;
+
+	auto CreateNineInOne = [&]()->HRESULT {
 		ATLASSERT(width > m_pngWidth && height > m_pngHeight);
 		png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
 		
 		//四个角无需拉伸，直接拷贝
-		return nullptr;
-	};
-	auto CreateThreeH = [&]()->ID2D1Bitmap* {
-		png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
+		png_uint_32 topLeftCornerWidth  = m_arrVerticalLinePos[0];
+		png_uint_32 topLeftCornerHeight = m_arrHorizontalLinePos[0];
+		for (png_uint_32 i = 0; i < topLeftCornerHeight; ++i)
+			for (png_uint_32 j = 0; j<topLeftCornerWidth * m_colorChannels; ++j){
+				rowPointers[i][j] = m_rowPointers[i][j];
+			}
+		
+		png_uint_32 topRightCornerWidth  = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+		png_uint_32 topRightCornerHeight = m_arrHorizontalLinePos[0];
+		png_uint_32 offsetXSrc = m_pngWidth - topRightCornerWidth;
+		png_uint_32 offsetXDst = width - topRightCornerWidth;
+		for (png_uint_32 i = 0; i < topRightCornerHeight; ++i)
+			for (png_uint_32 j = 0; j < topRightCornerWidth * m_colorChannels; ++j) {
+				rowPointers[i][offsetXDst + j] = m_rowPointers[i][offsetXSrc + j];
+			}
 
-		return nullptr;
-	};
-	auto CreateThreeV = [&]()->ID2D1Bitmap* {
-		png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
+		png_uint_32 bottomLeftCornerWidth  = m_arrVerticalLinePos[0];
+		png_uint_32 bottomLeftCornerHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
+		png_uint_32 offsetYSrc = m_pngHeight - bottomLeftCornerHeight;
+		png_uint_32 offsetYDst = height - bottomLeftCornerHeight;
+		for (png_uint_32 i = 0; i < bottomLeftCornerHeight; ++i)
+			for (png_uint_32 j = 0; j < bottomLeftCornerWidth * m_colorChannels; ++j) {
+				rowPointers[offsetYDst + i][j] = m_rowPointers[offsetYSrc + i][j];
+			}
 
-		return nullptr;
+		png_uint_32 bottomRightCornerWidth  = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+		png_uint_32 bottomRightCornerHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
+		offsetXSrc = m_pngWidth - bottomRightCornerWidth;
+		offsetXDst = width - bottomRightCornerWidth;
+		offsetYSrc = m_pngHeight - bottomRightCornerHeight;
+		offsetYDst = height - bottomRightCornerHeight;
+		for (png_uint_32 i = 0; i < bottomRightCornerHeight; ++i)
+			for (png_uint_32 j = 0; j < bottomRightCornerWidth * m_colorChannels; ++j) {
+				rowPointers[offsetYDst + i][offsetXDst + j] = m_rowPointers[offsetYSrc + i][offsetXSrc + j];
+			}
+
+
+		size.width  = width;
+		size.height = height;
+		return pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], width * m_colorChannels, properties, &m_d2d1BitmapPtr);
+	};
+	auto CreateThreeH = [&]()->HRESULT {
+		//ThreeH类型的texture，只拉伸长度
+		png_bytep* rowPointers = AllocPngDataMem(width, m_pngHeight, m_colorChannels);
+
+
+		size.width  = width;
+		size.height = m_pngHeight;
+		return pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], width * m_colorChannels, properties, &m_d2d1BitmapPtr);
+	};
+	auto CreateThreeV = [&]()->HRESULT {
+		//ThreeV类型的texture，只拉伸高度
+		png_bytep* rowPointers = AllocPngDataMem(m_pngWidth, height, m_colorChannels);
+
+
+		size.width  = m_pngWidth;
+		size.height = height;
+		return pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], m_pngWidth * m_colorChannels, properties, &m_d2d1BitmapPtr);
 	};
 
 	if (m_d2d1BitmapPtr && width == m_lastQueryWidth && height == m_lastQueryHeight) { 
@@ -161,20 +212,22 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 		ATLASSERT(m_arrVerticalLinePos.size() == 2 || m_arrHorizontalLinePos.size() == 2);
 	}
 
+	HRESULT hr = S_OK;
 	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2){
-		//NineInOne类型的texture
-		m_d2d1BitmapPtr = CreateNineInOne();
+		hr = CreateNineInOne();
 	} else if (m_arrHorizontalLinePos.size() == 2) {
-		//ThreeV类型的texture，直接返回单张图片
-		m_d2d1BitmapPtr = CreateThreeV();
+		hr = CreateThreeV();
 	}else if (m_arrVerticalLinePos.size() == 2){
-		//ThreeH类型的texture，直接返回单张图片
-		m_d2d1BitmapPtr = CreateThreeH();
+		hr = CreateThreeH();
 	}
 
-	if (!m_d2d1BitmapPtr){
+	if (FAILED(hr) || m_d2d1BitmapPtr == nullptr){
 		ERR("GetD2D1Bitmap error: get null m_d2d1BitmapPtr");
+		return nullptr;
 	}
+
+	retWidth  = (unsigned int)m_d2d1BitmapPtr->GetSize().width;
+	retHeight = (unsigned int)m_d2d1BitmapPtr->GetSize().height;
 	return m_d2d1BitmapPtr;
 }
 

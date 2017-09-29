@@ -62,20 +62,5 @@ private:
 };
 
 
-class PicListDivider :public ResPicture
-{
-public:
-									PicListDivider(const wstring& wstrFilePath);
-#ifdef USE_D2D_RENDER_MODE
-	virtual ID2D1Bitmap*			GetD2D1Bitmap(unsigned int width, unsigned int height) { return nullptr; }
-#else
-	virtual Gdiplus::Bitmap*		GetGDIBitmap(unsigned int width, unsigned int height)  { return nullptr; }
-#endif
-	unsigned int					GetPicCount();
-	ResPicture*						GetPicByIndex();
-};
-
-//class UIImage
-
 	}//end of namespace Res
 }//end of namespace Gear

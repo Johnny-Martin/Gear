@@ -26,10 +26,6 @@ protected:
 protected:
 	RESERROR						ReadPngFile(const string& strFilePath);
 	bool							ReadPngFile(const wstring& wstrFilePath);
-	bool							IsVerticalLine(unsigned int horizontalPos, COLORREF lineColor);
-	bool							IsHorizontalLine(unsigned int verticalPos, COLORREF lineColor);
-	RESERROR						DetectVerticalLine();
-	RESERROR						DetectHorizontalLine();
 protected:
 	wstring							m_wstrFilePath;
 	png_uint_32						m_pngWidth;
@@ -43,9 +39,6 @@ protected:
 
 	HBITMAP							m_hResHandle;//??????
 	RESERROR						m_resError;
-	vector<unsigned int>			m_arrVerticalLinePos;
-	vector<unsigned int>			m_arrHorizontalLinePos;
-	const COLORREF					m_purpleLineColor;
 };
 
 	}//end of namespace Res

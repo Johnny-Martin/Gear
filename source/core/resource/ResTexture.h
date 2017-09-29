@@ -24,6 +24,16 @@ protected:
 	void										InitAttrMap();
 	void										InitAttrValuePatternMap();
 	void										InitAttrValueParserMap();
+private:
+	const COLORREF								m_purpleLineColor;
+	vector<unsigned int>						m_arrVerticalLinePos;
+	vector<unsigned int>						m_arrHorizontalLinePos;
+	bool										IsVerticalLine(unsigned int horizontalPos, COLORREF lineColor);
+	bool										IsHorizontalLine(unsigned int verticalPos, COLORREF lineColor);
+	RESERROR									DetectVerticalLine();
+	RESERROR									DetectHorizontalLine();
+	png_uint_32									m_lastQueryWidth;
+	png_uint_32									m_lastQueryHeight;
 };
 
 	}//end of namespace Res

@@ -261,28 +261,6 @@ string ResManager::GetRealIdFromPicListId(LPCSTR szPicListID)
 	return strRealResId;
 }
 
-
-unsigned int PicListDivider::GetPicCount()
-{
-	return m_arrVerticalLinePos.empty() ? 0 : m_arrVerticalLinePos.size() + 1;
-}
-
-//imagelist、texturelist都是水平排布的——用竖线分割
-PicListDivider::PicListDivider(const wstring& wstrFilePath)
-{
-	m_wstrFilePath = wstrFilePath;
-	if (ReadPngFile(wstrFilePath)) {
-		DetectVerticalLine();
-	}
-}
-ResPicture*	PicListDivider::GetPicByIndex()
-{
-	if(GetPicCount() == 0){ return nullptr; }
-
-	//根据index创建新的image、texture
-
-	return nullptr;
-}
 /*RESERROR ResManager::GetResPicHandle(LPCSTR szResID, RPicture** hRes)
 {
 	

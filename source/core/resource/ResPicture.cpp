@@ -4,7 +4,6 @@
 using namespace Gear::Res;
 
 ResPicture::ResPicture() :
-	m_purpleLineColor(RGB(127, 0, 127)),
 	m_wstrFilePath(L""),
 	m_pngWidth(0),
 	m_pngHeight(0),
@@ -38,8 +37,7 @@ ResPicture::~ResPicture()
 #endif
 }
 ResPicture::ResPicture(const wstring& wstrFilePath) 
-	:m_purpleLineColor(RGB(127, 0, 127))
-	,m_wstrFilePath(L"")
+	:m_wstrFilePath(L"")
 	,m_pngWidth(0)
 	,m_pngHeight(0)
 	,m_colorType(0)
@@ -55,8 +53,7 @@ ResPicture::ResPicture(const wstring& wstrFilePath)
 	//ReadPngFile(wstrFilePath);
 }
 ResPicture::ResPicture(png_bytep* rowPointers, png_uint_32 width, png_uint_32 height, png_byte colorType, png_byte colorChannels, png_byte bitDepth)
-	:m_purpleLineColor(RGB(127, 0, 127))
-	, m_wstrFilePath(L"")
+	:m_wstrFilePath(L"")
 	, m_pngWidth(0)
 	, m_pngHeight(0)
 	, m_colorType(0)
@@ -174,78 +171,6 @@ RESERROR ResPicture::ReadPngFile(const string& strFilePath)
 	return RES_SUCCESS;
 }
 
-bool ResPicture::IsVerticalLine(unsigned int horizontalPos, const COLORREF lineColor)
-{
-	for (unsigned int rowIndex = 0; rowIndex < m_pngHeight; ++rowIndex)
-	{
-		png_byte* row = m_rowPointers[rowIndex];
-		png_byte* ptr = &(row[horizontalPos*m_colorChannels]);
-
-		COLORREF pixelColor = RGB(ptr[0], ptr[1], ptr[2]);
-		if (lineColor != pixelColor)
-			return false;
-	}
-	return true;
-}
-
-bool ResPicture::IsHorizontalLine(unsigned int horizontalPos, const COLORREF lineColor)
-{
-	png_byte* row = m_rowPointers[horizontalPos];
-	for (unsigned int columnIndex = 0; columnIndex < m_pngWidth; ++columnIndex)
-	{
-		png_byte* ptr = &(row[columnIndex*m_colorChannels]);
-
-		COLORREF pixelColor = RGB(ptr[0], ptr[1], ptr[2]);
-		if (lineColor != pixelColor)
-			return false;
-	}
-	return true;
-}
-
-//detect the dividing line(RGB: 255,0,255)
-RESERROR ResPicture::DetectVerticalLine()
-{
-	//before calling this function,make sure that
-	//png file must has been loaded to memory successfully.
-	png_byte* pixelDataPtr = NULL;
-
-	for (unsigned int columnIndex = 0; columnIndex < m_pngWidth; ++columnIndex)
-	{
-		pixelDataPtr = &(m_rowPointers[0][columnIndex*m_colorChannels]);
-		COLORREF pixelColor = RGB(pixelDataPtr[0], pixelDataPtr[1], pixelDataPtr[2]);
-		if (m_purpleLineColor == pixelColor)
-		{
-			if (IsVerticalLine(columnIndex, m_purpleLineColor))
-			{
-				m_arrVerticalLinePos.push_back(columnIndex);
-			}
-		}
-
-	}
-	return RES_SUCCESS;
-}
-
-RESERROR ResPicture::DetectHorizontalLine()
-{
-	//before calling this function,make sure that
-	//png file must has been loaded to memory successfully.
-	png_byte* pixelDataPtr = NULL;
-
-	for (unsigned int rowIndex = 0; rowIndex < m_pngHeight; ++rowIndex)
-	{
-		pixelDataPtr = &(m_rowPointers[rowIndex][0]);
-		COLORREF pixelColor = RGB(pixelDataPtr[0], pixelDataPtr[1], pixelDataPtr[2]);
-		if (m_purpleLineColor == pixelColor)
-		{
-			if (IsHorizontalLine(rowIndex, m_purpleLineColor))
-			{
-				m_arrHorizontalLinePos.push_back(rowIndex);
-			}
-		}
-
-	}
-	return RES_SUCCESS;
-}
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE	    
 HRESULT ResPicture::DiscardD2D1Bitmap()

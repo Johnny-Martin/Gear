@@ -127,18 +127,17 @@ png_bytep* ResTexture::__CreateNineInOn(unsigned int width, unsigned int height,
 	png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
 
 	//四个角无需拉伸，直接拷贝
-	png_uint_32 topLeftCornerHeight = m_arrHorizontalLinePos[0];
 	for (png_uint_32 i = 0; i < m_arrHorizontalLinePos[0]; ++i)
 		for (png_uint_32 j = 0; j < m_arrVerticalLinePos[0] * m_colorChannels; ++j) {
 			rowPointers[i][j] = m_rowPointers[i][j];
 		}
 
-	png_uint_32 topRightCornerWidth = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+	png_uint_32 topRightCornerWidth =(m_pngWidth - m_arrVerticalLinePos[1] - 1);
 	png_uint_32 topRightCornerHeight = m_arrHorizontalLinePos[0];
-	png_uint_32 offsetXSrc = (m_pngWidth - topRightCornerWidth)*m_colorChannels;
+	png_uint_32 offsetXSrc = (m_arrVerticalLinePos[1] + 1)*m_colorChannels;
 	png_uint_32 offsetXDst = (width - topRightCornerWidth)*m_colorChannels;
 	for (png_uint_32 i = 0; i < topRightCornerHeight; ++i)
-		for (png_uint_32 j = 0; j < topRightCornerWidth * m_colorChannels; ++j) {
+		for (png_uint_32 j = 0; j < (m_pngWidth - m_arrVerticalLinePos[1] - 1) * m_colorChannels; ++j) {
 			rowPointers[i][offsetXDst + j] = m_rowPointers[i][offsetXSrc + j];
 		}
 
@@ -164,10 +163,10 @@ png_bytep* ResTexture::__CreateNineInOn(unsigned int width, unsigned int height,
 
 	//四个边，拉伸
 	png_uint_32 leftEdgeWidth = m_arrVerticalLinePos[0];
-	png_uint_32 leftEdgeHeight = height - topLeftCornerHeight - bottomLeftCornerHeight;
+	png_uint_32 leftEdgeHeight = height - m_arrHorizontalLinePos[0] - bottomLeftCornerHeight;
 	for (png_uint_32 i = 0; i < leftEdgeHeight; ++i)
 		for (size_t j = 0; j < leftEdgeWidth * m_colorChannels; j++) {
-			rowPointers[i + topLeftCornerHeight][j] = m_rowPointers[topLeftCornerHeight + 1][j];
+			rowPointers[i + m_arrHorizontalLinePos[0]][j] = m_rowPointers[m_arrHorizontalLinePos[0] + 1][j];
 		}
 
 	png_uint_32 topEdgeWidth = width - m_arrVerticalLinePos[0] - topRightCornerWidth;
@@ -201,10 +200,9 @@ png_bytep* ResTexture::__CreateNineInOn(unsigned int width, unsigned int height,
 	png_uint_32 centerWidth = topEdgeWidth;
 	png_uint_32 centerHeight = leftEdgeHeight;
 	offsetXDst = leftEdgeWidth*m_colorChannels;
-	offsetYDst = topLeftCornerHeight;
 	for (png_uint_32 i = 0; i < centerHeight; ++i)
 		for (png_uint_32 j = 0; j < centerWidth *m_colorChannels; ++j) {
-			rowPointers[offsetYDst + i][offsetXDst + j] = m_rowPointers[m_arrHorizontalLinePos[0] + 1][(m_arrVerticalLinePos[0] + 1)*m_colorChannels + j%m_colorChannels];
+			rowPointers[m_arrHorizontalLinePos[0] + i][offsetXDst + j] = m_rowPointers[m_arrHorizontalLinePos[0] + 1][(m_arrVerticalLinePos[0] + 1)*m_colorChannels + j%m_colorChannels];
 		}
 
 	retWidth  = width;

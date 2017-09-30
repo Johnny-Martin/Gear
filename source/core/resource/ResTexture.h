@@ -26,6 +26,9 @@ protected:
 	void										InitAttrValuePatternMap();
 	void										InitAttrValueParserMap();
 private:
+	png_bytep*									__CreateNineInOn(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight);
+	png_bytep*									__CreateThreeH(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight);
+	png_bytep*									__CreateThreeV(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight);
 	const COLORREF								m_purpleLineColor;
 	vector<unsigned int>						m_arrVerticalLinePos;
 	vector<unsigned int>						m_arrHorizontalLinePos;

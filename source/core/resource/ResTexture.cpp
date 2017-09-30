@@ -121,168 +121,166 @@ RESERROR ResTexture::DetectHorizontalLine()
 	}
 	return RES_SUCCESS;
 }
+png_bytep* ResTexture::__CreateNineInOn(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
+{
+	ATLASSERT(width > m_pngWidth && height > m_pngHeight);
+	png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
+
+	//四个角无需拉伸，直接拷贝
+	png_uint_32 topLeftCornerHeight = m_arrHorizontalLinePos[0];
+	for (png_uint_32 i = 0; i < topLeftCornerHeight; ++i)
+		for (png_uint_32 j = 0; j < m_arrVerticalLinePos[0] * m_colorChannels; ++j) {
+			rowPointers[i][j] = m_rowPointers[i][j];
+		}
+
+	png_uint_32 topRightCornerWidth = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+	png_uint_32 topRightCornerHeight = m_arrHorizontalLinePos[0];
+	png_uint_32 offsetXSrc = (m_pngWidth - topRightCornerWidth)*m_colorChannels;
+	png_uint_32 offsetXDst = (width - topRightCornerWidth)*m_colorChannels;
+	for (png_uint_32 i = 0; i < topRightCornerHeight; ++i)
+		for (png_uint_32 j = 0; j < topRightCornerWidth * m_colorChannels; ++j) {
+			rowPointers[i][offsetXDst + j] = m_rowPointers[i][offsetXSrc + j];
+		}
+
+	png_uint_32 bottomLeftCornerWidth = m_arrVerticalLinePos[0];
+	png_uint_32 bottomLeftCornerHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
+	png_uint_32 offsetYSrc = m_pngHeight - bottomLeftCornerHeight;
+	png_uint_32 offsetYDst = height - bottomLeftCornerHeight;
+	for (png_uint_32 i = 0; i < bottomLeftCornerHeight; ++i)
+		for (png_uint_32 j = 0; j < bottomLeftCornerWidth * m_colorChannels; ++j) {
+			rowPointers[offsetYDst + i][j] = m_rowPointers[offsetYSrc + i][j];
+		}
+
+	png_uint_32 bottomRightCornerWidth = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+	png_uint_32 bottomRightCornerHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
+	offsetXSrc = (m_pngWidth - bottomRightCornerWidth)*m_colorChannels;
+	offsetXDst = (width - bottomRightCornerWidth)*m_colorChannels;
+	offsetYSrc = m_pngHeight - bottomRightCornerHeight;
+	offsetYDst = height - bottomRightCornerHeight;
+	for (png_uint_32 i = 0; i < bottomRightCornerHeight; ++i)
+		for (png_uint_32 j = 0; j < bottomRightCornerWidth * m_colorChannels; ++j) {
+			rowPointers[offsetYDst + i][offsetXDst + j] = m_rowPointers[offsetYSrc + i][offsetXSrc + j];
+		}
+
+	//四个边，拉伸
+	png_uint_32 leftEdgeWidth = m_arrVerticalLinePos[0];
+	png_uint_32 leftEdgeHeight = height - topLeftCornerHeight - bottomLeftCornerHeight;
+	for (png_uint_32 i = 0; i < leftEdgeHeight; ++i)
+		for (size_t j = 0; j < leftEdgeWidth * m_colorChannels; j++) {
+			rowPointers[i + topLeftCornerHeight][j] = m_rowPointers[topLeftCornerHeight + 1][j];
+		}
+
+	png_uint_32 topEdgeWidth = width - m_arrVerticalLinePos[0] - topRightCornerWidth;
+	png_uint_32 topEdgeHeight = m_arrHorizontalLinePos[0];
+	offsetXDst = m_arrVerticalLinePos[0] * m_colorChannels;
+	for (png_uint_32 i = 0; i < topEdgeHeight; ++i)
+		for (png_uint_32 j = 0; j < topEdgeWidth * m_colorChannels; j++) {
+			rowPointers[i][j + offsetXDst] = m_rowPointers[i][offsetXDst + m_colorChannels + j%m_colorChannels];
+		}
+
+	png_uint_32 rightEdgeWidth = topRightCornerWidth;
+	png_uint_32 rightEdgeHeight = height - topRightCornerHeight - bottomRightCornerHeight;
+	offsetXDst = (width - rightEdgeWidth)*m_colorChannels;
+	offsetXSrc = (m_arrVerticalLinePos[1] + 1)*m_colorChannels;
+	for (png_uint_32 i = 0; i < rightEdgeHeight; ++i)
+		for (png_uint_32 j = 0; j < rightEdgeWidth*m_colorChannels; ++j) {
+			rowPointers[i + topRightCornerHeight][j + offsetXDst] = m_rowPointers[topRightCornerHeight + 1][j + offsetXSrc];
+		}
+
+	png_uint_32 bottomEdgeWidth = width - bottomLeftCornerWidth - bottomRightCornerWidth;
+	png_uint_32 bottomEdgeHeight = bottomLeftCornerHeight;
+	offsetYDst = height - bottomEdgeHeight;
+	offsetYSrc = m_arrHorizontalLinePos[1] + 1;
+	offsetXDst = m_arrVerticalLinePos[0] * m_colorChannels;
+	offsetXSrc = (m_arrVerticalLinePos[0] + 1)*m_colorChannels;
+	for (png_uint_32 i = 0; i < bottomEdgeHeight; ++i)
+		for (png_uint_32 j = 0; j < bottomEdgeWidth *m_colorChannels; ++j) {
+			rowPointers[i + offsetYDst][j + offsetXDst] = m_rowPointers[offsetYSrc + i][j%m_colorChannels + offsetXSrc];
+		}
+
+	png_uint_32 centerWidth = topEdgeWidth;
+	png_uint_32 centerHeight = leftEdgeHeight;
+	offsetXDst = leftEdgeWidth*m_colorChannels;
+	offsetYDst = topLeftCornerHeight;
+	for (png_uint_32 i = 0; i < centerHeight; ++i)
+		for (png_uint_32 j = 0; j < centerWidth *m_colorChannels; ++j) {
+			rowPointers[offsetYDst + i][offsetXDst + j] = m_rowPointers[m_arrHorizontalLinePos[0] + 1][(m_arrVerticalLinePos[0] + 1)*m_colorChannels + j%m_colorChannels];
+		}
+
+	retWidth  = width;
+	retHeight = height;
+	return rowPointers;
+}
+
+png_bytep* ResTexture::__CreateThreeH(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
+{
+	png_bytep* rowPointers = AllocPngDataMem(width, m_pngHeight, m_colorChannels);
+
+	//两端直接拷贝
+	png_uint_32 leftPartWidth = m_arrVerticalLinePos[0];
+	png_uint_32 leftPartHeight = m_pngHeight;
+	for (png_uint_32 i = 0; i < leftPartHeight; ++i)
+		for (png_uint_32 j = 0; j < leftPartWidth*m_colorChannels; ++j) {
+			rowPointers[i][j] = m_rowPointers[i][j];
+		}
+	png_uint_32 rightPartWidth = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+	png_uint_32 rightPartHeight = m_pngHeight;
+	png_uint_32 offsetXSrc = (m_arrVerticalLinePos[1] + 1)*m_colorChannels;
+	png_uint_32 offsetXDst = (width - rightPartWidth)*m_colorChannels;
+	for (png_uint_32 i = 0; i < rightPartHeight; ++i)
+		for (png_uint_32 j = 0; j < rightPartWidth*m_colorChannels; ++j) {
+			rowPointers[i][j + offsetXDst] = m_rowPointers[i][j + offsetXSrc];
+		}
+
+	png_uint_32 centerWidth = width - leftPartWidth - rightPartWidth;
+	offsetXDst = (m_arrVerticalLinePos[0])*m_colorChannels;
+	for (png_uint_32 i = 0; i < m_pngHeight; ++i)
+		for (png_uint_32 j = 0; j < centerWidth*m_colorChannels; ++j) {
+			rowPointers[i][j + offsetXDst] = m_rowPointers[i][j%m_colorChannels + offsetXDst + m_colorChannels];
+		}
+
+	retWidth  = width;
+	retHeight = m_pngHeight;
+	return rowPointers;
+}
+
+png_bytep* ResTexture::__CreateThreeV(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
+{
+	png_bytep* rowPointers = AllocPngDataMem(m_pngWidth, height, m_colorChannels);
+
+	png_uint_32 topPartWidth = m_pngWidth;
+	png_uint_32 topPartHeight = m_arrHorizontalLinePos[0];
+	for (png_uint_32 i = 0; i < topPartHeight; ++i)
+		for (png_uint_32 j = 0; j < topPartWidth*m_colorChannels; ++j) {
+			rowPointers[i][j] = m_rowPointers[i][j];
+		}
+
+	png_uint_32 bottomPartWidth = m_pngWidth;
+	png_uint_32 bottomPartHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
+	png_uint_32 offsetYSrc = (m_arrHorizontalLinePos[1] + 1);
+	png_uint_32 offsetYDst = height - bottomPartHeight;
+	for (png_uint_32 i = 0; i < bottomPartHeight; ++i)
+		for (png_uint_32 j = 0; j < bottomPartWidth*m_colorChannels; ++j) {
+			rowPointers[i + offsetYDst][j] = m_rowPointers[i + offsetYSrc][j];
+		}
+
+	png_uint_32 centerWidth = m_pngWidth;
+	png_uint_32 centerHeight = height - topPartHeight - bottomPartHeight;
+	offsetYSrc = (m_arrHorizontalLinePos[0] + 1);
+	offsetYDst = topPartHeight;
+	for (png_uint_32 i = 0; i < centerHeight; ++i)
+		for (png_uint_32 j = 0; j < centerWidth*m_colorChannels; ++j) {
+			rowPointers[i + offsetYDst][j] = m_rowPointers[offsetYSrc][j];
+		}
+
+	retWidth  = m_pngWidth;
+	retHeight = height;
+	return rowPointers;
+}
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
-	D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
-	D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
-	D2D1_SIZE_U size;
-
-	auto CreateNineInOne = [&]()->HRESULT {
-		ATLASSERT(width > m_pngWidth && height > m_pngHeight);
-		png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
-		
-		//四个角无需拉伸，直接拷贝
-		png_uint_32 topLeftCornerWidth  = m_arrVerticalLinePos[0];
-		png_uint_32 topLeftCornerHeight = m_arrHorizontalLinePos[0];
-		for (png_uint_32 i = 0; i < topLeftCornerHeight; ++i)
-			for (png_uint_32 j = 0; j<topLeftCornerWidth * m_colorChannels; ++j){
-				rowPointers[i][j] = m_rowPointers[i][j];
-			}
-		
-		png_uint_32 topRightCornerWidth  = m_pngWidth - m_arrVerticalLinePos[1] - 1;
-		png_uint_32 topRightCornerHeight = m_arrHorizontalLinePos[0];
-		png_uint_32 offsetXSrc = (m_pngWidth - topRightCornerWidth)*m_colorChannels;
-		png_uint_32 offsetXDst = (width - topRightCornerWidth)*m_colorChannels;
-		for (png_uint_32 i = 0; i < topRightCornerHeight; ++i)
-			for (png_uint_32 j = 0; j < topRightCornerWidth * m_colorChannels; ++j) {
-				rowPointers[i][offsetXDst + j] = m_rowPointers[i][offsetXSrc + j];
-			}
-
-		png_uint_32 bottomLeftCornerWidth  = m_arrVerticalLinePos[0];
-		png_uint_32 bottomLeftCornerHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
-		png_uint_32 offsetYSrc = m_pngHeight - bottomLeftCornerHeight;
-		png_uint_32 offsetYDst = height - bottomLeftCornerHeight;
-		for (png_uint_32 i = 0; i < bottomLeftCornerHeight; ++i)
-			for (png_uint_32 j = 0; j < bottomLeftCornerWidth * m_colorChannels; ++j) {
-				rowPointers[offsetYDst + i][j] = m_rowPointers[offsetYSrc + i][j];
-			}
-
-		png_uint_32 bottomRightCornerWidth  = m_pngWidth - m_arrVerticalLinePos[1] - 1;
-		png_uint_32 bottomRightCornerHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
-		offsetXSrc = (m_pngWidth - bottomRightCornerWidth)*m_colorChannels;
-		offsetXDst = (width - bottomRightCornerWidth)*m_colorChannels;
-		offsetYSrc = m_pngHeight - bottomRightCornerHeight;
-		offsetYDst = height - bottomRightCornerHeight;
-		for (png_uint_32 i = 0; i < bottomRightCornerHeight; ++i)
-			for (png_uint_32 j = 0; j < bottomRightCornerWidth * m_colorChannels; ++j) {
-				rowPointers[offsetYDst + i][offsetXDst + j] = m_rowPointers[offsetYSrc + i][offsetXSrc + j];
-			}
-
-		//四个边，拉伸
-		png_uint_32 leftEdgeWidth  = m_arrVerticalLinePos[0];
-		png_uint_32 leftEdgeHeight = height - topLeftCornerHeight - bottomLeftCornerHeight;
-		for (png_uint_32 i=0; i<leftEdgeHeight; ++i)
-			for (size_t j = 0; j < leftEdgeWidth * m_colorChannels; j++) {
-				rowPointers[i+topLeftCornerHeight][j] = m_rowPointers[topLeftCornerHeight + 1][j];
-			}
-		
-		png_uint_32 topEdgeWidth  = width - topLeftCornerWidth - topRightCornerWidth;
-		png_uint_32 topEdgeHeight = m_arrHorizontalLinePos[0];
-		offsetXDst = topLeftCornerWidth*m_colorChannels;
-		for (png_uint_32 i=0; i<topEdgeHeight; ++i)
-			for (png_uint_32 j = 0; j < topEdgeWidth * m_colorChannels; j++) {
-				rowPointers[i][j + offsetXDst] = m_rowPointers[i][offsetXDst + m_colorChannels + j%m_colorChannels];
-			}
-
-		png_uint_32 rightEdgeWidth = topRightCornerWidth;
-		png_uint_32 rightEdgeHeight = height - topRightCornerHeight - bottomRightCornerHeight;
-		offsetXDst = (width - rightEdgeWidth)*m_colorChannels;
-		offsetXSrc = (m_arrVerticalLinePos[1] + 1)*m_colorChannels;
-		for (png_uint_32 i = 0; i < rightEdgeHeight; ++i)
-			for (png_uint_32 j = 0; j < rightEdgeWidth*m_colorChannels; ++j) {
-				rowPointers[i+topRightCornerHeight][j+ offsetXDst] = m_rowPointers[topRightCornerHeight + 1][j + offsetXSrc];
-			}
-
-		png_uint_32 bottomEdgeWidth = width - bottomLeftCornerWidth - bottomRightCornerWidth;
-		png_uint_32 bottomEdgeHeight = bottomLeftCornerHeight;
-		offsetYDst = height - bottomEdgeHeight;
-		offsetYSrc = m_arrHorizontalLinePos[1] + 1;
-		offsetXDst = m_arrVerticalLinePos[0] * m_colorChannels;
-		offsetXSrc = (m_arrVerticalLinePos[0] + 1)*m_colorChannels;
-		for (png_uint_32 i = 0; i < bottomEdgeHeight; ++i)
-			for (png_uint_32 j = 0; j <bottomEdgeWidth *m_colorChannels; ++j) {
-				rowPointers[i + offsetYDst][j + offsetXDst] = m_rowPointers[offsetYSrc + i][j%m_colorChannels + offsetXSrc];
-			}
-
-		png_uint_32 centerWidth = topEdgeWidth;
-		png_uint_32 centerHeight = leftEdgeHeight;
-		offsetXDst = leftEdgeWidth*m_colorChannels;
-		offsetYDst = topLeftCornerHeight;
-		for (png_uint_32 i = 0; i < centerHeight; ++i)
-			for (png_uint_32 j = 0; j < centerWidth *m_colorChannels; ++j) {
-				rowPointers[offsetYDst + i][offsetXDst + j] = m_rowPointers[m_arrHorizontalLinePos[0]+1][(m_arrVerticalLinePos[0]+1)*m_colorChannels + j%m_colorChannels];
-			}
-		size.width  = width;
-		size.height = height;
-		return pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], width * m_colorChannels, properties, &m_d2d1BitmapPtr);
-	};
-	auto CreateThreeH = [&]()->HRESULT {
-		//ThreeH类型的texture，只拉伸长度
-		png_bytep* rowPointers = AllocPngDataMem(width, m_pngHeight, m_colorChannels);
-
-		//两端直接拷贝
-		png_uint_32 leftPartWidth = m_arrVerticalLinePos[0];
-		png_uint_32 leftPartHeight = m_pngHeight;
-		for (png_uint_32 i = 0; i < leftPartHeight; ++i)
-			for (png_uint_32 j = 0; j < leftPartWidth*m_colorChannels; ++j) {
-				rowPointers[i][j] = m_rowPointers[i][j];
-			}
-		png_uint_32 rightPartWidth = m_pngWidth - m_arrVerticalLinePos[1] - 1;
-		png_uint_32 rightPartHeight = m_pngHeight;
-		png_uint_32 offsetXSrc = (m_arrVerticalLinePos[1] + 1)*m_colorChannels;
-		png_uint_32 offsetXDst = (width - rightPartWidth)*m_colorChannels;
-		for (png_uint_32 i = 0; i < rightPartHeight; ++i)
-			for (png_uint_32 j = 0; j < rightPartWidth*m_colorChannels; ++j) {
-				rowPointers[i][j+ offsetXDst] = m_rowPointers[i][j+ offsetXSrc];
-			}
-
-		png_uint_32 centerWidth = width - leftPartWidth - rightPartWidth;
-		offsetXDst = (m_arrVerticalLinePos[0])*m_colorChannels;
-		for (png_uint_32 i = 0; i < m_pngHeight; ++i)
-			for (png_uint_32 j = 0; j < centerWidth*m_colorChannels; ++j) {
-				rowPointers[i][j + offsetXDst] = m_rowPointers[i][j%m_colorChannels + offsetXDst + m_colorChannels];
-			}
-
-		size.width  = width;
-		size.height = m_pngHeight;
-		return pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], width * m_colorChannels, properties, &m_d2d1BitmapPtr);
-	};
-	auto CreateThreeV = [&]()->HRESULT {
-		//ThreeV类型的texture，只拉伸高度
-		png_bytep* rowPointers = AllocPngDataMem(m_pngWidth, height, m_colorChannels);
-
-		png_uint_32 topPartWidth = m_pngWidth;
-		png_uint_32 topPartHeight = m_arrHorizontalLinePos[0];
-		for (png_uint_32 i = 0; i < topPartHeight; ++i)
-			for (png_uint_32 j = 0; j < topPartWidth*m_colorChannels; ++j) {
-				rowPointers[i][j] = m_rowPointers[i][j];
-			}
-
-		png_uint_32 bottomPartWidth = m_pngWidth;
-		png_uint_32 bottomPartHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
-		png_uint_32 offsetYSrc = (m_arrHorizontalLinePos[1] + 1);
-		png_uint_32 offsetYDst = height - bottomPartHeight;
-		for (png_uint_32 i = 0; i < bottomPartHeight; ++i)
-			for (png_uint_32 j = 0; j < bottomPartWidth*m_colorChannels; ++j) {
-				rowPointers[i + offsetYDst][j] = m_rowPointers[i + offsetYSrc][j];
-			}
-
-		png_uint_32 centerWidth = m_pngWidth;
-		png_uint_32 centerHeight = height - topPartHeight - bottomPartHeight;
-		offsetYSrc = (m_arrHorizontalLinePos[0] + 1);
-		offsetYDst = topPartHeight;
-		for (png_uint_32 i = 0; i < centerHeight; ++i)
-			for (png_uint_32 j = 0; j < centerWidth*m_colorChannels; ++j) {
-				rowPointers[i + offsetYDst][j] = m_rowPointers[offsetYSrc][j];
-			}
-
-		size.width  = m_pngWidth;
-		size.height = height;
-		return pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], m_pngWidth * m_colorChannels, properties, &m_d2d1BitmapPtr);
-	};
-
 	if (m_d2d1BitmapPtr && width == m_lastQueryWidth && height == m_lastQueryHeight) { 
 		return m_d2d1BitmapPtr; 
 	}
@@ -302,14 +300,22 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 	}
 
 	HRESULT hr = S_OK;
+	D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
+	D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
+	D2D1_SIZE_U size;
+	png_bytep* rowPointers = nullptr;
 	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2){
-		hr = CreateNineInOne();
+		rowPointers = __CreateNineInOn(width, height, retWidth, retHeight);
 	} else if (m_arrHorizontalLinePos.size() == 2) {
-		hr = CreateThreeV();
+		rowPointers = __CreateThreeV(width, height, retWidth, retHeight);
 	}else if (m_arrVerticalLinePos.size() == 2){
-		hr = CreateThreeH();
+		rowPointers = __CreateThreeH(width, height, retWidth, retHeight);
 	}
 
+	size.width  = retWidth;
+	size.height = retHeight;
+	hr = pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], width * m_colorChannels, properties, &m_d2d1BitmapPtr);
+	
 	if (FAILED(hr) || m_d2d1BitmapPtr == nullptr){
 		ERR("GetD2D1Bitmap error: get null m_d2d1BitmapPtr");
 		return nullptr;

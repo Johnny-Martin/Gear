@@ -22,7 +22,7 @@
 using namespace Gear::Res;
 ResTexture::ResTexture()
 	: m_lastQueryWidth(0)
-	, m_purpleLineColor(RGB(127, 0, 127))
+	, m_purpleLineColor(RGB(255, 0, 255))
 	, m_lastQueryHeight(0)
 {
 	InitAttrMap();
@@ -32,7 +32,7 @@ ResTexture::ResTexture()
 
 ResTexture::ResTexture(const string& strImageDesc)
 	: m_lastQueryWidth(0)
-	, m_purpleLineColor(RGB(127, 0, 127))
+	, m_purpleLineColor(RGB(255, 0, 255))
 	, m_lastQueryHeight(0)
 {
 	m_wstrFilePath = ResManager::GetInstance().GetResFilePathByName(strImageDesc);
@@ -45,14 +45,14 @@ ResTexture::ResTexture(const wstring& wstrPath)
 	: ResPicture(wstrPath)
 	, m_lastQueryWidth(0)
 	, m_lastQueryHeight(0)
-	, m_purpleLineColor(RGB(127, 0, 127))
+	, m_purpleLineColor(RGB(255, 0, 255))
 {
 }
 ResTexture::ResTexture(png_bytep* rowPointers, png_uint_32 width, png_uint_32 height, png_byte colorType, png_byte colorChannels, png_byte bitDepth)
 	: ResPicture(rowPointers, width, height, colorType, colorChannels, bitDepth)
 	, m_lastQueryWidth(0)
 	, m_lastQueryHeight(0)
-	, m_purpleLineColor(RGB(127, 0, 127))
+	, m_purpleLineColor(RGB(255, 0, 255))
 {
 }
 void ResTexture::InitAttrMap()
@@ -143,8 +143,8 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 		
 		png_uint_32 topRightCornerWidth  = m_pngWidth - m_arrVerticalLinePos[1] - 1;
 		png_uint_32 topRightCornerHeight = m_arrHorizontalLinePos[0];
-		png_uint_32 offsetXSrc = m_pngWidth - topRightCornerWidth;
-		png_uint_32 offsetXDst = width - topRightCornerWidth;
+		png_uint_32 offsetXSrc = (m_pngWidth - topRightCornerWidth)*m_colorChannels;
+		png_uint_32 offsetXDst = (width - topRightCornerWidth)*m_colorChannels;
 		for (png_uint_32 i = 0; i < topRightCornerHeight; ++i)
 			for (png_uint_32 j = 0; j < topRightCornerWidth * m_colorChannels; ++j) {
 				rowPointers[i][offsetXDst + j] = m_rowPointers[i][offsetXSrc + j];
@@ -161,8 +161,8 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 
 		png_uint_32 bottomRightCornerWidth  = m_pngWidth - m_arrVerticalLinePos[1] - 1;
 		png_uint_32 bottomRightCornerHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
-		offsetXSrc = m_pngWidth - bottomRightCornerWidth;
-		offsetXDst = width - bottomRightCornerWidth;
+		offsetXSrc = (m_pngWidth - bottomRightCornerWidth)*m_colorChannels;
+		offsetXDst = (width - bottomRightCornerWidth)*m_colorChannels;
 		offsetYSrc = m_pngHeight - bottomRightCornerHeight;
 		offsetYDst = height - bottomRightCornerHeight;
 		for (png_uint_32 i = 0; i < bottomRightCornerHeight; ++i)
@@ -170,6 +170,41 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 				rowPointers[offsetYDst + i][offsetXDst + j] = m_rowPointers[offsetYSrc + i][offsetXSrc + j];
 			}
 
+		//ËÄ¸ö±ß£¬À­Éì
+		png_uint_32 leftEdgeWidth  = m_arrVerticalLinePos[0];
+		png_uint_32 leftEdgeHeight = height - topLeftCornerHeight - bottomLeftCornerHeight;
+		for (png_uint_32 i=0; i<leftEdgeHeight; ++i)
+			for (size_t j = 0; j < leftEdgeWidth * m_colorChannels; j++) {
+				rowPointers[i+topLeftCornerHeight][j] = m_rowPointers[topLeftCornerHeight + 1][j];
+			}
+		
+		png_uint_32 topEdgeWidth  = width - topLeftCornerWidth - topRightCornerWidth;
+		png_uint_32 topEdgeHeight = m_arrHorizontalLinePos[0];
+		offsetXDst = topLeftCornerWidth*m_colorChannels;
+		for (png_uint_32 i=0; i<topEdgeHeight; ++i)
+			for (png_uint_32 j = 0; j < topEdgeWidth * m_colorChannels; j++) {
+				rowPointers[i][j + offsetXDst] = m_rowPointers[i][offsetXDst + m_colorChannels + j%m_colorChannels];
+			}
+
+		png_uint_32 rightEdgeWidth = topRightCornerWidth;
+		png_uint_32 rightEdgeHeight = height - topRightCornerHeight - bottomRightCornerHeight;
+		offsetXDst = (width - rightEdgeWidth)*m_colorChannels;
+		offsetXSrc = (m_arrVerticalLinePos[1] + 1)*m_colorChannels;
+		for (png_uint_32 i = 0; i < rightEdgeHeight; ++i)
+			for (png_uint_32 j = 0; j < rightEdgeWidth*m_colorChannels; ++j) {
+				rowPointers[i+topRightCornerHeight][j+ offsetXDst] = m_rowPointers[topRightCornerHeight + 1][j + offsetXSrc];
+			}
+
+		png_uint_32 bottomEdgeWidth = width - bottomLeftCornerWidth - bottomRightCornerWidth;
+		png_uint_32 bottomEdgeHeight = bottomLeftCornerHeight;
+		offsetYDst = height - bottomEdgeHeight;
+		offsetYSrc = m_arrHorizontalLinePos[1] + 1;
+		offsetXDst = m_arrVerticalLinePos[0] * m_colorChannels;
+		offsetXSrc = (m_arrVerticalLinePos[0] + 1)*m_colorChannels;
+		for (png_uint_32 i = 0; i < bottomEdgeHeight; ++i)
+			for (png_uint_32 j = 0; j <bottomEdgeWidth *m_colorChannels; ++j) {
+				rowPointers[i + offsetYDst][j + offsetXDst] = m_rowPointers[offsetYSrc + i][j%m_colorChannels + offsetXSrc];
+			}
 
 		size.width  = width;
 		size.height = height;

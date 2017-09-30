@@ -175,8 +175,8 @@ bool ResManager::LoadResFromFile(const wstring& wstrFilePath, const string& strR
 		ResPicture* pResPic = new ResImage(wstrFilePath);
 		m_picMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_TEXTURE) {
-		//ResPicture* pResPic = new ResTexture(wstrFilePath);
-		//m_resMap.insert(pair<string, ResPicture*>(strResID, pResPic));
+		ResPicture* pResPic = new ResTexture(wstrFilePath);
+		m_picMap.insert(pair<string, ResPicture*>(strResID, pResPic));
 	} else if (resType == RES_IMAGELIST || resType == RES_TEXTURELIST) {
 		//此处的strResID是指imagelist中的一个subImage的ID,需要处理成imagelist的ID
 		auto pos = strResID.find_last_of(".");

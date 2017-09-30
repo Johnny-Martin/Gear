@@ -20,6 +20,7 @@ public:
 	virtual HRESULT								OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, UIObject* obj /*= nullptr*/);
 #else
 	virtual Gdiplus::Bitmap*					GetGDIBitmap(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight);
+	virtual HRESULT								OnDrawImplEx(Graphics& graphics, const UIPos& rcWndPos, UIObject* obj = nullptr);
 #endif
 protected:
 	void										InitAttrMap();

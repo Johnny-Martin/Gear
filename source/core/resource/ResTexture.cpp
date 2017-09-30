@@ -318,11 +318,8 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 	
 	if (FAILED(hr) || m_d2d1BitmapPtr == nullptr){
 		ERR("GetD2D1Bitmap error: get null m_d2d1BitmapPtr");
-		return nullptr;
+		SafeDelete(&m_d2d1BitmapPtr);
 	}
-
-	retWidth  = (unsigned int)m_d2d1BitmapPtr->GetSize().width;
-	retHeight = (unsigned int)m_d2d1BitmapPtr->GetSize().height;
 	return m_d2d1BitmapPtr;
 }
 
@@ -372,9 +369,49 @@ HRESULT ResTexture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RE
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
-Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int height)
+Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
+	if (m_gdiplusBitmapPtr && width == m_lastQueryWidth && height == m_lastQueryHeight) {
+		return m_gdiplusBitmapPtr;
+	}
+	//删掉旧尺寸的图片,重新填充一个
+	SafeDelete(&m_gdiplusBitmapPtr);
 
-	return nullptr;
+	//尚未加载png
+	if (m_pngWidth == 0) {
+		auto ret = ReadPngFile(m_wstrFilePath);
+		if (!ret) { return nullptr; }
+
+		//检测分割线（如何加快检测？ texture.ThreeH?）
+		DetectHorizontalLine();
+		DetectVerticalLine();
+
+		ATLASSERT(m_arrVerticalLinePos.size() == 2 || m_arrHorizontalLinePos.size() == 2);
+	}
+
+	HRESULT hr = S_OK;
+	png_bytep* rowPointers = nullptr;
+	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
+		rowPointers = __CreateNineInOn(width, height, retWidth, retHeight);
+	} else if (m_arrHorizontalLinePos.size() == 2) {
+		rowPointers = __CreateThreeV(width, height, retWidth, retHeight);
+	} else if (m_arrVerticalLinePos.size() == 2) {
+		rowPointers = __CreateThreeH(width, height, retWidth, retHeight);
+	}
+
+	PixelFormat pixFormat = PixelFormat32bppARGB;
+	INT stride = retWidth * 4;
+	m_gdiplusBitmapPtr = new Gdiplus::Bitmap(retWidth, retHeight, stride, pixFormat, (BYTE*)rowPointers[0]);
+	Gdiplus::Status status = m_gdiplusBitmapPtr->GetLastStatus();
+	if (status != Ok) {
+		ERR("GetGDIBitmap error: create Gdiplus::Bitmap failed!!!!");
+		SafeDelete(&m_gdiplusBitmapPtr);
+	}
+	
+	return m_gdiplusBitmapPtr;
+}
+HRESULT	ResTexture::OnDrawImplEx(Graphics& graphics, const UIPos& rcWndPos, UIObject* obj /*= nullptr*/)
+{
+	return S_OK;
 }
 #endif

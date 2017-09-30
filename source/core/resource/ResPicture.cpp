@@ -47,6 +47,8 @@ ResPicture::ResPicture(const wstring& wstrFilePath)
 	,m_pngInfoPtr(nullptr)
 #ifdef USE_D2D_RENDER_MODE
 	, m_d2d1BitmapPtr(nullptr)
+#else
+	, m_gdiplusBitmapPtr(nullptr)
 #endif
 {
 	m_wstrFilePath = wstrFilePath;
@@ -63,6 +65,8 @@ ResPicture::ResPicture(png_bytep* rowPointers, png_uint_32 width, png_uint_32 he
 	, m_pngInfoPtr(nullptr)
 #ifdef USE_D2D_RENDER_MODE
 	, m_d2d1BitmapPtr(nullptr)
+#else
+	, m_gdiplusBitmapPtr(nullptr)
 #endif
 {
 	m_rowPointers = rowPointers;

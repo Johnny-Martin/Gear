@@ -222,6 +222,28 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 		//ThreeH类型的texture，只拉伸长度
 		png_bytep* rowPointers = AllocPngDataMem(width, m_pngHeight, m_colorChannels);
 
+		//两端直接拷贝
+		png_uint_32 leftPartWidth = m_arrVerticalLinePos[0];
+		png_uint_32 leftPartHeight = m_pngHeight;
+		for (png_uint_32 i = 0; i < leftPartHeight; ++i)
+			for (png_uint_32 j = 0; j < leftPartWidth*m_colorChannels; ++j) {
+				rowPointers[i][j] = m_rowPointers[i][j];
+			}
+		png_uint_32 rightPartWidth = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+		png_uint_32 rightPartHeight = m_pngHeight;
+		png_uint_32 offsetXSrc = (m_arrVerticalLinePos[1] + 1)*m_colorChannels;
+		png_uint_32 offsetXDst = (width - rightPartWidth)*m_colorChannels;
+		for (png_uint_32 i = 0; i < rightPartHeight; ++i)
+			for (png_uint_32 j = 0; j < rightPartWidth*m_colorChannels; ++j) {
+				rowPointers[i][j+ offsetXDst] = m_rowPointers[i][j+ offsetXSrc];
+			}
+
+		png_uint_32 centerWidth = width - leftPartWidth - rightPartWidth;
+		offsetXDst = (m_arrVerticalLinePos[0])*m_colorChannels;
+		for (png_uint_32 i = 0; i < m_pngHeight; ++i)
+			for (png_uint_32 j = 0; j < centerWidth*m_colorChannels; ++j) {
+				rowPointers[i][j + offsetXDst] = m_rowPointers[i][j%m_colorChannels + offsetXDst + m_colorChannels];
+			}
 
 		size.width  = width;
 		size.height = m_pngHeight;

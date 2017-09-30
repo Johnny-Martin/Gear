@@ -206,6 +206,14 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 				rowPointers[i + offsetYDst][j + offsetXDst] = m_rowPointers[offsetYSrc + i][j%m_colorChannels + offsetXSrc];
 			}
 
+		png_uint_32 centerWidth = topEdgeWidth;
+		png_uint_32 centerHeight = leftEdgeHeight;
+		offsetXDst = leftEdgeWidth*m_colorChannels;
+		offsetYDst = topLeftCornerHeight;
+		for (png_uint_32 i = 0; i < centerHeight; ++i)
+			for (png_uint_32 j = 0; j < centerWidth *m_colorChannels; ++j) {
+				rowPointers[offsetYDst + i][offsetXDst + j] = m_rowPointers[m_arrHorizontalLinePos[0]+1][(m_arrVerticalLinePos[0]+1)*m_colorChannels + j%m_colorChannels];
+			}
 		size.width  = width;
 		size.height = height;
 		return pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], width * m_colorChannels, properties, &m_d2d1BitmapPtr);

@@ -58,12 +58,13 @@ ID2D1Bitmap* ResImage::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned 
 	D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
 	D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
 	HRESULT hr = pRenderTarget->CreateBitmap(size, (void*)m_rowPointers[0], m_pngWidth*m_colorChannels, properties, &m_d2d1BitmapPtr);
-	if (SUCCEEDED(hr)){
-		retWidth  = m_pngWidth;
-		retHeight = m_pngHeight;
-		return m_d2d1BitmapPtr;
+	if (FAILED(hr)){
+		ERR("GetD2D1Bitmap error: create ID2D1Bitmap failed!!!!");
+		SafeRelease(&m_d2d1BitmapPtr);
 	}
-	return nullptr;
+	retWidth = m_pngWidth;
+	retHeight = m_pngHeight;
+	return m_d2d1BitmapPtr;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
@@ -81,13 +82,12 @@ Gdiplus::Bitmap* ResImage::GetGDIBitmap(unsigned int width, unsigned int height,
 	INT stride = m_pngWidth*4;
 	m_gdiplusBitmapPtr = new Gdiplus::Bitmap(m_pngWidth, m_pngHeight, stride, pixFormat, (BYTE*)m_rowPointers[0]);
 	Gdiplus::Status status = m_gdiplusBitmapPtr->GetLastStatus();
-	if (status == Ok){
-		retWidth = m_pngWidth;
-		retHeight = m_pngHeight;
-		return m_gdiplusBitmapPtr;
+	if (status != Ok){
+		ERR("GetGDIBitmap error: create Gdiplus::Bitmap failed!!!!");
+		SafeDelete(&m_gdiplusBitmapPtr);
 	} 
-	//出错了
-	SafeDelete(&m_gdiplusBitmapPtr);
-	return nullptr;
+	retWidth = m_pngWidth;
+	retHeight = m_pngHeight;
+	return m_gdiplusBitmapPtr;
 }
 #endif

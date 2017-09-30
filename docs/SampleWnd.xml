@@ -64,8 +64,8 @@
 		<bitmap id="wnd.content.texture"  pos="50, 50, 300, 280" res="#texture.wndbkg_shadow" zorder="10"/>
 		<bitmap id="wnd.content.textureH"  pos="50, 20, 300, 28" res="#texture.ThreeV.xBtnBkg_Hover" zorder="10"/> <!-- -->
 		<bitmap id="wnd.content.textureV"  pos="10, 100, 7, 100" res="#texture.ThreeH.listctrl_scroll_bkg" zorder="11"/> <!-- -->
-		<!-- <bitmap id="wnd.content.icon"  pos="0, 0, 100, 100" res="#image.settingIcon" stretch="1" zorder="10"/> 
-		<bitmap id="wnd.checkbutton"  pos="100, 100, 32, 32" res="#imagelist.3.arrow.1"  zorder="11"/>
+		<bitmap id="wnd.content.icon"  pos="0, 0, 100, 100" res="#image.settingIcon" stretch="0" zorder="10"/> 
+		<!-- <bitmap id="wnd.checkbutton"  pos="100, 100, 32, 32" res="#imagelist.3.arrow.1"  zorder="11"/>
 		<bitmap id="wnd.checkbutton2"  pos="120, 120, 16, 17" res="#imagelist.2x4.checkbutton.0"  zorder="12"/>
 		<curve id="wnd.content.curve"  pos="0, #mid, #width, 20" color="FF00FF" style="dashdotdot" dashes="1, 2, 2, 8, 2, 2" hline="1" linewidth="3" zorder="100"/>
 		<curve id="wnd.content.curve2" pos="#mid, 0, 20, #height" color="00FF00" style="dashdotdot" cap="triangle" vline="1" linewidth="3" zorder="100"/>

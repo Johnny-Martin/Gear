@@ -128,7 +128,7 @@ png_bytep* ResTexture::__CreateNineInOn(unsigned int width, unsigned int height,
 
 	//四个角无需拉伸，直接拷贝
 	png_uint_32 topLeftCornerHeight = m_arrHorizontalLinePos[0];
-	for (png_uint_32 i = 0; i < topLeftCornerHeight; ++i)
+	for (png_uint_32 i = 0; i < m_arrHorizontalLinePos[0]; ++i)
 		for (png_uint_32 j = 0; j < m_arrVerticalLinePos[0] * m_colorChannels; ++j) {
 			rowPointers[i][j] = m_rowPointers[i][j];
 		}

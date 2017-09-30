@@ -62,7 +62,8 @@
 	</window>
 	<window id="TestLayout3" pos="100, 100, 400, 400" title="测试布局对象">
 		<!-- <bitmap id="wnd.content.texture"  pos="50, 50, 300, 280" res="#texture.wndbkg_shadow" zorder="10"/> <!-- --> -->
-		<bitmap id="wnd.content.texture"  pos="50, 50, 300, 28" res="#texture.ThreeV.xBtnBkg_Hover" zorder="10"/> <!-- -->
+		<bitmap id="wnd.content.textureH"  pos="50, 50, 300, 28" res="#texture.ThreeV.xBtnBkg_Hover" zorder="10"/> <!-- -->
+		<bitmap id="wnd.content.textureV"  pos="50, 50, 7, 300" res="#texture.ThreeH.listctrl_scroll_bkg" zorder="11"/> <!-- -->
 		<!-- <bitmap id="wnd.content.icon"  pos="0, 0, 100, 100" res="#image.settingIcon" stretch="1" zorder="10"/> 
 		<bitmap id="wnd.checkbutton"  pos="100, 100, 32, 32" res="#imagelist.3.arrow.1"  zorder="11"/>
 		<bitmap id="wnd.checkbutton2"  pos="120, 120, 16, 17" res="#imagelist.2x4.checkbutton.0"  zorder="12"/>

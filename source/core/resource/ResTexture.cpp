@@ -287,6 +287,72 @@ png_bytep* ResTexture::CreateAndCopySubBlock(unsigned int subWidth, unsigned int
 
 	return rowPointers;
 }
+//只创建内存块，可同时给D2D跟GDI使用
+size_t ResTexture::__CreateMultiSubBitmapBlock_AllStyle()
+{
+	auto CreateNineInOneSubBitmapBlock = [&]()->void {
+		m_arrVerticalLinePos.push_back(m_pngWidth);
+		m_arrHorizontalLinePos.push_back(m_pngHeight);
+		int lastBlockXEnd = -1, lastBlockYEnd = -1;
+		for (auto i = 0; i < 9; ++i) {
+			lastBlockXEnd = (i % 3 == 0) ? -1 : m_arrVerticalLinePos[i % 3 - 1];
+			lastBlockYEnd = (i / 3 == 0) ? -1 : m_arrHorizontalLinePos[i / 3 - 1];
+
+			unsigned int curBlockWidth = m_arrVerticalLinePos[i % 3] - lastBlockXEnd - 1;
+			unsigned int curBlockHeight = m_arrHorizontalLinePos[i / 3] - lastBlockYEnd - 1;
+			unsigned int offsetXInPix = lastBlockXEnd + 1;
+			unsigned int offsetYInPix = lastBlockYEnd + 1;
+			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, offsetXInPix, offsetYInPix);
+			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
+			m_arrSubBitmapBlock.push_back(rowPointers);
+		}
+		m_arrVerticalLinePos.pop_back();
+		m_arrHorizontalLinePos.pop_back();
+	};
+	auto CreateThreeHSubBitmapBlock = [&]()->void {
+		int lastBlockXEnd = -1;
+		m_arrVerticalLinePos.push_back(m_pngWidth);
+		for (int i = 0; i < 3; ++i) {
+			lastBlockXEnd = (i % 3 == 0) ? -1 : m_arrVerticalLinePos[i % 3 - 1];
+			unsigned int curBlockWidth = m_arrVerticalLinePos[i] - lastBlockXEnd - 1;
+			unsigned int curBlockHeight = m_pngHeight;
+			unsigned int offsetXInPix = lastBlockXEnd + 1;
+			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, offsetXInPix, 0);
+			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
+			m_arrSubBitmapBlock.push_back(rowPointers);
+		}
+	};
+	auto CreateThreeVSubBitmapBlock = [&]()->void {
+		int lastBlockYEnd = -1;
+		m_arrHorizontalLinePos.push_back(m_pngHeight);
+		for (auto i = 0; i < 3; ++i) {
+			lastBlockYEnd = (i / 3 == 0) ? -1 : m_arrHorizontalLinePos[i / 3 - 1];
+
+			unsigned int curBlockWidth = m_pngWidth;
+			unsigned int curBlockHeight = m_arrHorizontalLinePos[i] - lastBlockYEnd - 1;
+			unsigned int offsetYInPix = lastBlockYEnd + 1;
+			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, 0, offsetYInPix);
+			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
+			m_arrSubBitmapBlock.push_back(rowPointers);
+		}
+		m_arrHorizontalLinePos.pop_back();
+	};
+
+	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
+		//NineInOne类型的texture,创建九个子图
+		CreateNineInOneSubBitmapBlock();
+	} else if (m_arrHorizontalLinePos.size() == 2) {
+		//ThreeV类型的texture
+		CreateThreeVSubBitmapBlock();
+	} else if (m_arrVerticalLinePos.size() == 2) {
+		//ThreeH类型的texture
+		CreateThreeHSubBitmapBlock();
+	} else {
+		return S_FALSE;
+	}
+	return S_OK;
+}
+
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
@@ -447,71 +513,6 @@ HRESULT ResTexture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RE
 	}
 	return hr;
 }
-//只创建内存块，可同时给D2D跟GDI使用
-size_t ResTexture::__CreateMultiSubBitmapBlock_AllStyle()
-{
-	auto CreateNineInOneSubBitmapBlock = [&]()->void {
-		m_arrVerticalLinePos.push_back(m_pngWidth);
-		m_arrHorizontalLinePos.push_back(m_pngHeight);
-		int lastBlockXEnd = -1, lastBlockYEnd = -1;
-		for (auto i=0; i<9; ++i){
-			lastBlockXEnd = (i % 3 == 0) ? -1: m_arrVerticalLinePos[i % 3 - 1];
-			lastBlockYEnd = (i / 3 == 0)?-1: m_arrHorizontalLinePos[i / 3 - 1];
-
-			unsigned int curBlockWidth  = m_arrVerticalLinePos[i % 3] - lastBlockXEnd - 1;
-			unsigned int curBlockHeight = m_arrHorizontalLinePos[i / 3] - lastBlockYEnd - 1;
-			unsigned int offsetXInPix   = lastBlockXEnd + 1;
-			unsigned int offsetYInPix   = lastBlockYEnd + 1;
-			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, offsetXInPix, offsetYInPix);
-			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
-			m_arrSubBitmapBlock.push_back(rowPointers);
-		}
-		m_arrVerticalLinePos.pop_back();
-		m_arrHorizontalLinePos.pop_back();
-	};
-	auto CreateThreeHSubBitmapBlock = [&]()->void {
-		int lastBlockXEnd = -1;
-		m_arrVerticalLinePos.push_back(m_pngWidth);
-		for (int i = 0; i < 3; ++i) {
-			lastBlockXEnd = (i % 3 == 0) ? -1 : m_arrVerticalLinePos[i % 3 - 1];
-			unsigned int curBlockWidth  = m_arrVerticalLinePos[i] - lastBlockXEnd - 1;
-			unsigned int curBlockHeight = m_pngHeight;
-			unsigned int offsetXInPix   = lastBlockXEnd + 1;
-			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, offsetXInPix, 0);
-			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
-			m_arrSubBitmapBlock.push_back(rowPointers);
-		}
-	};
-	auto CreateThreeVSubBitmapBlock = [&]()->void {
-		int lastBlockYEnd = -1;
-		m_arrHorizontalLinePos.push_back(m_pngHeight);
-		for (auto i = 0; i < 3; ++i) {
-			lastBlockYEnd = (i / 3 == 0) ? -1 : m_arrHorizontalLinePos[i / 3 - 1];
-
-			unsigned int curBlockWidth  = m_pngWidth;
-			unsigned int curBlockHeight = m_arrHorizontalLinePos[i] - lastBlockYEnd - 1;
-			unsigned int offsetYInPix   = lastBlockYEnd + 1;
-			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, 0, offsetYInPix);
-			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
-			m_arrSubBitmapBlock.push_back(rowPointers);
-		}
-		m_arrHorizontalLinePos.pop_back();
-	};
-
-	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
-		//NineInOne类型的texture,创建九个子图
-		CreateNineInOneSubBitmapBlock();
-	} else if (m_arrHorizontalLinePos.size() == 2) {
-		//ThreeV类型的texture
-		CreateThreeVSubBitmapBlock();
-	} else if (m_arrVerticalLinePos.size() == 2) {
-		//ThreeH类型的texture
-		CreateThreeHSubBitmapBlock();
-	} else {
-		return S_FALSE;
-	}
-	return S_OK;
-}
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
 Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
@@ -557,6 +558,122 @@ Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int heigh
 }
 HRESULT	ResTexture::OnDrawImplEx(Graphics& graphics, const UIPos& rcWndPos, UIObject* obj /*= nullptr*/)
 {
+	auto DrawNineInOne = [&]()->HRESULT {
+		UIPos dstRect = rcWndPos;
+		ImageAttributes imgAttr;
+		imgAttr.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
+
+		dstRect.width = m_arrVerticalLinePos[0];
+		dstRect.height = m_arrHorizontalLinePos[0];
+		graphics.DrawImage(m_arrGdiplusBitmap[0], dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		
+		dstRect.left +=  dstRect.width;
+		png_uint_32 topRightCornerWidth = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+		png_uint_32 topLeftCornerWidth = m_arrVerticalLinePos[0];
+		dstRect.width = (rcWndPos.width - topRightCornerWidth - topLeftCornerWidth);	
+		Bitmap* pBitmap = m_arrGdiplusBitmap[1];
+		Gdiplus::Rect rc(dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		graphics.DrawImage(pBitmap, rc, 0, 0, pBitmap->GetWidth(), pBitmap->GetHeight(), Gdiplus::UnitPixel, &imgAttr);
+
+
+		dstRect.left = dstRect.left + dstRect.width;
+		dstRect.width = topRightCornerWidth;
+		graphics.DrawImage(m_arrGdiplusBitmap[2], dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+
+		dstRect.left = rcWndPos.left;
+		dstRect.top = dstRect.top + dstRect.height;
+		dstRect.width = topLeftCornerWidth;
+		png_uint_32 topLeftCornerHeight = m_arrHorizontalLinePos[0];
+		png_uint_32 bottomLeftCornerHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
+		dstRect.height = (rcWndPos.height - topLeftCornerHeight - bottomLeftCornerHeight);
+		pBitmap = m_arrGdiplusBitmap[3];
+		Gdiplus::Rect rc3(dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		graphics.DrawImage(pBitmap, rc3, 0, 0, pBitmap->GetWidth(), pBitmap->GetHeight(), Gdiplus::UnitPixel, &imgAttr);
+
+		dstRect.left = dstRect.left + dstRect.width;
+		dstRect.width = (rcWndPos.width - topLeftCornerWidth - topRightCornerWidth);
+		pBitmap = m_arrGdiplusBitmap[4];
+		Gdiplus::Rect rc4(dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		graphics.DrawImage(pBitmap, rc4, 0, 0, pBitmap->GetWidth(), pBitmap->GetHeight(), Gdiplus::UnitPixel, &imgAttr);
+
+		dstRect.left += dstRect.width;
+		dstRect.width = topRightCornerWidth;
+		pBitmap = m_arrGdiplusBitmap[5];
+		Gdiplus::Rect rc5(dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		graphics.DrawImage(pBitmap, rc5, 0, 0, pBitmap->GetWidth(), pBitmap->GetHeight(), Gdiplus::UnitPixel, &imgAttr);
+
+		dstRect.left = rcWndPos.left;
+		dstRect.width = topLeftCornerWidth;
+		dstRect.height = bottomLeftCornerHeight;
+		dstRect.top = rcWndPos.top + rcWndPos.height - dstRect.height;
+		graphics.DrawImage(m_arrGdiplusBitmap[6], dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+
+		dstRect.left += dstRect.width;
+		dstRect.width = (rcWndPos.width - topLeftCornerWidth - topRightCornerWidth);
+		pBitmap = m_arrGdiplusBitmap[7];
+		Gdiplus::Rect rc7(dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		graphics.DrawImage(pBitmap, rc7, 0, 0, pBitmap->GetWidth(), pBitmap->GetHeight(), Gdiplus::UnitPixel, &imgAttr);
+
+		dstRect.left += dstRect.width;
+		dstRect.width = rcWndPos.width - dstRect.width - topLeftCornerWidth;
+		graphics.DrawImage(m_arrGdiplusBitmap[8], dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		
+		/**/
+		return S_OK;
+	};
+	auto DrawThreeH = [&]()->HRESULT {
+
+		return S_OK;
+	};
+	auto DrawThreeV = [&]()->HRESULT {
+
+		return S_OK;
+	};
+	//删掉旧的图片,使用新模式绘制
+	SafeDelete(&m_gdiplusBitmapPtr);
+
+	if (m_pngWidth == 0) {
+		auto ret = ReadPngFile(m_wstrFilePath);
+		if (!ret) { return S_FALSE; }
+
+		//检测分割线（如何加快检测？ texture.ThreeH?）
+		DetectHorizontalLine();
+		DetectVerticalLine();
+
+		ATLASSERT(m_arrVerticalLinePos.size() == 2 || m_arrHorizontalLinePos.size() == 2);
+	}
+
+	//尚未创建子图
+	if (m_arrGdiplusBitmap.size() <= 0) {
+		__CreateMultiSubBitmapBlock_AllStyle();
+		ATLASSERT(m_arrSubBitmapBlock.size() > 0 && m_arrSubBitmapBlock.size() == m_arrSubBitmapBlockSize.size());
+		for (size_t i = 0; i < m_arrSubBitmapBlock.size(); ++i) {
+			png_bytep* rowPointers = m_arrSubBitmapBlock[i];
+			INT stride = m_arrSubBitmapBlockSize[i].first * m_colorChannels;
+			Gdiplus::Bitmap* pBitmap = new Gdiplus::Bitmap(m_arrSubBitmapBlockSize[i].first, m_arrSubBitmapBlockSize[i].second, stride, PixelFormat32bppARGB, (BYTE*)rowPointers[0]);
+
+			ATLASSERT(pBitmap && pBitmap->GetLastStatus() == Ok);
+			
+			m_arrGdiplusBitmap.push_back(pBitmap);
+			//创建完毕后，销毁m_arrSubBitmapBlock中的内存块
+			//与D2D的CreateBitmap不同，GDI+的CreateBitmap不能此时释放rowPointers
+			//free(rowPointers[0]);
+			//free(rowPointers);
+			//m_arrSubBitmapBlock[i] = nullptr;
+		}
+		//m_arrSubBitmapBlock.clear();
+		//m_arrSubBitmapBlockSize.clear();
+	}
+
+	HRESULT hr = S_OK;
+	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
+		hr = DrawNineInOne();
+	} else if (m_arrHorizontalLinePos.size() == 2) {
+		hr = DrawThreeV();
+	} else if (m_arrVerticalLinePos.size() == 2) {
+		hr = DrawThreeH();
+	}
+	return hr;
 	return S_OK;
 }
 #endif

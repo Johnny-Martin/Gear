@@ -104,22 +104,27 @@ HRESULT	UIBitmap::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 		ATLASSERT(FALSE);
 		return S_FALSE;
 	}
-	unsigned int realWidth{ 0 };
-	unsigned int realHeight{ 0 };
-	Gdiplus::Bitmap* pBitmap = m_picObject->GetGDIBitmap(m_pos.width, m_pos.height, realWidth, realHeight);
-	if (!pBitmap){
-		ATLASSERT(FALSE);
-		return S_FALSE;
-	}
-
+	
 	Status status = GenericError;
-	auto spStretch = m_attrMap["stretch"];
-	if (spStretch == "0") {
-		status = graphics.DrawImage(pBitmap, rcWndPos.left, rcWndPos.top, realWidth, realHeight);
+	auto sFrequent = m_attrMap["frequent"];
+	if (sFrequent == "0") {
+		unsigned int realWidth{ 0 };
+		unsigned int realHeight{ 0 };
+		Gdiplus::Bitmap* pBitmap = m_picObject->GetGDIBitmap(m_pos.width, m_pos.height, realWidth, realHeight);
+		if (!pBitmap) {
+			ATLASSERT(FALSE);
+			return S_FALSE;
+		}
+		auto spStretch = m_attrMap["stretch"];
+		if (spStretch == "0") {
+			status = graphics.DrawImage(pBitmap, rcWndPos.left, rcWndPos.top, realWidth, realHeight);
+		} else {
+			status = graphics.DrawImage(pBitmap, rcWndPos.left, rcWndPos.top, rcWndPos.width, rcWndPos.height);
+		}
+		return status == Ok ? S_OK : S_FALSE;
 	} else {
-		status = graphics.DrawImage(pBitmap, rcWndPos.left, rcWndPos.top, rcWndPos.width, rcWndPos.height);
+		return m_picObject->OnDrawImplEx(graphics, rcWndPos, this);
 	}
-
-	return status == Ok ? S_OK : S_FALSE;
+	return S_FALSE;
 }
 #endif

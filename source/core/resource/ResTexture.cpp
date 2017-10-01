@@ -121,7 +121,7 @@ RESERROR ResTexture::DetectHorizontalLine()
 	}
 	return RES_SUCCESS;
 }
-png_bytep* ResTexture::__CreateNineInOn(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
+png_bytep* ResTexture::__CreateSingleBitmapBlock_NineInOn(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
 	ATLASSERT(width > m_pngWidth && height > m_pngHeight);
 	png_bytep* rowPointers = AllocPngDataMem(width, height, m_colorChannels);
@@ -210,7 +210,7 @@ png_bytep* ResTexture::__CreateNineInOn(unsigned int width, unsigned int height,
 	return rowPointers;
 }
 
-png_bytep* ResTexture::__CreateThreeH(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
+png_bytep* ResTexture::__CreateSingleBitmapBlock_ThreeH(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
 	png_bytep* rowPointers = AllocPngDataMem(width, m_pngHeight, m_colorChannels);
 
@@ -242,7 +242,7 @@ png_bytep* ResTexture::__CreateThreeH(unsigned int width, unsigned int height, u
 	return rowPointers;
 }
 
-png_bytep* ResTexture::__CreateThreeV(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
+png_bytep* ResTexture::__CreateSingleBitmapBlock_ThreeV(unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
 {
 	png_bytep* rowPointers = AllocPngDataMem(m_pngWidth, height, m_colorChannels);
 
@@ -275,6 +275,18 @@ png_bytep* ResTexture::__CreateThreeV(unsigned int width, unsigned int height, u
 	retHeight = height;
 	return rowPointers;
 }
+
+png_bytep* ResTexture::CreateAndCopySubBlock(unsigned int subWidth, unsigned int subHeight, unsigned int offsetXInPix, unsigned int offsetYInPix)
+{
+	png_bytep* rowPointers = AllocPngDataMem(subWidth, subHeight, m_colorChannels);
+	offsetXInPix = offsetXInPix*m_colorChannels;
+	for (png_uint_32 i = 0; i < subHeight; ++i)
+		for (png_uint_32 j = 0; j < subWidth*m_colorChannels; ++j) {
+			rowPointers[i][j] = m_rowPointers[i + offsetYInPix][j + offsetXInPix];
+		}
+
+	return rowPointers;
+}
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned int width, unsigned int height, unsigned int& retWidth, unsigned int& retHeight)
@@ -303,11 +315,11 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 	D2D1_SIZE_U size;
 	png_bytep* rowPointers = nullptr;
 	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2){
-		rowPointers = __CreateNineInOn(width, height, retWidth, retHeight);
+		rowPointers = __CreateSingleBitmapBlock_NineInOn(width, height, retWidth, retHeight);
 	} else if (m_arrHorizontalLinePos.size() == 2) {
-		rowPointers = __CreateThreeV(width, height, retWidth, retHeight);
+		rowPointers = __CreateSingleBitmapBlock_ThreeV(width, height, retWidth, retHeight);
 	}else if (m_arrVerticalLinePos.size() == 2){
-		rowPointers = __CreateThreeH(width, height, retWidth, retHeight);
+		rowPointers = __CreateSingleBitmapBlock_ThreeH(width, height, retWidth, retHeight);
 	}
 
 	size.width  = retWidth;
@@ -325,7 +337,57 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 HRESULT ResTexture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos, UIObject* obj /*= nullptr*/)
 {
 	auto DrawNineInOne = [&]()->HRESULT {
+		D2D1_RECT_F dstRect = rcWndPos;
+		ID2D1Bitmap *pBitmap = NULL;
 
+		pBitmap = m_arrD2D1Bitmap[0];
+		dstRect.right = (FLOAT)(rcWndPos.left + m_arrVerticalLinePos[0]);
+		dstRect.bottom = (FLOAT)(rcWndPos.top + m_arrHorizontalLinePos[0]);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[1];
+		dstRect.left = dstRect.right;
+		dstRect.right = (FLOAT)(rcWndPos.right - (m_pngWidth - m_arrVerticalLinePos[1]) + 1);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[2];
+		dstRect.left = dstRect.right;
+		dstRect.right = (FLOAT)rcWndPos.right;
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[3];
+		dstRect.left = (FLOAT)rcWndPos.left;
+		dstRect.top = dstRect.bottom;
+		dstRect.right = (FLOAT)(rcWndPos.left + m_arrVerticalLinePos[0]);
+		dstRect.bottom = (FLOAT)(rcWndPos.bottom - (m_pngHeight - m_arrHorizontalLinePos[1]) + 1);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[4];
+		dstRect.left = dstRect.right;
+		dstRect.right = (FLOAT)(rcWndPos.right - (m_pngWidth - m_arrVerticalLinePos[1]) + 1);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[5];
+		dstRect.left = dstRect.right;
+		dstRect.right = (FLOAT)rcWndPos.right;
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[6];
+		dstRect.left = (FLOAT)rcWndPos.left;
+		dstRect.right = (FLOAT)(rcWndPos.left + m_arrVerticalLinePos[0]);
+		dstRect.top = dstRect.bottom;
+		dstRect.bottom = (FLOAT)rcWndPos.bottom;
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[7];
+		dstRect.left = dstRect.right;
+		dstRect.right = (FLOAT)(rcWndPos.right - (m_pngWidth - m_arrVerticalLinePos[1]) + 1);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[8];
+		dstRect.left = dstRect.right;
+		dstRect.right = (FLOAT)rcWndPos.right;
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
 		return S_OK;
 	};
 	auto DrawThreeH = [&]()->HRESULT {
@@ -351,19 +413,104 @@ HRESULT ResTexture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RE
 		ATLASSERT(m_arrVerticalLinePos.size() == 2 || m_arrHorizontalLinePos.size() == 2);
 	}
 	
-	HRESULT hr = S_OK;
-	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
-		//NineInOne类型的texture
-		hr = DrawNineInOne();
-	} else if (m_arrHorizontalLinePos.size() == 2) {
-		//ThreeV类型的texture
-		hr = DrawThreeV();
-	} else if (m_arrVerticalLinePos.size() == 2) {
-		//ThreeH类型的texture
-		hr = DrawThreeH();
+	//尚未创建子图
+	if (m_arrD2D1Bitmap.size() <= 0){
+		__CreateMultiSubBitmapBlock_AllStyle();
+		ATLASSERT(m_arrSubBitmapBlock.size() > 0 && m_arrSubBitmapBlock.size() == m_arrSubBitmapBlockSize.size());
+		for (size_t i=0; i<m_arrSubBitmapBlock.size(); ++i){
+			png_bytep* rowPointers = m_arrSubBitmapBlock[i];
+			D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
+			D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
+			D2D1_SIZE_U size;
+			size.width = m_arrSubBitmapBlockSize[i].first;
+			size.height = m_arrSubBitmapBlockSize[i].second;
+			ID2D1Bitmap* d2d1Bitmap = nullptr;
+			HRESULT hr = pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], size.width * m_colorChannels, properties, &d2d1Bitmap);
+			ATLASSERT(SUCCEEDED(hr));
+			m_arrD2D1Bitmap.push_back(d2d1Bitmap);
+			//创建完毕后，销毁m_arrSubBitmapBlock中的内存块
+			free(rowPointers[0]);
+			free(rowPointers);
+			m_arrSubBitmapBlock[i] = nullptr;
+		}
+		m_arrSubBitmapBlock.clear();
+		m_arrSubBitmapBlockSize.clear();
 	}
 
+	HRESULT hr = S_OK;
+	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
+		hr = DrawNineInOne();
+	} else if (m_arrHorizontalLinePos.size() == 2) {
+		hr = DrawThreeV();
+	} else if (m_arrVerticalLinePos.size() == 2) {
+		hr = DrawThreeH();
+	}
 	return hr;
+}
+//只创建内存块，可同时给D2D跟GDI使用
+size_t ResTexture::__CreateMultiSubBitmapBlock_AllStyle()
+{
+	auto CreateNineInOneSubBitmapBlock = [&]()->void {
+		m_arrVerticalLinePos.push_back(m_pngWidth);
+		m_arrHorizontalLinePos.push_back(m_pngHeight);
+		int lastBlockXEnd = -1, lastBlockYEnd = -1;
+		for (auto i=0; i<9; ++i){
+			lastBlockXEnd = (i % 3 == 0) ? -1: m_arrVerticalLinePos[i % 3 - 1];
+			lastBlockYEnd = (i / 3 == 0)?-1: m_arrHorizontalLinePos[i / 3 - 1];
+
+			unsigned int curBlockWidth  = m_arrVerticalLinePos[i % 3] - lastBlockXEnd - 1;
+			unsigned int curBlockHeight = m_arrHorizontalLinePos[i / 3] - lastBlockYEnd - 1;
+			unsigned int offsetXInPix   = lastBlockXEnd + 1;
+			unsigned int offsetYInPix   = lastBlockYEnd + 1;
+			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, offsetXInPix, offsetYInPix);
+			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
+			m_arrSubBitmapBlock.push_back(rowPointers);
+		}
+		m_arrVerticalLinePos.pop_back();
+		m_arrHorizontalLinePos.pop_back();
+	};
+	auto CreateThreeHSubBitmapBlock = [&]()->void {
+		int lastBlockXEnd = -1;
+		m_arrVerticalLinePos.push_back(m_pngWidth);
+		for (int i = 0; i < 3; ++i) {
+			lastBlockXEnd = (i % 3 == 0) ? -1 : m_arrVerticalLinePos[i % 3 - 1];
+			unsigned int curBlockWidth  = m_arrVerticalLinePos[i] - lastBlockXEnd - 1;
+			unsigned int curBlockHeight = m_pngHeight;
+			unsigned int offsetXInPix   = lastBlockXEnd + 1;
+			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, offsetXInPix, 0);
+			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
+			m_arrSubBitmapBlock.push_back(rowPointers);
+		}
+	};
+	auto CreateThreeVSubBitmapBlock = [&]()->void {
+		int lastBlockYEnd = -1;
+		m_arrHorizontalLinePos.push_back(m_pngHeight);
+		for (auto i = 0; i < 3; ++i) {
+			lastBlockYEnd = (i / 3 == 0) ? -1 : m_arrHorizontalLinePos[i / 3 - 1];
+
+			unsigned int curBlockWidth  = m_pngWidth;
+			unsigned int curBlockHeight = m_arrHorizontalLinePos[i] - lastBlockYEnd - 1;
+			unsigned int offsetYInPix   = lastBlockYEnd + 1;
+			png_bytep* rowPointers = CreateAndCopySubBlock(curBlockWidth, curBlockHeight, 0, offsetYInPix);
+			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
+			m_arrSubBitmapBlock.push_back(rowPointers);
+		}
+		m_arrHorizontalLinePos.pop_back();
+	};
+
+	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
+		//NineInOne类型的texture,创建九个子图
+		CreateNineInOneSubBitmapBlock();
+	} else if (m_arrHorizontalLinePos.size() == 2) {
+		//ThreeV类型的texture
+		CreateThreeVSubBitmapBlock();
+	} else if (m_arrVerticalLinePos.size() == 2) {
+		//ThreeH类型的texture
+		CreateThreeHSubBitmapBlock();
+	} else {
+		return S_FALSE;
+	}
+	return S_OK;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
 #else
@@ -390,11 +537,11 @@ Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int heigh
 	HRESULT hr = S_OK;
 	png_bytep* rowPointers = nullptr;
 	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2) {
-		rowPointers = __CreateNineInOn(width, height, retWidth, retHeight);
+		rowPointers = __CreateSingleBitmapBlock_NineInOn(width, height, retWidth, retHeight);
 	} else if (m_arrHorizontalLinePos.size() == 2) {
-		rowPointers = __CreateThreeV(width, height, retWidth, retHeight);
+		rowPointers = __CreateSingleBitmapBlock_ThreeV(width, height, retWidth, retHeight);
 	} else if (m_arrVerticalLinePos.size() == 2) {
-		rowPointers = __CreateThreeH(width, height, retWidth, retHeight);
+		rowPointers = __CreateSingleBitmapBlock_ThreeH(width, height, retWidth, retHeight);
 	}
 
 	PixelFormat pixFormat = PixelFormat32bppARGB;

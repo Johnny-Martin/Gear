@@ -321,12 +321,13 @@ size_t ResTexture::__CreateMultiSubBitmapBlock_AllStyle()
 			m_arrSubBitmapBlockSize.push_back(pair<unsigned int, unsigned int>(curBlockWidth, curBlockHeight));
 			m_arrSubBitmapBlock.push_back(rowPointers);
 		}
+		m_arrVerticalLinePos.pop_back();
 	};
 	auto CreateThreeVSubBitmapBlock = [&]()->void {
 		int lastBlockYEnd = -1;
 		m_arrHorizontalLinePos.push_back(m_pngHeight);
 		for (auto i = 0; i < 3; ++i) {
-			lastBlockYEnd = (i / 3 == 0) ? -1 : m_arrHorizontalLinePos[i / 3 - 1];
+			lastBlockYEnd = (i % 3 == 0) ? -1 : m_arrHorizontalLinePos[i % 3 - 1];
 
 			unsigned int curBlockWidth = m_pngWidth;
 			unsigned int curBlockHeight = m_arrHorizontalLinePos[i] - lastBlockYEnd - 1;
@@ -457,11 +458,45 @@ HRESULT ResTexture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RE
 		return S_OK;
 	};
 	auto DrawThreeH = [&]()->HRESULT {
+		D2D1_RECT_F dstRect = rcWndPos;
+		ID2D1Bitmap *pBitmap = NULL;
 
+		pBitmap = m_arrD2D1Bitmap[0];
+		dstRect.right = (FLOAT)(rcWndPos.left + m_arrVerticalLinePos[0]);
+		dstRect.bottom = (FLOAT)(rcWndPos.bottom);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[1];
+		dstRect.left = dstRect.right;
+		dstRect.right = (FLOAT)(rcWndPos.right - (m_pngWidth - m_arrVerticalLinePos[1]) + 1);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[2];
+		dstRect.left = dstRect.right;
+		dstRect.right = (FLOAT)rcWndPos.right;
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
 		return S_OK;
 	};
 	auto DrawThreeV = [&]()->HRESULT {
+		D2D1_RECT_F dstRect = rcWndPos;
+		ID2D1Bitmap *pBitmap = NULL;
 
+		pBitmap = m_arrD2D1Bitmap[0];
+		//dstRect.right = (FLOAT)(rcWndPos.left + m_arrVerticalLinePos[0]);
+		dstRect.bottom = (FLOAT)(dstRect.top + m_arrHorizontalLinePos[0]);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[1];
+		dstRect.top = dstRect.bottom;
+		png_uint_32 topPartHeight = m_arrHorizontalLinePos[0];
+		png_uint_32 bottomPartHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
+		dstRect.bottom = (FLOAT)(rcWndPos.bottom - bottomPartHeight);
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
+
+		pBitmap = m_arrD2D1Bitmap[2];
+		dstRect.top = dstRect.bottom;
+		dstRect.bottom = (FLOAT)rcWndPos.bottom;
+		pRenderTarget->DrawBitmap(pBitmap, dstRect);
 		return S_OK;
 	};
 

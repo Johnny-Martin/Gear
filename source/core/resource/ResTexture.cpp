@@ -593,10 +593,11 @@ Gdiplus::Bitmap* ResTexture::GetGDIBitmap(unsigned int width, unsigned int heigh
 }
 HRESULT	ResTexture::OnDrawImplEx(Graphics& graphics, const UIPos& rcWndPos, UIObject* obj /*= nullptr*/)
 {
+	ImageAttributes imgAttr;
+	imgAttr.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
+
 	auto DrawNineInOne = [&]()->HRESULT {
 		UIPos dstRect = rcWndPos;
-		ImageAttributes imgAttr;
-		imgAttr.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
 
 		dstRect.width = m_arrVerticalLinePos[0];
 		dstRect.height = m_arrHorizontalLinePos[0];
@@ -657,10 +658,42 @@ HRESULT	ResTexture::OnDrawImplEx(Graphics& graphics, const UIPos& rcWndPos, UIOb
 		return S_OK;
 	};
 	auto DrawThreeH = [&]()->HRESULT {
+		UIPos dstRect = rcWndPos;
 
+		dstRect.width = m_arrVerticalLinePos[0];
+		graphics.DrawImage(m_arrGdiplusBitmap[0], dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+
+		dstRect.left += dstRect.width;
+		png_uint_32 leftPartWidth = m_arrVerticalLinePos[0];
+		png_uint_32 rightPartWidth = m_pngWidth - m_arrVerticalLinePos[1] - 1;
+		dstRect.width = rcWndPos.width - leftPartWidth - rightPartWidth;
+		Gdiplus::Rect rc1(dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		Gdiplus::Bitmap* pBitmap = m_arrGdiplusBitmap[1];
+		graphics.DrawImage(pBitmap, rc1, 0, 0, pBitmap->GetWidth(), pBitmap->GetHeight(), Gdiplus::UnitPixel, &imgAttr);
+
+		dstRect.left += dstRect.width;
+		dstRect.width = rightPartWidth;
+		graphics.DrawImage(m_arrGdiplusBitmap[2], dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		
 		return S_OK;
 	};
 	auto DrawThreeV = [&]()->HRESULT {
+		UIPos dstRect = rcWndPos;
+
+		dstRect.height = m_arrHorizontalLinePos[0];
+		graphics.DrawImage(m_arrGdiplusBitmap[0], dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+
+		dstRect.top += dstRect.height;
+		png_uint_32 topPartHeight = m_arrHorizontalLinePos[0];
+		png_uint_32 bottomPartHeight = m_pngHeight - m_arrHorizontalLinePos[1] - 1;
+		dstRect.height = rcWndPos.height - topPartHeight - bottomPartHeight;
+		Gdiplus::Rect rc1(dstRect.left, dstRect.top, dstRect.width, dstRect.height);
+		Gdiplus::Bitmap* pBitmap = m_arrGdiplusBitmap[1];
+		graphics.DrawImage(pBitmap, rc1, 0, 0, pBitmap->GetWidth(), pBitmap->GetHeight(), Gdiplus::UnitPixel, &imgAttr);
+
+		dstRect.top += dstRect.height;
+		dstRect.height = bottomPartHeight;
+		graphics.DrawImage(m_arrGdiplusBitmap[2], dstRect.left, dstRect.top, dstRect.width, dstRect.height);
 
 		return S_OK;
 	};

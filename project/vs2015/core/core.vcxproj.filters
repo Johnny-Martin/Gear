@@ -57,9 +57,6 @@
     <ClCompile Include="..\..\..\source\core\metaobject\UICurve.cpp">
       <Filter>metaobject</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\metaobject\UIString.cpp">
-      <Filter>metaobject</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\metaobject\UIWindow.cpp">
       <Filter>metaobject</Filter>
     </ClCompile>
@@ -87,9 +84,6 @@
     <ClCompile Include="..\..\..\source\core\entry\UIFactory.cpp">
       <Filter>entry</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\core\resource\ResText.cpp">
-      <Filter>resource</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\core\resource\ResPicture.cpp">
       <Filter>resource</Filter>
     </ClCompile>
@@ -100,6 +94,12 @@
       <Filter>resource</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\resource\ResList.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\metaobject\UIText.cpp">
+      <Filter>metaobject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\resource\ResString.cpp">
       <Filter>resource</Filter>
     </ClCompile>
   </ItemGroup>
@@ -129,9 +129,6 @@
       <Filter>metaobject</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\metaobject\UICurve.h">
-      <Filter>metaobject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\core\metaobject\UIString.h">
       <Filter>metaobject</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\metaobject\UIWindow.h">
@@ -167,9 +164,6 @@
     <ClInclude Include="..\..\..\source\core\utils\UIError.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\core\resource\ResText.h">
-      <Filter>resource</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResPicture.h">
       <Filter>resource</Filter>
     </ClInclude>
@@ -180,6 +174,12 @@
       <Filter>resource</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResTexture.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\metaobject\UIText.h">
+      <Filter>metaobject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\resource\ResString.h">
       <Filter>resource</Filter>
     </ClInclude>
   </ItemGroup>

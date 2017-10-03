@@ -123,6 +123,7 @@ HRESULT	UIBitmap::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 		}
 		return status == Ok ? S_OK : S_FALSE;
 	} else {
+		//OnDrawImpl自己实现stretch特性
 		return m_picObject->OnDrawImplEx(graphics, rcWndPos, this);
 	}
 	return S_FALSE;

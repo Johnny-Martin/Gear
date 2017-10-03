@@ -178,7 +178,7 @@
     <ClCompile Include="..\..\..\source\core\metaobject\UIControl.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UICurve.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIRectangle.cpp" />
-    <ClCompile Include="..\..\..\source\core\metaobject\UIString.cpp" />
+    <ClCompile Include="..\..\..\source\core\metaobject\UIText.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIWindow.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp" />
@@ -186,7 +186,7 @@
     <ClCompile Include="..\..\..\source\core\resource\ResList.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResManage.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResPicture.cpp" />
-    <ClCompile Include="..\..\..\source\core\resource\ResText.cpp" />
+    <ClCompile Include="..\..\..\source\core\resource\ResString.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResTexture.cpp" />
     <ClCompile Include="..\..\..\source\core\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -205,7 +205,7 @@
     <ClInclude Include="..\..\..\source\core\metaobject\UIControl.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UICurve.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIRectangle.h" />
-    <ClInclude Include="..\..\..\source\core\metaobject\UIString.h" />
+    <ClInclude Include="..\..\..\source\core\metaobject\UIText.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIWindow.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResFont.h" />
@@ -213,7 +213,7 @@
     <ClInclude Include="..\..\..\source\core\resource\ResList.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResManager.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResPicture.h" />
-    <ClInclude Include="..\..\..\source\core\resource\ResText.h" />
+    <ClInclude Include="..\..\..\source\core\resource\ResString.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResTexture.h" />
     <ClInclude Include="..\..\..\source\core\stdafx.h" />
     <ClInclude Include="..\..\..\source\core\targetver.h" />

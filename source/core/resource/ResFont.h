@@ -2,11 +2,10 @@
 #include "../stdafx.h"
 #include "../base/XmlUIElement.h"
 
-class ResFont
+class ResFont:public XmlUIElement
 {
 public:
 												ResFont();
-												ResFont(const string& sColorHexValue);
 #ifdef USE_D2D_RENDER_MODE
 public:
 

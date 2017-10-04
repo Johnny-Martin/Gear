@@ -11,9 +11,7 @@ ResString::ResString()
 void ResString::InitAttrMap()
 {
 	//以下属性应属于ResString
-	ADD_ATTR("color", "")
-	ADD_ATTR("font", "微软雅黑")
-	ADD_ATTR("weight", "12")
+	//ADD_ATTR("color", ""))
 }
 void ResString::InitAttrValuePatternMap()
 {

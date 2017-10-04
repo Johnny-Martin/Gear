@@ -98,7 +98,7 @@ ResPicture*	ResManager::GetPicObject(const string& strResID)
 }
 ResColor* ResManager::GetColorObject(const string& strColorValueOrID)
 {
-	if (strColorValueOrID.find("#") == 0){
+	if (strColorValueOrID.find("#") == string::npos){
 		auto it = m_colorMap.find(strColorValueOrID);
 		return it == m_colorMap.end() ? nullptr : it->second;
 	} 
@@ -108,11 +108,21 @@ ResColor* ResManager::GetColorObject(const string& strColorValueOrID)
 		return it->second;
 	}
 	//用给定的色值创建一个颜色对象
-	ResColor* pColorObj = new ResColor(strColorValueOrID);
+	string value = strColorValueOrID.substr(1, strColorValueOrID.length() - 1);
+	ResColor* pColorObj = new ResColor(value);
 	m_colorMap2[strColorValueOrID] = pColorObj;
 	return pColorObj;
 }
+ResFont* ResManager::GetFontObject(const string& strFontIDOrDesc)
+{
+	if (strFontIDOrDesc.find("#") == 0){
+		//使用字体描述创建一个字体对象（例如"#宋体.12.normal"）
 
+	} else {
+
+	}
+	return nullptr;
+}
 ResType Gear::Res::GetResType(const string& resID)
 {
 	if (resID.find("image.") == 0 || resID.find("#image.") == 0) {

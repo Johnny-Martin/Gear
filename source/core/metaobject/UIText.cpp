@@ -13,6 +13,7 @@ UIText::UIText()
 void UIText::InitAttrMap()
 {
 	ADD_ATTR("str", "")
+	ADD_ATTR("font", "")
 }
 void UIText::InitEventMap()
 {
@@ -43,6 +44,14 @@ HRESULT	UIText::DiscardDeviceDependentResources()
 #else
 HRESULT UIText::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
+	string str = m_attrMap["str"];
+	wstring wstr = UTF8AToUnicodeW(str);
+	Gdiplus:SolidBrush brush(Color::Red);
+	Gdiplus::Font font(L"ËÎÌו", 12);
+	Gdiplus::StringFormat format();
+	Gdiplus::PointF point(rcWndPos.left, rcWndPos.top);
+	//graphics.DrawString(wstr.c_str(),);
+	graphics.DrawString(wstr.c_str(), wstr.length(), &font, point, &brush);
 	return S_OK;
 }
 #endif

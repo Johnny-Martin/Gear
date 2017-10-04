@@ -13,6 +13,7 @@ Description:		界面图片资源管理器
 #include "../entry/RenderManager.h"
 #include "ResPicture.h"
 #include "ResColor.h"
+#include "ResFont.h"
 #include "ResTexture.h"
 #include "ResImage.h"
 #include "ResList.h"
@@ -46,6 +47,7 @@ public:
 	//主要接口
 	ResPicture*						GetPicObject(const string& strResID);
 	ResColor*						GetColorObject(const string& strColorValueOrID);
+	ResFont*						GetFontObject(const string& strFontIDOrDesc);
 	bool							LoadResourceByID(const string& strResID);
 	bool							LoadResFromFile(const wstring& wstrFilePath, const string& strResID, ResType resType);
 private:

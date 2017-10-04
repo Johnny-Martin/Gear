@@ -19,7 +19,7 @@ UICurve::UICurve()
 }
 void UICurve::InitAttrMap()
 {
-	ADD_ATTR("color",	"FFFFFF")
+	ADD_ATTR("color",	"#FFFFFF")
 	ADD_ATTR("hline",	"0")
 	ADD_ATTR("vline", "0")
 	ADD_ATTR("linewidth", "1")
@@ -33,7 +33,7 @@ void UICurve::InitEventMap()
 }
 void UICurve::InitAttrValuePatternMap()
 {
-	ADD_ATTR_PATTERN("color",	R_CHECK_COLOR_VALUE)
+	//ADD_ATTR_PATTERN("color",	R_CHECK_COLOR_VALUE)
 	ADD_ATTR_PATTERN("hline",	R_CHECK_BOOL)
 	ADD_ATTR_PATTERN("vline", R_CHECK_BOOL)
 	ADD_ATTR_PATTERN("linewidth", R_CHECK_INT)

@@ -11,6 +11,7 @@ Description:		实现一个简单的C++反射
 #include "../metaobject/UIRectangle.h"
 #include "../metaobject/UIBitmap.h"
 #include "../metaobject/UICurve.h"
+#include "../metaobject/UIText.h"
 #include "../resource/ResManager.h"
 #include "../resource/ResColor.h"
 
@@ -61,6 +62,7 @@ private:
 		REGISTER_CLASS("bitmap",	UIBitmap)
 		REGISTER_CLASS("rectangle", UIRectangle)
 		REGISTER_CLASS("curve",		UICurve)
+		REGISTER_CLASS("text",		UIText)
 		//REGISTER_CLASS("color", ResColor)
 	REFLECTION_DECLARE_END()
 };

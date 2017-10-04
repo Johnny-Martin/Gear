@@ -20,7 +20,7 @@ protected:
 	virtual HRESULT					CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget);
 	virtual HRESULT					DiscardDeviceDependentResources();
 #else
-	virtual HRESULT					OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos);
+	virtual HRESULT					OnDrawImpl(Gdiplus::Graphics& graphics, const UIPos& rcWndPos);
 #endif
 protected:
 	void							InitAttrMap();

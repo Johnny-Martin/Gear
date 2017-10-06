@@ -16,6 +16,9 @@ public:
 public:
 	static ID2D1Factory*			m_pD2DFactory;
 	static IDWriteFactory*			m_pD2DWriteFactory;
+	static D2D1_PIXEL_FORMAT		m_gPixelFormat;
+	static D2D1_BITMAP_PROPERTIES   m_gBitmapProperties;
+
 #else
 private:
 	static ULONG_PTR				m_gdiplusToken;

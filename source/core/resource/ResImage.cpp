@@ -55,9 +55,8 @@ ID2D1Bitmap* ResImage::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigned 
 	D2D1_SIZE_U size;
 	size.width = m_pngWidth;
 	size.height = m_pngHeight;
-	D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
-	D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
-	HRESULT hr = pRenderTarget->CreateBitmap(size, (void*)m_rowPointers[0], m_pngWidth*m_colorChannels, properties, &m_d2d1BitmapPtr);
+	
+	HRESULT hr = pRenderTarget->CreateBitmap(size, (void*)m_rowPointers[0], m_pngWidth*m_colorChannels, RenderManager::m_gBitmapProperties, &m_d2d1BitmapPtr);
 	if (FAILED(hr)){
 		ERR("GetD2D1Bitmap error: create ID2D1Bitmap failed!!!!");
 		SafeRelease(&m_d2d1BitmapPtr);

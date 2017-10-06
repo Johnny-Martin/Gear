@@ -3,8 +3,11 @@
 #include "../base/UIObject.h"
 
 #ifdef USE_D2D_RENDER_MODE
-ID2D1Factory*		RenderManager::m_pD2DFactory{ nullptr };
-IDWriteFactory*		RenderManager::m_pD2DWriteFactory{ nullptr };
+ID2D1Factory*			RenderManager::m_pD2DFactory{ nullptr };
+IDWriteFactory*			RenderManager::m_pD2DWriteFactory{ nullptr };
+D2D1_PIXEL_FORMAT		RenderManager::m_gPixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
+D2D1_BITMAP_PROPERTIES	RenderManager::m_gBitmapProperties = { m_gPixelFormat, 96.0, 96.0 };
+
 #else
 ULONG_PTR			RenderManager::m_gdiplusToken{NULL};
 GdiplusStartupInput RenderManager::m_gdiStartupInput{};

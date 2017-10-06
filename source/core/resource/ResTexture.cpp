@@ -377,8 +377,6 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 	}
 
 	HRESULT hr = S_OK;
-	D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
-	D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
 	D2D1_SIZE_U size;
 	png_bytep* rowPointers = nullptr;
 	if (m_arrVerticalLinePos.size() == 2 && m_arrHorizontalLinePos.size() == 2){
@@ -391,7 +389,7 @@ ID2D1Bitmap* ResTexture::GetD2D1Bitmap(ID2D1RenderTarget* pRenderTarget, unsigne
 
 	size.width  = retWidth;
 	size.height = retHeight;
-	hr = pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], width * m_colorChannels, properties, &m_d2d1BitmapPtr);
+	hr = pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], width * m_colorChannels, RenderManager::m_gBitmapProperties, &m_d2d1BitmapPtr);
 	
 	if (FAILED(hr) || m_d2d1BitmapPtr == nullptr){
 		ERR("GetD2D1Bitmap error: get null m_d2d1BitmapPtr");
@@ -520,13 +518,11 @@ HRESULT ResTexture::OnDrawImplEx(ID2D1RenderTarget* pRenderTarget, const D2D1_RE
 		ATLASSERT(m_arrSubBitmapBlock.size() > 0 && m_arrSubBitmapBlock.size() == m_arrSubBitmapBlockSize.size());
 		for (size_t i=0; i<m_arrSubBitmapBlock.size(); ++i){
 			png_bytep* rowPointers = m_arrSubBitmapBlock[i];
-			D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED);
-			D2D1_BITMAP_PROPERTIES properties = { pixelFormat, 96.0, 96.0 };
 			D2D1_SIZE_U size;
 			size.width = m_arrSubBitmapBlockSize[i].first;
 			size.height = m_arrSubBitmapBlockSize[i].second;
 			ID2D1Bitmap* d2d1Bitmap = nullptr;
-			HRESULT hr = pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], size.width * m_colorChannels, properties, &d2d1Bitmap);
+			HRESULT hr = pRenderTarget->CreateBitmap(size, (void*)rowPointers[0], size.width * m_colorChannels, RenderManager::m_gBitmapProperties, &d2d1Bitmap);
 			ATLASSERT(SUCCEEDED(hr));
 			m_arrD2D1Bitmap.push_back(d2d1Bitmap);
 			//创建完毕后，销毁m_arrSubBitmapBlock中的内存块

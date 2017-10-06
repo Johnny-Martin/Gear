@@ -4,6 +4,7 @@
 
 #ifdef USE_D2D_RENDER_MODE
 ID2D1Factory*		RenderManager::m_pD2DFactory{ nullptr };
+IDWriteFactory*		RenderManager::m_pD2DWriteFactory{ nullptr };
 #else
 ULONG_PTR			RenderManager::m_gdiplusToken{NULL};
 GdiplusStartupInput RenderManager::m_gdiStartupInput{};
@@ -15,6 +16,12 @@ HRESULT RenderManager::Init()
 #ifdef USE_D2D_RENDER_MODE
 	//初始化Direct2D环境
 	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &m_pD2DFactory);
+	if (SUCCEEDED(hr)) {
+		hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, 
+			__uuidof(IDWriteFactory), 
+			reinterpret_cast<IUnknown**>(&m_pD2DWriteFactory)
+		);
+	}
 #else
 	//初始化GDI+环境
 	Gdiplus::Status status = GdiplusStartup(&m_gdiplusToken, &m_gdiStartupInput, NULL);

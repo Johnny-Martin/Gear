@@ -47,7 +47,7 @@
 	-->
 	<window id="TestLayout" pos="500, 100, 200, 200" title="测试布局对象">
 		<layout id="root" pos="#mid, (#height - 200), 100, 200">
-			<text id="test.text.id.random" pos="0,0,#width,#height" str="123你好！hello" color="#0000FF" font="#宋体.8.1"/>
+			<text id="test.text.id.random" pos="0,0,#width,#height" str="123你好！hello" color="#0000FF" font="#宋体.18.1"/>
 		</layout>
 		<event id="OnCreate" func="..\\Program File\\test.lua"/>
 		<event name="OnDestory" func="OnWindowCreateDestory" />

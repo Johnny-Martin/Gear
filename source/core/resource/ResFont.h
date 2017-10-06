@@ -9,7 +9,9 @@ public:
 	ResFont(const string& strFontDesc);
 #ifdef USE_D2D_RENDER_MODE
 public:
-
+	IDWriteTextFormat*							GetD2D1TextFormat();
+private:
+	IDWriteTextFormat*							m_d2d1TextFormatPtr;
 #else
 public:
 	Gdiplus::Font*								GetGdiplusFont();

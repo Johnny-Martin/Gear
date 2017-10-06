@@ -6,6 +6,11 @@
 
 
 UIText::UIText()
+#ifdef USE_D2D_RENDER_MODE
+	:m_pColorBrush(nullptr)
+#else
+
+#endif
 {
 	InitAttrMap();
 	InitEventMap();
@@ -37,14 +42,27 @@ void UIText::InitAttrValueParserMap()
 #ifdef USE_D2D_RENDER_MODE
 HRESULT	UIText::OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos)
 {
+	wstring wstr = StringToWString(m_attrMap["str"]);
+	auto pFont = Gear::Res::ResManager::GetInstance().GetFontObject(m_attrMap["font"]);
+
+	IDWriteTextFormat* format = pFont->GetD2D1TextFormat();
+	pRenderTarget->DrawText(wstr.c_str(), wstr.length(), format, rcWndPos, m_pColorBrush);
+
 	return S_OK;
 }
 HRESULT	UIText::CreateDeviceDependentResources(ID2D1RenderTarget* pRenderTarget)
 {
-	return S_OK;
+	if (m_pColorBrush){
+		return S_OK;
+	}
+
+	ResColor* pColor = Gear::Res::ResManager::GetInstance().GetColorObject(m_attrMap["color"]);
+	auto color = pColor->GetD2D1ColorF();
+	return pRenderTarget->CreateSolidColorBrush(color, &m_pColorBrush);
 }
 HRESULT	UIText::DiscardDeviceDependentResources()
 {
+	SafeRelease(&m_pColorBrush);
 	return S_OK;
 }
 /////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////

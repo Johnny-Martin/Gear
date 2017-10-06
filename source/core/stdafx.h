@@ -53,7 +53,7 @@ extern CAppModule _Module;
 
 
 ///////GDI+以及Direct2D////////
-//#define USE_D2D_RENDER_MODE
+#define USE_D2D_RENDER_MODE
 #ifdef USE_D2D_RENDER_MODE
 	#include <d2d1.h>
 	#include <d2d1helper.h>
@@ -70,3 +70,11 @@ extern CAppModule _Module;
 	using namespace Gdiplus;
 	#pragma comment(lib, "GdiPlus.lib")
 #endif // USE_D2D_RENDER_MODE
+
+///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
+#ifdef USE_D2D_RENDER_MODE
+
+/////////////////////////////////////////GDI+渲染模式相关代码/////////////////////////////////////
+#else
+
+#endif

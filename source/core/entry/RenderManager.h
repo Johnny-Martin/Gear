@@ -15,6 +15,7 @@ public:
 #ifdef USE_D2D_RENDER_MODE
 public:
 	static ID2D1Factory*			m_pD2DFactory;
+	static IDWriteFactory*			m_pD2DWriteFactory;
 #else
 private:
 	static ULONG_PTR				m_gdiplusToken;

@@ -13,6 +13,11 @@
 #define ADD_ATTR_PARSER(attrName, sParser)	\
 		m_attrValueParserMap.insert(pair<string, function<bool(const string&)> >(attrName, sParser));
 
+#define DECLEAR_LAMBDA_HANDLE_CHINESE(funName)		\
+		auto funName = [&](const string& strAttrName)->bool { \
+			m_attrMap[strAttrName] = UTF8AToUnicodeA(m_attrMap[strAttrName]);\
+			return true;\
+		};
 /*******************************************************************************
 *以下 5 个宏用于粗略检查pos表达式的合法性
 *是否是4段

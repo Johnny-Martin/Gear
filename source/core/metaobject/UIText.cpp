@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "UIText.h"
+#include "../resource/ResColor.h"
+#include "../resource/ResManager.h"
 
 
 
@@ -13,6 +15,7 @@ UIText::UIText()
 void UIText::InitAttrMap()
 {
 	ADD_ATTR("str", "")
+	ADD_ATTR("color", "#FFFFFF")
 	ADD_ATTR("font", "")
 }
 void UIText::InitEventMap()
@@ -24,6 +27,10 @@ void UIText::InitAttrValuePatternMap()
 }
 void UIText::InitAttrValueParserMap()
 {
+	DECLEAR_LAMBDA_HANDLE_CHINESE(HandleChinese)
+	
+	ADD_ATTR_PARSER("str", HandleChinese)
+	ADD_ATTR_PARSER("font", HandleChinese)
 }
 
 ///////////////////////////////////////Direct2D渲染模式相关代码///////////////////////////////////
@@ -45,13 +52,16 @@ HRESULT	UIText::DiscardDeviceDependentResources()
 HRESULT UIText::OnDrawImpl(Graphics& graphics, const UIPos& rcWndPos)
 {
 	string str = m_attrMap["str"];
-	wstring wstr = UTF8AToUnicodeW(str);
-	Gdiplus:SolidBrush brush(Color::Red);
-	Gdiplus::Font font(L"宋体", 12);
-	Gdiplus::StringFormat format();
-	Gdiplus::PointF point(rcWndPos.left, rcWndPos.top);
-	//graphics.DrawString(wstr.c_str(),);
-	graphics.DrawString(wstr.c_str(), wstr.length(), &font, point, &brush);
+	wstring wstr = StringToWString(str);
+	ResColor* pColor = Gear::Res::ResManager::GetInstance().GetColorObject(m_attrMap["color"]);
+	Color color = pColor->GetGdiplusColor();
+	Gdiplus::SolidBrush brush(color);
+	
+	ResFont* pResFont = Gear::Res::ResManager::GetInstance().GetFontObject(m_attrMap["font"]);
+	Gdiplus::Font* pFont = pResFont->GetGdiplusFont();
+	Gdiplus::PointF point((REAL)rcWndPos.left, (REAL)rcWndPos.top);
+	
+	graphics.DrawString(wstr.c_str(), wstr.length(), pFont, point, &brush);
 	return S_OK;
 }
 #endif

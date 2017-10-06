@@ -115,13 +115,20 @@ ResColor* ResManager::GetColorObject(const string& strColorValueOrID)
 }
 ResFont* ResManager::GetFontObject(const string& strFontIDOrDesc)
 {
-	if (strFontIDOrDesc.find("#") == 0){
-		//使用字体描述创建一个字体对象（例如"#宋体.12.normal"）
-
-	} else {
-
+	if (strFontIDOrDesc.find("#") == string::npos){
+		//xml中定义的字体，以ID为索引
+		auto it = m_fontMap.find(strFontIDOrDesc);
+		return it == m_fontMap.end() ? nullptr : it->second;
 	}
-	return nullptr;
+	//使用字体描述创建一个字体对象（例如"#宋体.12.normal"）
+	auto it = m_fontMap2.find(strFontIDOrDesc);
+	if (it != m_fontMap2.end()){
+		return it->second;
+	}
+	string realID = strFontIDOrDesc.substr(1, strFontIDOrDesc.size() - 1);
+	auto pFont = new ResFont(realID);
+	m_fontMap2[strFontIDOrDesc] = pFont;
+	return pFont;
 }
 ResType Gear::Res::GetResType(const string& resID)
 {

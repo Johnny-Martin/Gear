@@ -61,6 +61,8 @@ private:
 	map<const string, ResPicture*>  m_picMap;
 	map<const string, ResColor*>	m_colorMap;//保存以ID命名的颜色对象（XML定义的：<color id="mainwnd.bak.color" value=...）
 	map<const string, ResColor*>	m_colorMap2;//保存以色值创建的颜色对象
+	map<const string, ResFont*>		m_fontMap;
+	map<const string, ResFont*>		m_fontMap2;
 };
 
 

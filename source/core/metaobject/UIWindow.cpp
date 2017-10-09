@@ -1,55 +1,7 @@
 #include "stdafx.h"
 #include "UIWindow.h"
+#include "../entry/WndManager.h"
 
-vector<HWND> WndManager::m_allWndVec;
-WndManager::WndManager() {}
-
-WndManager& WndManager::GetInstance()
-{
-	static WndManager wndMgr{};
-	return wndMgr;
-}
-void WndManager::AddWindow(HWND hWnd)
-{
-	auto it = std::find(m_allWndVec.begin(), m_allWndVec.end(), hWnd);
-	if (it != m_allWndVec.end()) {
-		WARN("AddWindow warning: window handle already exisits in WndManager, hWnd: {}", (int)hWnd);
-		return;
-	}
-	m_allWndVec.push_back(hWnd);
-}
-void WndManager::RemoveWindow(HWND hWnd)
-{
-	auto it = std::find(m_allWndVec.begin(), m_allWndVec.end(), hWnd);
-	if (it == m_allWndVec.end()) {
-		WARN("RemoveWindow warning: window handle not found in WndManager, hWnd: {}", (int)hWnd);
-		return;
-	}
-	m_allWndVec.erase(it);
-}
-void WndManager::OnTryExit()
-{
-	if (m_allWndVec.size() == 0)
-		return;
-
-	auto it = m_allWndVec.begin();
-	while (it != m_allWndVec.end()) {
-		::DestroyWindow(*it);
-#ifdef DEBUG
-		auto next = m_allWndVec.begin();
-		if (next != m_allWndVec.end()) {
-			//必须在OnDestroy中Remove调自己的窗口
-			ATLASSERT(next != it && *next != *it);
-		}
-#endif // DEBUG
-
-		it = m_allWndVec.begin();
-	}
-}
-WndManager::~WndManager()
-{
-	OnTryExit();
-}
 UIWindow::UIWindow() :m_hWndParent(0)
 {
 	InitAttrMap();
@@ -242,7 +194,7 @@ bool UIWindow::CreateUIWindow()
 	ATLASSERT(m_hWnd);
 	ShowWindow(atoi(m_attrMap["show"].c_str()));
 	
-	WndManager::GetInstance().AddWindow(m_hWnd);
+	WndManager::GetInstance().AddWindow(this);
 	return m_hWnd != NULL;
 }
 BOOL UIWindow::PreTranslateMessage(MSG* pMsg)
@@ -342,7 +294,7 @@ LRESULT UIWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	ATLASSERT(pLoop != NULL);
 	pLoop->RemoveMessageFilter(this);
 
-	WndManager::GetInstance().RemoveWindow(m_hWnd);
+	WndManager::GetInstance().RemoveWindow(this);
 	//FireLuaEvent()
 	//模仿脚本中退出
 	//WndManager::GetInstance().OnTryExit();

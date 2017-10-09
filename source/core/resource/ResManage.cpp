@@ -1,7 +1,12 @@
 #include "stdafx.h"
 #include "ResManager.h"
+#include "../entry/WndManager.h"
 
 using namespace Gear::Res;
+
+#ifdef DEBUG
+vector<string>	ResManager::m_vecLanguages{ "zh_cn", "zh_hk", "zh_tw", "en_us" };
+#endif // DEBUG
 
 ResManager::ResManager(LPWSTR szResPath)
 {
@@ -277,78 +282,21 @@ string ResManager::GetRealIdFromPicListId(LPCSTR szPicListID)
 
 	return strRealResId;
 }
-
-/*RESERROR ResManager::GetResPicHandle(LPCSTR szResID, RPicture** hRes)
+string ResManager::GetLanguageName()
 {
-	
-	map<string, RPicture*>::iterator iter = m_resID2HandleMap.find(szResID);
-	if (m_resID2HandleMap.end() != iter)
-	{
-		*hRes = iter->second;
-		return RES_SUCCESS;
+	return m_languageName;
+}
+void ResManager::SetLanguageName(const string& name)
+{
+	if (m_languageName != name) {
+#ifdef DEBUG
+		auto it = std::find(m_vecLanguages.begin(), m_vecLanguages.end(), name);
+		ATLASSERT(it != m_vecLanguages.end());
+#endif
+		m_languageName = name;
+		//通知所有窗口，重新绘制一遍。
+		WndManager::GetInstance().RePaintAllWnd();
 	}
-
-	wstring resFilePath;
-	string strResID = szResID;
-	//list's strResID must has .index at the end
-	std::size_t iBeginPos = strResID.find("texturelist");
-	std::size_t iBeginPosEx = strResID.find("imagelist");
-	if (0 == iBeginPos || 0 == iBeginPosEx)
-	{
-		unsigned int resIndex = GetIndexFromPicListId(szResID);
-		if (resIndex <= 0)
-			return RES_ERROR_ILLEGAL_ID;
-
-		string strRealResId = GetRealIdFromPicListId(szResID);
-		iter = m_resID2HandleMap.find(strRealResId);
-		//piclist has been created
-		if (m_resID2HandleMap.end() != iter)
-		{
-			RPicList* picListObjPointer = dynamic_cast<RPicList*>(iter->second);
-			*hRes = picListObjPointer->GetPicByIndex(resIndex - 1);
-			return (NULL == (*hRes)) ? RES_ERROR_ILLEGAL_ID : RES_SUCCESS;
-		}
-
-		resFilePath = GetPicPathByID(strRealResId.c_str());
-		if (!::PathFileExists(resFilePath.c_str()))
-			return RES_ERROR_FILE_NOT_FOUND;
-
-		RPicList* picListObj = new RPicList(resFilePath.c_str(), strRealResId.c_str());
-
-		//insert each of texture into map
-		//++++++++++++++++++++++++++++++++
-		m_resID2HandleMap.insert(pair<string, RPicList*>(szResID, picListObj));
-
-		*hRes = picListObj->GetPicByIndex(resIndex - 1);
-		RPicture* pObj = *hRes;
-
-		return (NULL == (*hRes)) ? RES_ERROR_ILLEGAL_ID : RES_SUCCESS;
-	}
-
-	iBeginPos = strResID.find("texture");
-	iBeginPosEx = strResID.find("image");
-	if (0 == iBeginPos || 0 == iBeginPosEx)
-	{
-		resFilePath = GetPicPathByID(szResID);
-		if (!::PathFileExists(resFilePath.c_str()))
-			return RES_ERROR_FILE_NOT_FOUND;
-
-		RPicture* picObj = NULL;
-		if (0 == iBeginPos)
-		{
-			picObj = new RTexture(resFilePath.c_str(), szResID);
-		}
-		else
-		{
-			picObj = new RImage(resFilePath.c_str(), szResID);
-		}
-		m_resID2HandleMap.insert(pair<string, RPicture*>(szResID, picObj));
-
-		*hRes = picObj;
-		return RES_SUCCESS;
-	}
-	
-	return RES_ERROR_UNKNOWN;
-}//*/
+}
 
 

@@ -102,6 +102,9 @@
     <ClCompile Include="..\..\..\source\core\resource\ResString.cpp">
       <Filter>resource</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\entry\WndManager.cpp">
+      <Filter>entry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\resource\ResString.h">
       <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\entry\WndManager.h">
+      <Filter>entry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

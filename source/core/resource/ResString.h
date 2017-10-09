@@ -5,12 +5,7 @@ class ResString :public XmlUIElement
 {
 public:
 	ResString();
-#ifdef USE_D2D_RENDER_MODE
-public:
-	
-#else
-public:
-#endif
+	wstring GetStringW();
 protected:
 	void										InitAttrMap();
 	void										InitAttrValuePatternMap();

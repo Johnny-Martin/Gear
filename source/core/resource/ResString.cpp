@@ -10,12 +10,14 @@ ResString::ResString()
 
 void ResString::InitAttrMap()
 {
-	//以下属性应属于ResString
-	//ADD_ATTR("color", ""))
+	ADD_ATTR("zh_cn", "")//简体中文
+	ADD_ATTR("zh_hk", "")//香港繁体
+	ADD_ATTR("zh_tw", "")//台湾繁体
+	ADD_ATTR("en_us", "")//美国英文
 }
 void ResString::InitAttrValuePatternMap()
 {
-	ADD_ATTR_PATTERN("color", R_CHECK_COLOR_VALUE);
+	
 }
 void ResString::InitAttrValueParserMap()
 {

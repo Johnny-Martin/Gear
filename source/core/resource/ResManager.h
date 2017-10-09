@@ -50,6 +50,8 @@ public:
 	ResFont*						GetFontObject(const string& strFontIDOrDesc);
 	bool							LoadResourceByID(const string& strResID);
 	bool							LoadResFromFile(const wstring& wstrFilePath, const string& strResID, ResType resType);
+	string							GetLanguageName();
+	void							SetLanguageName(const string& name);
 private:
 	
 	unsigned int					GetIndexFromPicListId(LPCSTR szPicListID);
@@ -63,6 +65,10 @@ private:
 	map<const string, ResColor*>	m_colorMap2;//保存以色值创建的颜色对象
 	map<const string, ResFont*>		m_fontMap;
 	map<const string, ResFont*>		m_fontMap2;
+	string							m_languageName;
+#ifdef DEBUG
+	static vector<string>			m_vecLanguages;
+#endif
 };
 
 

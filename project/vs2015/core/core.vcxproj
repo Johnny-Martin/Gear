@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\..\source\core\entry\GearEnv.cpp" />
     <ClCompile Include="..\..\..\source\core\entry\RenderManager.cpp" />
     <ClCompile Include="..\..\..\source\core\entry\UIFactory.cpp" />
+    <ClCompile Include="..\..\..\source\core\entry\WndManager.cpp" />
     <ClCompile Include="..\..\..\source\core\entry\XmlAgent.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIBitmap.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIControl.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="..\..\..\source\core\entry\GearEnv.h" />
     <ClInclude Include="..\..\..\source\core\entry\RenderManager.h" />
     <ClInclude Include="..\..\..\source\core\entry\UIFactory.h" />
+    <ClInclude Include="..\..\..\source\core\entry\WndManager.h" />
     <ClInclude Include="..\..\..\source\core\entry\XmlAgent.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIBitmap.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIControl.h" />

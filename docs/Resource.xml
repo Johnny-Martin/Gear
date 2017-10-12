@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf8" ?>
+<resource>
+	<font id="default.font" face="微软雅黑" height="14" weight="0" italic="1" />
+	<color id="color.system.somecolor" value="FF00EE"/>
+	<string id="wnd.title.text" zh_cn="文本资源" zh_hk="文本資源"  zh_tw="文本資源" en_us="text resource" />
+	
+	<texture id="texture.mainwnd.bkg" type="nine" hlinepos="15,20" vlinepos="15,20" path="res/mainwnd.bkg.png"/>
+	<image id="image.xxx.fff" path="res/xxx.fff.png"/>
+	<texturelist id="texturelist.xxx.fff.sss" count="4" type="threev" hlinepos="15,20"  path="res/texturelist.mainwnd.bkg.png"/>
+	<imagelist id="imagelist.xxx.fff.sss" count="4"  path="res/imagelist.mainwnd.bkg.png" />
+</resource>

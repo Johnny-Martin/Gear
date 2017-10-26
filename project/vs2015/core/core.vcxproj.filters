@@ -188,6 +188,9 @@
     <ClInclude Include="..\..\..\source\core\entry\WndManager.h">
       <Filter>entry</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\core\base\ThreadModel.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\source\core\ReadMe.txt" />

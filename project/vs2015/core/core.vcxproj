@@ -196,6 +196,7 @@
     <ClCompile Include="..\..\..\source\core\utils\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\source\core\base\ThreadModel.h" />
     <ClInclude Include="..\..\..\source\core\base\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h" />
     <ClInclude Include="..\..\..\source\core\entry\GearEnv.h" />

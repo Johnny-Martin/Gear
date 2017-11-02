@@ -275,16 +275,6 @@ LRESULT UIWindow::OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	return 0;
 }
 
-LRESULT UIWindow::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	return 0;
-}
-
-LRESULT UIWindow::OnMouseLeave(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	return 0;
-}
-
 //当所有的UI窗口都（filterCount==0）被关闭后，进程会退出.
 //假如脚本想要退出进程，但此时尚有多个窗口存在，需调用WndManager::OnTryExit
 //依次销毁所有的窗口、然后退出进程

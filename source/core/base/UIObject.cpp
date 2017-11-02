@@ -28,6 +28,15 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
+bool UIEvent::Fire()
+{
+	return true;
+}
+bool UIEvent::InvokeLuaHandler()
+{
+
+	return true;
+}
 UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pVecChildrenPair(nullptr), m_bWndObj(false)
 {
 	InitAttrMap();
@@ -456,6 +465,8 @@ inline bool  CmpByZorder::operator()(const PAIR& k1, const PAIR& k2)
 	shared_ptr<const string> zorderB = k2.second->GetAttrValue("zorder");
 	return atoi(zorderA->c_str()) < atoi(zorderB->c_str());
 }
+
+//zorder小的在前面
 void UIObject::SortChildrenByZorder()
 {
 	if (m_pVecChildrenPair)

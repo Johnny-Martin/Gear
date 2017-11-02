@@ -2,6 +2,7 @@
 #include "../stdafx.h"
 #include "XmlUIElement.h"
 #include "../entry/RenderManager.h"
+#include "InputAdapter.h"
 
 using namespace std;
 using namespace tinyxml2;
@@ -36,9 +37,11 @@ public:
 所有UI元素的基类
 ****************************************/
 
-class UIObject:public XmlUIElement, public RenderTarget
+class UIObject:public XmlUIElement, public RenderTarget, public InputAdapter<UIObject>
 {
 	friend RenderTarget;
+	friend InputAdapter<UIObject>;
+
 public:
 	//UIBase的子类需要有一个无参构造，在里面初始化m_attrMap 和 m_eventMap
 	//(重写InitAttrMap、InitEventMap)此处应作编译时强制，但未想到好的方案

@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\source\core\base\InputAdapter.cpp" />
     <ClCompile Include="..\..\..\source\core\base\UIObject.cpp" />
     <ClCompile Include="..\..\..\source\core\base\XmlUIElement.cpp" />
     <ClCompile Include="..\..\..\source\core\coretest.cpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="..\..\..\source\core\utils\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\source\core\base\InputAdapter.h" />
     <ClInclude Include="..\..\..\source\core\base\ThreadModel.h" />
     <ClInclude Include="..\..\..\source\core\base\UIObject.h" />
     <ClInclude Include="..\..\..\source\core\base\XmlUIElement.h" />

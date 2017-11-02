@@ -14,13 +14,6 @@ ResManager::ResManager(LPWSTR szResPath)
 }
 ResManager::~ResManager()
 {
-	/*
-	map<string, RPicture*>::iterator iter = m_resID2HandleMap.begin();
-	for (; iter != m_resID2HandleMap.end(); ++iter)
-	{
-		delete iter->second;
-	}
-	//*/
 	for (auto it = m_colorMap.begin(); it != m_colorMap.end(); ++it) {
 		delete it->second;
 	}
@@ -157,8 +150,7 @@ bool ResManager::LoadResourceByID(const string& strResID)
 		
 		if (tmpResID.find("image.") == 0 || tmpResID.find("texture.") == 0) {
 			fileName = tmpResID + ".png";
-		}
-		else if (tmpResID.find("imagelist.") == 0 || tmpResID.find("texturelist.") == 0) {
+		}else if (tmpResID.find("imagelist.") == 0 || tmpResID.find("texturelist.") == 0) {
 			auto pos = tmpResID.find_last_of(".");
 			if (pos != string::npos) {
 				fileName = tmpResID.substr(0, pos) + ".png";
@@ -246,20 +238,15 @@ unsigned int ResManager::GetIndexFromPicListId(LPCSTR szPicListID)
 	std::size_t iPicListIDLen = strlen(szPicListID);
 
 	unsigned int iLastDotPos = iPicListIDLen;
-	for (; iLastDotPos>0; --iLastDotPos)
-	{
+	for (; iLastDotPos>0; --iLastDotPos){
 		if ('.' == szPicListID[iLastDotPos])
 			break;
 	}
 
-	for (unsigned int i = iLastDotPos + 1; i<iPicListIDLen; ++i)
-	{
-		if (szPicListID[i] > '9' || szPicListID[i] < '0')
-		{
+	for (unsigned int i = iLastDotPos + 1; i<iPicListIDLen; ++i){
+		if (szPicListID[i] > '9' || szPicListID[i] < '0'){
 			return 0;
-		}
-		else
-		{
+		}else{
 			picIndex = picIndex * 10 + szPicListID[i] - '0';
 		}
 	}
@@ -270,8 +257,7 @@ string ResManager::GetRealIdFromPicListId(LPCSTR szPicListID)
 {
 	//get the index section
 	unsigned int iLastDotPos = strlen(szPicListID);
-	for (; iLastDotPos>0; --iLastDotPos)
-	{
+	for (; iLastDotPos>0; --iLastDotPos){
 		if ('.' == szPicListID[iLastDotPos])
 			break;
 	}

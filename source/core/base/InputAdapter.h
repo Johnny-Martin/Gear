@@ -26,6 +26,7 @@ template<typename SubClass>
 InputAdapter<SubClass>::InputAdapter()
 {
 	m_msgMap[WM_MOUSEMOVE]		= "OnMouseMove";
+	//m_msgMap[WM_MOUSEENTER]	= "OnMouseEnter";//windows中不存在这个消息，将第一个OnMouseMove视为OnMouseEnter
 	m_msgMap[WM_MOUSEHOVER]		= "OnMouseHover";
 	m_msgMap[WM_MOUSELEAVE]		= "OnMouseLeave";
 	m_msgMap[WM_LBUTTONDOWN]	= "OnLButtonDown";
@@ -70,7 +71,15 @@ LRESULT	InputAdapter<SubClass>::MouseAdapter(UINT uMsg, WPARAM wParam, LPARAM lP
 		INFO("Fire event : {}, UIObject name:{}", m_msgMap[uMsg], pWndObj->m_attrMap["id"]);
 		
 		if (pEvent){
+			auto eventName = m_msgMap[uMsg];
 			//INFO("Fire event : {}, UIObject name:{}", m_msgMap[uMsg], pWndObj->m_attrMap["id"]);
+			if (!pEvent->m_mouseEnterFlag && uMsg == WM_MOUSEMOVE) {
+				pEvent->m_mouseEnterFlag = true;
+				eventName = "OnMouseEnter";
+			} else if(uMsg == WM_MOUSELEAVE){
+				pEvent->m_mouseEnterFlag = true;
+			}
+
 			pEvent->Fire();
 		}
 	}

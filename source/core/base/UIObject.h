@@ -17,15 +17,18 @@ class UIEvent
 {
 public:
 	//UIEvent(const string& sLableAttr_Func_In_XML);
+	UIEvent();
 	bool										SetEventHandlerFilePath(const string& sPath);
 	bool										SetEventHandlerFuncName(const string& sName);
 	shared_ptr<const string>					GetEventHandlerFilePath();
 	shared_ptr<const string>					GetEventHandlerFuncName();
 	bool										Fire();
 	bool										InvokeLuaHandler();
+	bool										m_mouseEnterFlag;
 private:
 	string m_filePath;							//处理该事件的lua的文件路径
 	string m_funcName;							//处理该事件的lua的函数名
+	
 };
 
 typedef  pair<string, UIObject*> PAIR;

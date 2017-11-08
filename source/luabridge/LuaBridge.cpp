@@ -27,15 +27,39 @@ void example_1()
 		(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
 		std::wstring str_url = szFilePath;  // 例如str_url==e:\program\Debug\
 
-		str_url = str_url + _T("test.lua");
+		auto path = str_url;
+		path = str_url + _T("LuaObject.lua");
 		char* pszUrl = NULL;
-		WideCharToChar(str_url.c_str(), pszUrl);
+		WideCharToChar(path.c_str(), pszUrl);
 
 		LUA_ENV_ERROR ret = luaBridge.LoadLuaFile(pszUrl);/*I:\\UIEngine\\example\\luacode\\ */
-		if (LUA_ENV_SUCCESS == ret)
-		{
-			luaBridge.InvokeLuaFunction("OnLoadLuaFile", 31, 32);
+		if (LUA_ENV_SUCCESS != ret){
+			ATLASSERT(false);
+			return;
 		}
+
+		delete[] pszUrl;
+		pszUrl = NULL;
+		path = str_url + _T("test3.lua");
+		WideCharToChar(path.c_str(), pszUrl);
+		ret = luaBridge.LoadLuaFile(pszUrl);
+		if (LUA_ENV_SUCCESS != ret) {
+			ATLASSERT(false);
+			return;
+		}
+		LUA_ENV_ERROR err = luaBridge.InvokeLuaFunction("OnLoadLuaFile", 31, 32);
+
+		delete[] pszUrl;
+		pszUrl = NULL;
+		path = str_url + _T("test.lua");
+		WideCharToChar(path.c_str(), pszUrl);
+		ret = luaBridge.LoadLuaFile(pszUrl);
+		if (LUA_ENV_SUCCESS != ret) {
+			ATLASSERT(false);
+			return;
+		}
+
+		err = luaBridge.InvokeLuaFunction("OnLoadLuaFile", 13, 12);
 	}
 }
 
@@ -721,8 +745,11 @@ LUA_ENV_ERROR LuaBridge::LoadLuaFile(const char* pszFilePath)
 
 	int ret = 0;  
 	ret = luaL_loadfile(m_luaState, pszFilePath);  
-	if ( ret != 0 )   
+	if (ret != 0){
+
 		return LUA_ENV_LOADFILEFAILED;
+	}
+		
 
 	ret = lua_pcall(m_luaState, 0, 0, 0);  
 	if ( ret != 0 )

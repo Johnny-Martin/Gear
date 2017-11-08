@@ -6,6 +6,11 @@
 //不可识别的字符转义序列（正则表达式中的\s）
 #pragma warning(disable:4129)
 
+UIEvent::UIEvent()
+	:m_mouseEnterFlag(false)
+{
+
+}
 bool UIEvent::SetEventHandlerFilePath(const string& sPath)
 {
 	m_filePath = sPath;

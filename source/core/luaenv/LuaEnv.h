@@ -7,6 +7,8 @@ Description:		脚本环境,用来编译Lua文件、注册全局对象、等
 
 #pragma once
 #include "../stdafx.h"
+#include "LuaAPI.h"
+
 extern "C" {
 #include "lua.h"
 #include "lualib.h"  
@@ -17,8 +19,6 @@ extern "C" {
 
 void DefaultErrorHandler_C(const char* errInfo);
 void DefaultErrorHandler_R(const char* errInfo);
-int MsgBox(lua_State* luaState);
-int SpdLog(lua_State* luaState);
 
 typedef void(*LuaErrorHandlerType)(const char* errInfo);
 

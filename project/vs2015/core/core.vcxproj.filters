@@ -114,6 +114,9 @@
     <ClCompile Include="..\..\..\source\core\luaenv\LuaEnv.cpp">
       <Filter>luaenv</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\luaenv\LuaAPI.cpp">
+      <Filter>luaenv</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -204,6 +207,9 @@
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\luaenv\LuaEnv.h">
+      <Filter>luaenv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\luaenv\LuaAPI.h">
       <Filter>luaenv</Filter>
     </ClInclude>
   </ItemGroup>

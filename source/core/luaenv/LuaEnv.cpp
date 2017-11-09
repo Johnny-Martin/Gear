@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "LuaEnv.h"
 
+LuaErrorHandlerType LuaEnv::m_errhandler_C = DefaultErrorHandler_C;
+LuaErrorHandlerType LuaEnv::m_errhandler_R = DefaultErrorHandler_R;
+int LuaEnv::m_initCFunctionArraySize = 0;
+
 void DefaultErrorHandler_C(const char* errInfo)
 {
 	//ERR("Compile Lua file error: {}", errInfo);
@@ -13,8 +17,49 @@ void DefaultErrorHandler_R(const char* errInfo)
 	cout << errInfo << endl;
 }
 
-LuaErrorHandlerType LuaEnv::m_errhandler_C = DefaultErrorHandler_C;
-LuaErrorHandlerType LuaEnv::m_errhandler_R = DefaultErrorHandler_R;
+int MsgBox(lua_State* luaState)
+{
+	const char* luaStr = lua_tostring(luaState, 1);
+	wchar_t* wszInfo = NULL;
+
+	bool ret = LuaStringToWideChar(luaStr, wszInfo);
+	if (ret)
+		MessageBox(NULL, wszInfo, L"MsgBox", MB_OK);
+	else
+		MessageBox(NULL, L"", L"MsgBox", MB_OK);
+
+	delete wszInfo;
+	return 0;
+}
+
+LuaEnv& LuaEnv::GetInstance()
+{
+	static LuaEnv mainEnv;
+	return mainEnv;
+}
+
+LuaEnv::LuaEnv()
+{
+	m_luaState = luaL_newstate();
+	if (m_luaState == NULL) {
+		ERR("Create Lua state failed! program abort");
+		abort();
+	}
+		
+	luaL_openlibs(m_luaState);
+	RegisterGlobalFunctions(m_luaState);
+}
+void LuaEnv::RegisterGlobalFunctions(lua_State* pLuaStat)
+{
+	const _LuaCFunctionInfo* pArray = LuaEnv::_GetCFunctionArray();
+	int iArrayLen = m_initCFunctionArraySize / sizeof(_LuaCFunctionInfo);
+	for (int i = 0; i < iArrayLen; ++i){
+		//Register the cpp function into lua
+		lua_pushcfunction(pLuaStat, pArray[i].func);
+		//Bind the global name to the function
+		lua_setglobal(pLuaStat, pArray[i].funcName);
+	}
+}
 
 void LuaEnv::SetErrorHandler_C(LuaErrorHandlerType callback)
 {
@@ -41,7 +86,6 @@ bool LuaEnv::CompileLuaFile(const string& filePath)
 		if (m_errhandler_C){
 			m_errhandler_C(pszErrInfo);
 		}
-		delete[] pszErrInfo;
 	}
 
 	lua_close(pLuaState);

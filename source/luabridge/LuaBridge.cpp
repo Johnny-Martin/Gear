@@ -746,6 +746,7 @@ LUA_ENV_ERROR LuaBridge::LoadLuaFile(const char* pszFilePath)
 	if (ret != 0){
 		const char* error = lua_tostring(m_luaState, -1);//打印错误结果 
 		lua_pop(m_luaState, 1);
+
 		cout << error << endl;
 		return LUA_ENV_LOADFILEFAILED;
 	}
@@ -757,6 +758,8 @@ LUA_ENV_ERROR LuaBridge::LoadLuaFile(const char* pszFilePath)
 
 	return LUA_ENV_SUCCESS;
 }
+
+
 LUA_ENV_ERROR LuaBridge::InvokeLuaFunction(const char* funcName, int a, int b)
 {
 	lua_getglobal(m_luaState, funcName); 
@@ -767,7 +770,7 @@ LUA_ENV_ERROR LuaBridge::InvokeLuaFunction(const char* funcName, int a, int b)
 		const char* error = lua_tostring(m_luaState, -1);//打印错误结果 
 		lua_pop(m_luaState, 1);
 		cout << error << endl;
-		return LUA_ENV_INVOKEFAILED;
+		return	LUA_ENV_INVOKEFAILED;
 	}
 		
 

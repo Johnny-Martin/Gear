@@ -17,18 +17,49 @@ extern "C" {
 
 void DefaultErrorHandler_C(const char* errInfo);
 void DefaultErrorHandler_R(const char* errInfo);
+int MsgBox(lua_State* luaState);
 
 typedef void(*LuaErrorHandlerType)(const char* errInfo);
+
+struct _LuaCFunctionInfo
+{
+	char* funcName;
+	lua_CFunction func;
+};
+
+#define BEGIN_LUACFUNCTION_DECLARE()\
+	private:\
+	static const _LuaCFunctionInfo* _GetCFunctionArray() {\
+			static const _LuaCFunctionInfo functions[] = {
+
+#define REGISTER_CFUNCTION(fun)\
+				{#fun, fun},
+
+#define END_LUACFUNCTION_DECLARE()\
+			};m_initCFunctionArraySize = sizeof(functions);\
+			return functions;}
+
 class LuaEnv
 {
 public:
+	static LuaEnv&				GetInstance();
+public:
+	BEGIN_LUACFUNCTION_DECLARE()
+		REGISTER_CFUNCTION(MsgBox)
+	END_LUACFUNCTION_DECLARE()
 
 public:
-	static void SetErrorHandler_C(LuaErrorHandlerType callback);
-	static void SetErrorHandler_R(LuaErrorHandlerType callback);
-	static bool CompileLuaFile(const string& filePath);
+	static void					SetErrorHandler_C(LuaErrorHandlerType callback);
+	static void					SetErrorHandler_R(LuaErrorHandlerType callback);
+	static bool					CompileLuaFile(const string& filePath);
+private:
+	static void					RegisterGlobalFunctions(lua_State* pLuaStat);
+private:
+	static LuaErrorHandlerType  m_errhandler_C;//编译时的错误处理回掉
+	static LuaErrorHandlerType  m_errhandler_R;//运行期的错误处理回调
+	static int					m_initCFunctionArraySize;
 
 private:
-	static LuaErrorHandlerType m_errhandler_C;//编译时的错误处理回掉
-	static LuaErrorHandlerType m_errhandler_R;//运行期的错误处理回调
+	LuaEnv();
+	lua_State*					m_luaState;
 };

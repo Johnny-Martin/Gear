@@ -60,4 +60,23 @@ function BaseClass:RemoveAllListener()
 	self.listener = {}
 end
 
-BaseObject = BaseClass:New();
+function CreateReadOnlyTable(tbl)
+	local fakeTable = {}
+	local mt = {}
+	mt.__index = tbl
+	mt.__newindex = function(t, k, v) 
+						MsgBox("attempt to update a read-only table!!!") 
+					end
+	
+	setmetatable(fakeTable, mt)
+	return fakeTable
+end
+
+BaseObject = BaseClass:New()
+
+--E是一个只读的空表，供safe navigation时使用。例如:
+--local ret = root and root.subTable1 and root.subTable1.subTable2 and root.subTable1.subTable2.subTable3
+--可以优化成这样:
+--local ret = (((root or E).subTable1 or E).subTable2 or E).subTable3
+--第一种safe navigation中，root、subTable1被重复写了多次，第二种形式的safe navigation可以避免这种情况
+E = CreateReadOnlyTable()

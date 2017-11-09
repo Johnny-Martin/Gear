@@ -11,7 +11,7 @@ class UIWindow;
 class WndManager
 {
 public:
-	static								WndManager& GetInstance();
+	static WndManager&					GetInstance();
 	static void 						AddWindow(UIWindow* pUIWnd);
 	static void 						RemoveWindow(UIWindow* pUIWnd);
 	static void 						RePaintAllWnd();

@@ -34,7 +34,6 @@ void example_1()
 
 		LUA_ENV_ERROR ret = luaBridge.LoadLuaFile(pszUrl);/*I:\\UIEngine\\example\\luacode\\ */
 		if (LUA_ENV_SUCCESS != ret){
-			ATLASSERT(false);
 			return;
 		}
 
@@ -44,7 +43,6 @@ void example_1()
 		WideCharToChar(path.c_str(), pszUrl);
 		ret = luaBridge.LoadLuaFile(pszUrl);
 		if (LUA_ENV_SUCCESS != ret) {
-			ATLASSERT(false);
 			return;
 		}
 		LUA_ENV_ERROR err = luaBridge.InvokeLuaFunction("OnLoadLuaFile", 31, 32);
@@ -746,7 +744,9 @@ LUA_ENV_ERROR LuaBridge::LoadLuaFile(const char* pszFilePath)
 	int ret = 0;  
 	ret = luaL_loadfile(m_luaState, pszFilePath);  
 	if (ret != 0){
-
+		const char* error = lua_tostring(m_luaState, -1);//打印错误结果 
+		lua_pop(m_luaState, 1);
+		cout << error << endl;
 		return LUA_ENV_LOADFILEFAILED;
 	}
 		
@@ -763,8 +763,13 @@ LUA_ENV_ERROR LuaBridge::InvokeLuaFunction(const char* funcName, int a, int b)
 	lua_pushinteger(m_luaState, a);  
 	lua_pushinteger(m_luaState, b);  
 	int ret = lua_pcall(m_luaState, 2, 1, 0);  
-	if ( ret != 0 )  
+	if (ret != 0) {
+		const char* error = lua_tostring(m_luaState, -1);//打印错误结果 
+		lua_pop(m_luaState, 1);
+		cout << error << endl;
 		return LUA_ENV_INVOKEFAILED;
+	}
+		
 
 	int result = lua_tointeger(m_luaState,-1);
 	printf("sum:%d + %d + 230 = %ld\n", a, b, result);  

@@ -1,8 +1,7 @@
 --用lua实现面向对象、简单的消息分发, 不依赖任何C工程
-ObjectBase = {}
--- XLSetGlobal("ObjectBase", ObjectBase)
+BaseClass = {}
 
-function ObjectBase:New(obj)
+function BaseClass:New(obj)
 	obj = obj or {}
 	setmetatable(obj, self)
 	
@@ -14,7 +13,7 @@ function ObjectBase:New(obj)
 	return obj
 end
 
-function ObjectBase:AddListener(event, callBack, ownerObj, bAddToEnd)
+function BaseClass:AddListener(event, callBack, ownerObj, bAddToEnd)
 	assert("string" == type(event), "param1 event must be string")
 	if not self.listener[event] then
 		self.listener[event] = {}
@@ -32,7 +31,7 @@ function ObjectBase:AddListener(event, callBack, ownerObj, bAddToEnd)
 	return callBack
 end
 
-function ObjectBase:DispatchEvent(event, ...)
+function BaseClass:DispatchEvent(event, ...)
 	if not self.listener[event] then
 		return
 	end
@@ -42,7 +41,7 @@ function ObjectBase:DispatchEvent(event, ...)
 	end
 end
 
-function ObjectBase:RemoveListener(event, callBack, ownerObj)
+function BaseClass:RemoveListener(event, callBack, ownerObj)
 	if not self.listener[event] then
 		return
 	end
@@ -57,6 +56,8 @@ function ObjectBase:RemoveListener(event, callBack, ownerObj)
 	end
 end
 
-function ObjectBase:RemoveAllListener()
+function BaseClass:RemoveAllListener()
 	self.listener = {}
 end
+
+BaseObject = BaseClass:New();

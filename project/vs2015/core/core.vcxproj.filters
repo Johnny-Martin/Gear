@@ -28,6 +28,9 @@
     <Filter Include="entry">
       <UniqueIdentifier>{b6c483a4-2e79-4769-89eb-3cc1beddafa4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="luaenv">
+      <UniqueIdentifier>{b40d3f53-2ec5-4a90-b946-181f23079a74}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp">
@@ -107,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\base\InputAdapter.cpp">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\luaenv\LuaEnv.cpp">
+      <Filter>luaenv</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\base\InputAdapter.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\luaenv\LuaEnv.h">
+      <Filter>luaenv</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

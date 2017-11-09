@@ -32,6 +32,15 @@ int MsgBox(lua_State* luaState)
 	return 0;
 }
 
+int SpdLog(lua_State* luaState)
+{
+	const char* luaStr = lua_tostring(luaState, 1);
+	if (luaStr) {
+		INFO("{}", luaStr);
+	}
+	return 0;
+}
+
 LuaEnv& LuaEnv::GetInstance()
 {
 	static LuaEnv mainEnv;
@@ -83,6 +92,7 @@ bool LuaEnv::CompileLuaFile(const string& filePath)
 	int iError = luaL_loadfile(pLuaState, filePath.c_str());
 	if (iError != 0){
 		const char* pszErrInfo = lua_tostring(pLuaState, -1);
+		lua_pop(pLuaState, 1);
 		if (m_errhandler_C){
 			m_errhandler_C(pszErrInfo);
 		}

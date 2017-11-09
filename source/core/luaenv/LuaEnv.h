@@ -18,6 +18,7 @@ extern "C" {
 void DefaultErrorHandler_C(const char* errInfo);
 void DefaultErrorHandler_R(const char* errInfo);
 int MsgBox(lua_State* luaState);
+int SpdLog(lua_State* luaState);
 
 typedef void(*LuaErrorHandlerType)(const char* errInfo);
 
@@ -46,6 +47,7 @@ public:
 public:
 	BEGIN_LUACFUNCTION_DECLARE()
 		REGISTER_CFUNCTION(MsgBox)
+		REGISTER_CFUNCTION(SpdLog)
 	END_LUACFUNCTION_DECLARE()
 
 public:

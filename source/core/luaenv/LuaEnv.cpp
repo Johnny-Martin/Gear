@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "LuaEnv.h"
 
-LuaErrorHandlerType LuaEnv::m_errhandler_C = DefaultErrorHandler_C;
-LuaErrorHandlerType LuaEnv::m_errhandler_R = DefaultErrorHandler_R;
 int LuaEnv::m_initCFunctionArraySize = 0;
 
 void DefaultErrorHandler_C(const char* errInfo)

@@ -57,14 +57,14 @@ public:
 	END_LUACFUNCTION_DECLARE()
 
 public:
-	static void					SetErrorHandler_C(LuaErrorHandlerType callback);
-	static void					SetErrorHandler_R(LuaErrorHandlerType callback);
-	static bool					CompileLuaFile(const string& filePath);
+	void						SetErrorHandler_C(LuaErrorHandlerType callback);
+	void						SetErrorHandler_R(LuaErrorHandlerType callback);
+	bool						CompileLuaFile(const string& filePath);
 private:
-	static void					RegisterGlobalFunctions(lua_State* pLuaStat);
+	void						RegisterGlobalFunctions(lua_State* pLuaStat);
 private:
-	static LuaErrorHandlerType  m_errhandler_C;//编译时的错误处理回掉
-	static LuaErrorHandlerType  m_errhandler_R;//运行期的错误处理回调
+	LuaErrorHandlerType			m_errhandler_C;//编译时的错误处理回掉
+	LuaErrorHandlerType			m_errhandler_R;//运行期的错误处理回调
 	static int					m_initCFunctionArraySize;
 
 private:

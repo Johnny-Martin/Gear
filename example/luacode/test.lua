@@ -1,9 +1,13 @@
+local BaseObject = GetGlobal("BaseObject")
 
 function err(msg)
 	MsgBox(msg)
 end
 
 function OnLoadLuaFile(a, b)
+	-- TestGlobalFunction()
+	
+	
 	if BaseObject then
 		BaseObject:DispatchEvent("TestEvent", 1, 5, 6)
 	else

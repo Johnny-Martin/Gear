@@ -61,6 +61,57 @@ void example_1()
 	}
 }
 
+void example_2()
+{
+	TCHAR szFilePath[MAX_PATH + 1] = { 0 };
+	GetModuleFileName(NULL, szFilePath, MAX_PATH);
+	(_tcsrchr(szFilePath, _T('\\')))[1] = 0; // 删除文件名，只获得路径字串
+
+	std::wstring str_url = szFilePath;  // 例如str_url==e:\program\Debug
+	LuaBridge luaBridge1;
+	if (LUA_ENV_SUCCESS == luaBridge1.InitLuaEnv()) {
+		auto path = str_url + _T("LuaObject.lua");
+		char* pszUrl = NULL;
+		WideCharToChar(path.c_str(), pszUrl);
+		LUA_ENV_ERROR ret = luaBridge1.LoadLuaFile(pszUrl);/*I:\\UIEngine\\example\\luacode\\ */
+		if (LUA_ENV_SUCCESS != ret) {
+			return;
+		}
+	}
+
+	LuaBridge luaBridge2;
+	if (LUA_ENV_SUCCESS == luaBridge2.InitLuaEnv()) {
+		auto path = str_url + _T("test3.lua");
+		char* pszUrl = NULL;
+		WideCharToChar(path.c_str(), pszUrl);
+		LUA_ENV_ERROR ret = luaBridge2.LoadLuaFile(pszUrl);/*I:\\UIEngine\\example\\luacode\\ */
+		if (LUA_ENV_SUCCESS != ret) {
+			return;
+		}
+		LUA_ENV_ERROR err = luaBridge2.InvokeLuaFunction("OnLoadLuaFile", 31, 32);
+		if (err) {
+			auto i = 0;
+			++i;
+		}
+	}
+
+	LuaBridge luaBridge3;
+	if (LUA_ENV_SUCCESS == luaBridge3.InitLuaEnv()) {
+		auto path = str_url + _T("test.lua");
+		char* pszUrl = NULL;
+		WideCharToChar(path.c_str(), pszUrl);
+		LUA_ENV_ERROR ret = luaBridge3.LoadLuaFile(pszUrl);/*I:\\UIEngine\\example\\luacode\\ */
+		if (LUA_ENV_SUCCESS != ret) {
+			return;
+		}
+
+		LUA_ENV_ERROR err = luaBridge3.InvokeLuaFunction("OnLoadLuaFile", 3, 32);
+		if (err) {
+			auto i = 0;
+			++i;
+		}
+	}
+}
 void test(LPTSTR lpszServer, LPTSTR lpszShare)
 {
 	PSHARE_INFO_502 BufPtr;
@@ -310,7 +361,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//luaState["Func"]();
 	//int retI = luaState["add"](1,8);
 
-	example_1();
+	example_2();
+	//example_1();
 	//ShareXmpMedia(NULL);
 	//test(NULL, _T("share2"));
 	//NetShareAddDacl(TEXT("share3"), TEXT("Everyone"), 2032127, true);
@@ -797,5 +849,23 @@ int SetGlobalObject(lua_State* pLuaState)
 	lua_Integer b = lua_tointeger(pLuaState,2);  
 
 	lua_pushinteger(pLuaState,a+b);
+	return 1;
+}
+int SetGlobal(lua_State* pLuaState)
+{
+	const char* strObjName = luaL_checkstring(pLuaState, 1);
+	if (strObjName && !lua_isnil(pLuaState, 2)){
+		lua_setglobal(pLuaState, strObjName);
+	}
+	
+	return 0;
+}
+int GetGlobal(lua_State* pLuaState)
+{
+	const char* strObjName = luaL_checkstring(pLuaState, 1);
+	if (!strObjName){
+		return 0;
+	}
+	lua_getglobal(pLuaState, strObjName);
 	return 1;
 }

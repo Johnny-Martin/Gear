@@ -1,3 +1,4 @@
+local BaseObject = GetGlobal("BaseObject")
 
 local SomeObjClass = {}
 
@@ -18,4 +19,8 @@ function OnLoadLuaFile(a, b)
 	end
 	
 	return a + b
+end
+
+function TestGlobalFunction()
+	MsgBox("TestGlobalFunction2222");
 end

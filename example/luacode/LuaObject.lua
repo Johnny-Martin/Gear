@@ -1,5 +1,5 @@
 --用lua实现面向对象、简单的消息分发, 不依赖任何C工程
-BaseClass = {}
+local BaseClass = {}
 
 function BaseClass:New(obj)
 	obj = obj or {}
@@ -72,7 +72,8 @@ function CreateReadOnlyTable(tbl)
 	return fakeTable
 end
 
-BaseObject = BaseClass:New()
+local BaseObject = BaseClass:New()
+SetGlobal("BaseObject", BaseObject)
 
 --E是一个只读的空表，供safe navigation时使用。例如:
 --local ret = root and root.subTable1 and root.subTable1.subTable2 and root.subTable1.subTable2.subTable3
@@ -80,3 +81,7 @@ BaseObject = BaseClass:New()
 --local ret = (((root or E).subTable1 or E).subTable2 or E).subTable3
 --第一种safe navigation中，root、subTable1被重复写了多次，第二种形式的safe navigation可以避免这种情况
 E = CreateReadOnlyTable()
+
+function TestGlobalFunction()
+	MsgBox("TestGlobalFunction");
+end

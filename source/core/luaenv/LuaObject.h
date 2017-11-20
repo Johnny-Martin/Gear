@@ -20,8 +20,9 @@ extern "C" {
 template<class T>
 class LuaObject {
 public:
-	void RegFuncs(lua_State* pLuaState);
-	void RegAttrs(lua_State* pLuaState);
+	void			RegFuncs(lua_State* pLuaState);
+	void			RegAttrs(lua_State* pLuaState);
+	luaL_Reg*		CreateLuaRegInfo();
 protected:
 };
 
@@ -35,4 +36,11 @@ template<class T>
 void LuaObject::RegAttrs(lua_State* pLuaState)
 {
 
+}
+
+template<class T>
+luaL_Reg* LuaObject::CreateLuaRegInfo()
+{
+
+	return nullptr;
 }

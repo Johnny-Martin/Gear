@@ -17,3 +17,5 @@ extern "C" {
 
 int MsgBox(lua_State* luaState);
 int SpdLog(lua_State* luaState);
+int SetGlobal(lua_State* luaState);
+int GetGlobal(lua_State* luaState);

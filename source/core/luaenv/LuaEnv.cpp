@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "LuaEnv.h"
 
+
 int LuaEnv::m_initCFunctionArraySize = 0;
 
 void DefaultErrorHandler_C(const char* errInfo)
@@ -23,14 +24,7 @@ LuaEnv& LuaEnv::GetInstance()
 
 LuaEnv::LuaEnv()
 {
-	m_luaState = luaL_newstate();
-	if (m_luaState == NULL) {
-		ERR("Create Lua state failed! program abort");
-		abort();
-	}
-		
-	luaL_openlibs(m_luaState);
-	RegisterGlobalFunctions(m_luaState);
+	
 }
 void LuaEnv::RegisterGlobalFunctions(lua_State* pLuaStat)
 {
@@ -60,10 +54,11 @@ void LuaEnv::SetErrorHandler_R(LuaErrorHandlerType callback)
 	m_errhandler_R = callback;
 }
 
-bool LuaEnv::CompileLuaFile(const string& filePath)
+//参数可以是一个文件路径，也可以是一段代码
+bool LuaEnv::CompileLuaModule(const string& filePathOrCode)
 {
 	lua_State* pLuaState = luaL_newstate();
-	int iError = luaL_loadfile(pLuaState, filePath.c_str());
+	int iError = luaL_loadfile(pLuaState, filePathOrCode.c_str());
 	if (iError != 0){
 		const char* pszErrInfo = lua_tostring(pLuaState, -1);
 		lua_pop(pLuaState, 1);
@@ -74,4 +69,43 @@ bool LuaEnv::CompileLuaFile(const string& filePath)
 
 	lua_close(pLuaState);
 	return (iError == 0);
+}
+
+bool LuaEnv::LoadLuaModule(const string& filePath)
+{
+	//检查是否已被加载
+	auto pos = m_mapPathToLuaState.find(filePath);
+	if (pos != m_mapPathToLuaState.end()){
+		WARN("Create Lua state failed! program abort");
+		return false;
+	}
+
+	//创建LuaState
+	auto pLuaState = luaL_newstate();
+	if (pLuaState == NULL) {
+		ERR("Create Lua state failed! program abort");
+		abort();
+	}
+
+	m_mapPathToLuaState[filePath] = pLuaState;
+	//打开库
+	luaL_openlibs(pLuaState);
+
+	//注册全局函数
+	RegisterGlobalFunctions(pLuaState);
+
+	//使用state创建LuaModule
+	auto pModule = new LuaModule(pLuaState, filePath);
+
+	m_mapLuaStateToModule[pLuaState] = pModule;
+	/*int iError = luaL_dofile(pLuaState, filePathOrCode.c_str());
+	if (iError != 0) {
+
+	}*/
+	return true;
+}
+
+bool LuaEnv::UnLoadLuaModule(const string& filePathOrCode)
+{
+	return true;
 }

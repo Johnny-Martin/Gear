@@ -24,3 +24,13 @@ int SpdLog(lua_State* luaState)
 	}
 	return 0;
 }
+int SetGlobal(lua_State* luaState)
+{
+
+	return 0;
+}
+int GetGlobal(lua_State* luaState)
+{
+
+	return 1;
+}

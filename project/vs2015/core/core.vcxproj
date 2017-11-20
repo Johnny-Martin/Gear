@@ -212,6 +212,7 @@
     <ClInclude Include="..\..\..\source\core\luaenv\LuaAPI.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaEnv.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaModule.h" />
+    <ClInclude Include="..\..\..\source\core\luaenv\LuaObject.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIBitmap.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIControl.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UICurve.h" />

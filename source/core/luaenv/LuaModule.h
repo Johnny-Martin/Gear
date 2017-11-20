@@ -23,5 +23,10 @@ extern "C" {
 class LuaModule
 {
 public:
-
+	LuaModule(lua_State* pLuaState, const string& filePath);
+	bool Run();
+private:
+	lua_State*	m_pLuaState;
+	string		m_luaFilePath;
+	bool		m_bLoadSuccessed;
 };

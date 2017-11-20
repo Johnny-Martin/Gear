@@ -14,6 +14,7 @@ Description:		脚本环境,用来编译Lua文件、注册全局对象、等
 #pragma once
 #include "../stdafx.h"
 #include "LuaAPI.h"
+#include "LuaModule.h"
 
 extern "C" {
 #include "lua.h"
@@ -59,7 +60,9 @@ public:
 public:
 	void						SetErrorHandler_C(LuaErrorHandlerType callback);
 	void						SetErrorHandler_R(LuaErrorHandlerType callback);
-	bool						CompileLuaFile(const string& filePath);
+	bool						CompileLuaModule(const string& filePathOrCode);
+	bool						LoadLuaModule(const string& filePathOrCode);
+	bool						UnLoadLuaModule(const string& filePathOrCode);
 private:
 	void						RegisterGlobalFunctions(lua_State* pLuaStat);
 private:
@@ -70,4 +73,6 @@ private:
 private:
 	LuaEnv();
 	lua_State*					m_luaState;
+	map<string, lua_State*>		m_mapPathToLuaState;
+	map<lua_State*, LuaModule*>	m_mapLuaStateToModule;
 };

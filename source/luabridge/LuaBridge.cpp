@@ -758,6 +758,34 @@ int LuaCallC()
 
 }  
 
+
+int LuaObject::Register(lua_State* luaState)
+{
+	//设置t[key]=value，t是索引为table_index对应的值，value为栈顶元素
+	auto set = [](lua_State *L, int table_index, const char *key)->void{
+		lua_pushstring(L, key);
+		lua_insert(L, -2);			 //交换key和value
+		lua_settable(L, table_index);//等效于t[key]=value，t位于table_index处，栈顶是value，栈顶之下是key
+	};
+
+	lua_newtable(luaState);
+	int luaTableObjPos = lua_gettop(luaState);
+
+	char mtName[64] = {0};
+	::itoa(long(this), mtName, 16);
+	luaL_newmetatable(luaState, mtName);
+	int mtPos = lua_gettop(luaState);
+
+	//隐藏luaTableObjPos的实质的元表，也就是说在Lua中
+	//调用getmetatable(luaTableObjPos)得到的是luaTableObjPos本身，
+	//而不是真正的metatable table，防止修改
+	lua_pushvalue(L, luaTableObjPos);
+	set(L, mtPos, "__metatable");
+
+
+	//lua_up
+	return 0;
+}
 int LuaBridge::m_initCFunctionArraySize = 0;
 
 void LuaBridge::InitLuaGlobalFunctions(lua_State* pLuaStat)

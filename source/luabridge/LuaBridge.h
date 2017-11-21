@@ -75,6 +75,7 @@ public:
 	int Add(const int& a, const int& b) {
 		return a + b;
 	}
+	int Register(lua_State* luaState);
 	/*int AddWrapper(lua_State* luaState) {
 
 		return 1;

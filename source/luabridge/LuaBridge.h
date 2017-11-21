@@ -69,6 +69,17 @@ enum LUA_ENV_ERROR
 			return functions;}
 
 
+class LuaObject
+{
+public: 
+	int Add(const int& a, const int& b) {
+		return a + b;
+	}
+	/*int AddWrapper(lua_State* luaState) {
+
+		return 1;
+	}*/
+};
 
 //Register C_Function for Lua ENV;
 //Invoke Lua function in Cpp code by using function name

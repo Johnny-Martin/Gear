@@ -77,11 +77,20 @@ public:
 protected:
 	typedef int (T::*mfp)(lua_State *L);
 	typedef struct { const char *name; mfp mfunc; } RegType;
+	
+	template<typename retType, typename... args>
+	int RawMenFuncWrapper(lua_State* L)
+	{
+		typedef retType(T::*MemFuncType)(args...);
+		return 0;
+	}
+
 private:
 	void RegisterMethods(lua_State* luaState);
 	static int thunk(lua_State *L);
 	static void set(lua_State *L, int table_index, const char *key);
 };
+
 
 template<class T>
 void LuaObject<T>::set(lua_State *L, int table_index, const char *key)
@@ -137,6 +146,8 @@ void LuaObject<T>::RegisterMethods(lua_State* L)
 	lua_pop(L, 2);
 }
 
+
+
 class TestLuaObject :public LuaObject<TestLuaObject> 
 {
 public:
@@ -146,6 +157,10 @@ public:
 	int Minus(lua_State* L) {
 		lua_pushstring(L, "call TestLuaObject member function Minus");
 		return 1;
+	}
+
+	int RawMemFunc(int a, int b) {
+		return a + b * 2;
 	}
 };
 
@@ -168,7 +183,6 @@ int LuaObject<T>::thunk(lua_State *L)
 	}
 	return 0;
 }
-
 
 //Register C_Function for Lua ENV;
 //Invoke Lua function in Cpp code by using function name

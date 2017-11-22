@@ -45,7 +45,8 @@ void example_1()
 		if (LUA_ENV_SUCCESS != ret) {
 			return;
 		}
-		LUA_ENV_ERROR err = luaBridge.InvokeLuaFunction("OnLoadLuaFile", 31, 32);
+		LUA_ENV_ERROR err = luaBridge.InvokeLuaFunction("TestLuaObject", 31, 32);
+					  err = luaBridge.InvokeLuaFunction("OnLoadLuaFile", 31, 32);
 
 		delete[] pszUrl;
 		pszUrl = NULL;
@@ -361,8 +362,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//luaState["Func"]();
 	//int retI = luaState["add"](1,8);
 
-	example_2();
-	//example_1();
+	//example_2();
+	example_1();
 	//ShareXmpMedia(NULL);
 	//test(NULL, _T("share2"));
 	//NetShareAddDacl(TEXT("share3"), TEXT("Everyone"), 2032127, true);
@@ -758,34 +759,6 @@ int LuaCallC()
 
 }  
 
-
-int LuaObject::Register(lua_State* luaState)
-{
-	//设置t[key]=value，t是索引为table_index对应的值，value为栈顶元素
-	auto set = [](lua_State *L, int table_index, const char *key)->void{
-		lua_pushstring(L, key);
-		lua_insert(L, -2);			 //交换key和value
-		lua_settable(L, table_index);//等效于t[key]=value，t位于table_index处，栈顶是value，栈顶之下是key
-	};
-
-	lua_newtable(luaState);
-	int luaTableObjPos = lua_gettop(luaState);
-
-	char mtName[64] = {0};
-	::itoa(long(this), mtName, 16);
-	luaL_newmetatable(luaState, mtName);
-	int mtPos = lua_gettop(luaState);
-
-	//隐藏luaTableObjPos的实质的元表，也就是说在Lua中
-	//调用getmetatable(luaTableObjPos)得到的是luaTableObjPos本身，
-	//而不是真正的metatable table，防止修改
-	lua_pushvalue(L, luaTableObjPos);
-	set(L, mtPos, "__metatable");
-
-
-	//lua_up
-	return 0;
-}
 int LuaBridge::m_initCFunctionArraySize = 0;
 
 void LuaBridge::InitLuaGlobalFunctions(lua_State* pLuaStat)
@@ -842,10 +815,12 @@ LUA_ENV_ERROR LuaBridge::LoadLuaFile(const char* pszFilePath)
 
 LUA_ENV_ERROR LuaBridge::InvokeLuaFunction(const char* funcName, int a, int b)
 {
+	TestLuaObject obj;
 	lua_getglobal(m_luaState, funcName); 
+	obj.PushSelf(m_luaState);
 	lua_pushinteger(m_luaState, a);  
 	lua_pushinteger(m_luaState, b);  
-	int ret = lua_pcall(m_luaState, 2, 1, 0);  
+	int ret = lua_pcall(m_luaState, 3, 1, 0);  
 	if (ret != 0) {
 		const char* error = lua_tostring(m_luaState, -1);//打印错误结果 
 		lua_pop(m_luaState, 1);

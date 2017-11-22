@@ -1,6 +1,7 @@
 #ifndef LUABRIDGE_H
 #define LUABRIDGE_H
 #include "stdafx.h"
+#include <assert.h>
 
 extern "C" {  
 #include "lua.h"
@@ -68,19 +69,106 @@ enum LUA_ENV_ERROR
 			};m_initCFunctionArraySize = sizeof(functions);\
 			return functions;}
 
-
+template<class T>
 class LuaObject
 {
 public: 
-	int Add(const int& a, const int& b) {
-		return a + b;
-	}
-	int Register(lua_State* luaState);
-	/*int AddWrapper(lua_State* luaState) {
-
-		return 1;
-	}*/
+	void PushSelf(lua_State* luaState);
+protected:
+	typedef int (T::*mfp)(lua_State *L);
+	typedef struct { const char *name; mfp mfunc; } RegType;
+private:
+	void RegisterMethods(lua_State* luaState);
+	static int thunk(lua_State *L);
+	static void set(lua_State *L, int table_index, const char *key);
 };
+
+template<class T>
+void LuaObject<T>::set(lua_State *L, int table_index, const char *key)
+{
+	lua_pushstring(L, key);
+	lua_insert(L, -2); //交换key和value
+	lua_settable(L, table_index);//等效于t[key]=value，t位于table_index处，栈顶是value，栈顶之下是key
+}
+
+template<class T>
+void LuaObject<T>::PushSelf(lua_State* L)
+{
+	int fir = lua_gettop(L);
+	T** ppT = (T**)lua_newuserdata(L, sizeof(T**));
+	*ppT = static_cast<T*>(this);//此userdata就是self
+
+	int sec = lua_gettop(L);
+
+	luaL_getmetatable(L, T::className);
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		RegisterMethods(L);
+		luaL_getmetatable(L, T::className);
+	}
+	assert(!lua_isnil(L, -1));
+
+	int thi = lua_gettop(L);
+	lua_setmetatable(L, -2);
+	int forth = lua_gettop(L);
+}
+
+template<class T>
+void LuaObject<T>::RegisterMethods(lua_State* L)
+{
+	lua_newtable(L);
+	int methods = lua_gettop(L);
+
+	luaL_newmetatable(L, T::className);
+	int metatable = lua_gettop(L);
+
+	lua_pushvalue(L, methods);
+	set(L, metatable, "__index");
+
+	//for (RegType *l = T::methods; l->name; l++)
+	for(int i=0; T::methods[i].name; ++i)
+	{
+		lua_pushstring(L, T::methods[i].name);
+		lua_pushnumber(L, i);
+		lua_pushcclosure(L, thunk, 1);
+		lua_settable(L, methods);
+	}
+
+	lua_pop(L, 2);
+}
+
+class TestLuaObject :public LuaObject<TestLuaObject> 
+{
+public:
+	static const char className[];
+	static RegType methods[];
+
+	int Minus(lua_State* L) {
+		lua_pushstring(L, "call TestLuaObject member function Minus");
+		return 1;
+	}
+};
+
+const char TestLuaObject::className[] = "TestLuaObject";
+TestLuaObject::RegType TestLuaObject::methods[] = {
+	{ "Minus", &TestLuaObject::Minus },
+	{ 0 }
+};
+
+template<class T>
+int LuaObject<T>::thunk(lua_State *L)
+{
+	int index = (int)lua_tonumber(L, lua_upvalueindex(1));
+	//假如Lua中使用self.Func,这里会check不通过，进而rise一个error
+	T** obj = static_cast<T**>(luaL_checkudata(L, 1, T::className));
+	//lua_remove(L, -1);
+	if (obj && *obj)
+	{
+		return ((*obj)->*(T::methods[index].mfunc))(L);
+	}
+	return 0;
+}
+
 
 //Register C_Function for Lua ENV;
 //Invoke Lua function in Cpp code by using function name

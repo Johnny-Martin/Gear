@@ -68,7 +68,7 @@ LRESULT	InputAdapter<SubClass>::MouseAdapter(UINT uMsg, WPARAM wParam, LPARAM lP
 	//发事件给脚本（处理自己的）
 	if (!m_msgMap[uMsg].empty()){
 		UIEvent* pEvent = pSubObj->m_eventMap[m_msgMap[uMsg]];
-		INFO("Fire event : {}, UIObject name:{}", m_msgMap[uMsg], pSubObj->m_attrMap["id"]);
+		//INFO("Fire event : {}, UIObject name:{}", m_msgMap[uMsg], pSubObj->m_attrMap["id"]);
 		
 		if (pEvent){
 			auto eventName = m_msgMap[uMsg];

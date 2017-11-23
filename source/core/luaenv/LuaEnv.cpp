@@ -108,6 +108,7 @@ lua_State* LuaEnv::LoadLuaModule(const string& filePath)
 	if (iError != 0) {
 
 	}*/
+	lua_pcall(pLuaState, 0, 0, 0);
 	return pLuaState;
 }
 

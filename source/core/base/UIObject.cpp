@@ -45,10 +45,10 @@ bool UIEvent::Fire(UIObject* pObj, const int& x, const int& y)
 
 	//要使用UIObject指针
 	lua_getglobal(luaState, m_funcName.c_str());
-	/*if (lua_isnil(luaState, -1)) {
-		ERR("UIEvent Fire error: can not find lua function, name: {}",m_funcName);
+	if (lua_isnil(luaState, -1)) {
+		ERR("UIEvent Fire error: can not find lua function, name: {}, lua file: {}",m_funcName, m_filePath);
 		return false;
-	}*/
+	}
 	pObj->PushSelf(luaState);
 	lua_pushnumber(luaState, x);
 	lua_pushnumber(luaState, y);

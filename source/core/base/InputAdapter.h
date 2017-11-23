@@ -48,8 +48,8 @@ template<typename SubClass>
 LRESULT	InputAdapter<SubClass>::MouseAdapter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	ATLASSERT((uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST)); //|| (uMsg >= 0x00A0 && uMsg <= 0x00AD)
-	SubClass* pWndObj = static_cast<SubClass*>(this);
-	if (pWndObj->m_attrMap["visible"] != "1" || pWndObj->m_attrMap["enable"] != "1"){
+	SubClass* pSubObj = static_cast<SubClass*>(this);
+	if (pSubObj->m_attrMap["visible"] != "1" || pSubObj->m_attrMap["enable"] != "1"){
 		return 0;
 	}
 
@@ -67,8 +67,8 @@ LRESULT	InputAdapter<SubClass>::MouseAdapter(UINT uMsg, WPARAM wParam, LPARAM lP
 	
 	//发事件给脚本（处理自己的）
 	if (!m_msgMap[uMsg].empty()){
-		UIEvent* pEvent = pWndObj->m_eventMap[m_msgMap[uMsg]];
-		INFO("Fire event : {}, UIObject name:{}", m_msgMap[uMsg], pWndObj->m_attrMap["id"]);
+		UIEvent* pEvent = pSubObj->m_eventMap[m_msgMap[uMsg]];
+		INFO("Fire event : {}, UIObject name:{}", m_msgMap[uMsg], pSubObj->m_attrMap["id"]);
 		
 		if (pEvent){
 			auto eventName = m_msgMap[uMsg];
@@ -80,12 +80,12 @@ LRESULT	InputAdapter<SubClass>::MouseAdapter(UINT uMsg, WPARAM wParam, LPARAM lP
 				pEvent->m_mouseEnterFlag = true;
 			}
 
-			pEvent->Fire();
+			pEvent->Fire(pSubObj, x, y);
 		}
 	}
 
 	//通知给子节点
-	vector<PAIR>* pChildrenVec = pWndObj->m_pVecChildrenPair;
+	vector<PAIR>* pChildrenVec = pSubObj->m_pVecChildrenPair;
 	if (pChildrenVec->empty()){
 		return 0;
 	}

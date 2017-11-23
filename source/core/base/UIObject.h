@@ -23,7 +23,7 @@ public:
 	bool										SetEventHandlerFuncName(const string& sName);
 	shared_ptr<const string>					GetEventHandlerFilePath();
 	shared_ptr<const string>					GetEventHandlerFuncName();
-	bool										Fire();
+	bool										Fire(UIObject* pObj, const int& x, const int& y);
 	bool										InvokeLuaHandler();
 	bool										m_mouseEnterFlag;
 private:

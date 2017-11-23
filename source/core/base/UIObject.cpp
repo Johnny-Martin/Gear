@@ -34,7 +34,7 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 	return make_shared<const string>(m_funcName);
 }
 
-bool UIEvent::Fire()
+bool UIEvent::Fire(UIObject* pObj, const int& x, const int& y)
 {
 	lua_State* luaState = LuaEnv::GetInstance().GetLuaState(m_filePath);
 	luaState = luaState ? luaState : LuaEnv::GetInstance().LoadLuaModule(m_filePath);
@@ -44,6 +44,24 @@ bool UIEvent::Fire()
 	}
 
 	//要使用UIObject指针
+	lua_getglobal(luaState, m_funcName.c_str());
+	/*if (lua_isnil(luaState, -1)) {
+		ERR("UIEvent Fire error: can not find lua function, name: {}",m_funcName);
+		return false;
+	}*/
+	pObj->PushSelf(luaState);
+	lua_pushnumber(luaState, x);
+	lua_pushnumber(luaState, y);
+
+	int ret = lua_pcall(luaState, 3, 1, 0);
+	if (ret != 0) {
+		const char* error = lua_tostring(luaState, -1);//打印错误结果 
+		ERR("UIEvent Fire error: script run error: {}", error);
+		return	false;
+	}
+	const char* msg = lua_tostring(luaState, -1);
+
+	lua_pop(luaState, 1);
 	return true;
 }
 bool UIEvent::InvokeLuaHandler()

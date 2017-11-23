@@ -24,9 +24,11 @@ public:
 	shared_ptr<const string>					GetAttrValue(const string& sAttrName);
 	bool										AddAttr(const string& sAttrName, const string& sAttrDefaultValue = "");
 	bool										GetInitState();
+	void										SetXmlPath(const string& path);
 protected:
 	bool										m_bInit;//false:未初始化或初始化失败；true:初始化成功
 	map<string, string>							m_attrMap;
 	map<string, string>							m_attrValuePatternMap;
 	map<string, function<bool(const string&)> >	m_attrValueParserMap;
+	string										m_xmlPath;
 };

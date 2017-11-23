@@ -2,6 +2,7 @@
 #include "../stdafx.h"
 #include "XmlUIElement.h"
 #include "../entry/RenderManager.h"
+#include "../luaenv/LuaObject.h"
 #include "InputAdapter.h"
 
 using namespace std;
@@ -40,12 +41,13 @@ public:
 所有UI元素的基类
 ****************************************/
 
-class UIObject:public XmlUIElement, public RenderTarget, public InputAdapter<UIObject>
+class UIObject:public XmlUIElement, public RenderTarget, public InputAdapter<UIObject>, public LuaObject<UIObject>
 {
 	friend RenderTarget;
 	friend InputAdapter<UIObject>;
-
 public:
+	static const char className[];
+	static RegType methods[];
 	//UIBase的子类需要有一个无参构造，在里面初始化m_attrMap 和 m_eventMap
 	//(重写InitAttrMap、InitEventMap)此处应作编译时强制，但未想到好的方案
 												UIObject();
@@ -66,6 +68,11 @@ public:
 	const UIPos									GetPosObject();
 	void										SortChildrenByZorder();
 	UIPos										GetWndCoordinatePos();
+
+	///////////////////////////////给Lua用的///////////////////////////////
+	int											Set(lua_State* L);
+	int											Get(lua_State* L);
+	///////////////////////////////////////////////////////////////////////
 #ifdef USE_D2D_RENDER_MODE
 public:
 	virtual HRESULT								OnDrawImpl(ID2D1RenderTarget* pRenderTarget, const D2D1_RECT_F& rcWndPos) = 0;

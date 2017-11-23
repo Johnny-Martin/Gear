@@ -140,3 +140,7 @@ bool XmlUIElement::GetInitState()
 {
 	return m_bInit;
 }
+void XmlUIElement::SetXmlPath(const string& path)
+{
+	m_xmlPath = path;
+}

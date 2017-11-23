@@ -71,7 +71,13 @@ bool LuaEnv::CompileLuaModule(const string& filePathOrCode)
 	return (iError == 0);
 }
 
-bool LuaEnv::LoadLuaModule(const string& filePath)
+lua_State* LuaEnv::GetLuaState(const string& filePath)
+{
+	auto ret = m_mapPathToLuaState.find(filePath);
+	return ret == m_mapPathToLuaState.end() ? nullptr : ret->second;
+}
+
+lua_State* LuaEnv::LoadLuaModule(const string& filePath)
 {
 	//检查是否已被加载
 	auto pos = m_mapPathToLuaState.find(filePath);
@@ -102,7 +108,7 @@ bool LuaEnv::LoadLuaModule(const string& filePath)
 	if (iError != 0) {
 
 	}*/
-	return true;
+	return pLuaState;
 }
 
 bool LuaEnv::UnLoadLuaModule(const string& filePathOrCode)

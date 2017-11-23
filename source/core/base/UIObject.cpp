@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIObject.h"
 #include "../entry/UIFactory.h"
+#include "../luaenv/LuaEnv.h"
 #include <sstream>
 
 //不可识别的字符转义序列（正则表达式中的\s）
@@ -35,6 +36,14 @@ shared_ptr<const string> UIEvent::GetEventHandlerFuncName()
 
 bool UIEvent::Fire()
 {
+	lua_State* luaState = LuaEnv::GetInstance().GetLuaState(m_filePath);
+	luaState = luaState ? luaState : LuaEnv::GetInstance().LoadLuaModule(m_filePath);
+	if (!luaState){
+		ERR("UIEvent Fire error: can not get luaState");
+		return false;
+	}
+
+	//要使用UIObject指针
 	return true;
 }
 bool UIEvent::InvokeLuaHandler()
@@ -42,12 +51,30 @@ bool UIEvent::InvokeLuaHandler()
 
 	return true;
 }
+
+const char UIObject::className[] = "UIObject";
+UIObject::RegType UIObject::methods[] = {
+	{ "Set", &UIObject::Set },
+	{ "Get", &UIObject::Get },
+	{ 0 }
+};
+
 UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pVecChildrenPair(nullptr), m_bWndObj(false)
 {
 	InitAttrMap();
 	InitEventMap();
 	InitAttrValuePatternMap();
 	InitAttrValueParserMap();
+}
+int	UIObject::Set(lua_State* L)
+{
+	lua_pushstring(L, "call UIObject Set method successfully!");
+	return 1;
+}
+int	UIObject::Get(lua_State* L)
+{
+	lua_pushstring(L, "call UIObject Get method successfully!");
+	return 1;
 }
 UIObject::~UIObject()
 {
@@ -85,6 +112,7 @@ bool UIObject::InitImpl(const XMLElement* pElement)
 			auto pChildObj = ::CreateUIObject<UIObject*>(childClassName);
 			if (pChildObj) {
 				//先加到父节点，再初始化
+				pChildObj->SetXmlPath(m_xmlPath);
 				AddChild(pChildObj, cszChildID);
 				pChildObj->SetParent(this);
 				pChildObj->Init(pChild);
@@ -252,6 +280,10 @@ bool UIObject::SetEventHandler(const string& sEventName, const string& sFuncName
 	if (it != m_eventMap.end() && it->second) {
 		WARN("SetEventHandler  warning: event handler already exisit, will be recoverd! event name: {}, old function name: {}, new function name: {}", sEventName, *(it->second->GetEventHandlerFuncName()), sFuncName);
 	}
+	if (m_xmlPath.empty()){
+		ERR("SetEventHandler CheckFuncName error: can not get xml file path");
+		return false;
+	}
 #endif // DEBUG
 	
 	UIEvent* pEventObj = m_eventMap[sEventName] ? m_eventMap[sEventName] : (new UIEvent());
@@ -259,7 +291,18 @@ bool UIObject::SetEventHandler(const string& sEventName, const string& sFuncName
 		ERR("SetEventHandler error: get event object failed, name: {}, function: {}", sEventName, sFuncName);
 		return false;
 	}
-	pEventObj->SetEventHandlerFilePath(sFilePath);
+
+	char szModuleFile[MAX_PATH] = { 0 };
+	::GetModuleFileNameA(NULL, szModuleFile, MAX_PATH);
+	::PathAppendA(szModuleFile, m_xmlPath.c_str());
+	//如果未指定lua文件名称，则默认为同目录下的同名文件
+	if (sFilePath.empty()) {
+		PathRenameExtensionA(szModuleFile, ".lua");
+	} else {
+		::PathAppendA(szModuleFile, "..\\");
+		::PathAppendA(szModuleFile, sFilePath.c_str());
+	}
+	pEventObj->SetEventHandlerFilePath(szModuleFile);
 	pEventObj->SetEventHandlerFuncName(sFuncName);
 	
 	m_eventMap[sEventName] = pEventObj;

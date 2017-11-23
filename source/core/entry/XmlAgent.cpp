@@ -63,8 +63,10 @@ XMLERROR XmlAgent::GetXmlRootElement(const std::string& sFilePath)
 		//if (checkRet != XML_SUCCESS) return checkRet;
 		//auto pObj = CREATE(UIObject*, pElement);
 		auto pObj = ::CreateUIObject<UIObject*>(pElement);
-		if (!pObj || !pObj->Init(pElement))
+		pObj->SetXmlPath(sFilePath);
+		if (!pObj->Init(pElement)) {
 			ERR("create/initicalize UI ojject error: pObj£º{}", int(pObj));
+		}
 		
 		GearEnv::AddRootObject(pObj);
 		pElement = pElement->NextSiblingElement();

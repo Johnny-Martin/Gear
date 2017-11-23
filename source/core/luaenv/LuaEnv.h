@@ -61,7 +61,8 @@ public:
 	void						SetErrorHandler_C(LuaErrorHandlerType callback);
 	void						SetErrorHandler_R(LuaErrorHandlerType callback);
 	bool						CompileLuaModule(const string& filePathOrCode);
-	bool						LoadLuaModule(const string& filePathOrCode);
+	lua_State*					GetLuaState(const string& filePath);
+	lua_State*					LoadLuaModule(const string& filePathOrCode);
 	bool						UnLoadLuaModule(const string& filePathOrCode);
 private:
 	void						RegisterGlobalFunctions(lua_State* pLuaStat);

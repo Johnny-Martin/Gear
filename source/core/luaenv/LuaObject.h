@@ -26,7 +26,6 @@ class LuaObject
 {
 public:
 	void PushSelf(lua_State* luaState);
-	void PushSelfEx(lua_State* luaState);
 protected:
 	typedef int (T::*mfp)(lua_State *L);
 	typedef struct { const char *name; mfp mfunc; } RegType;
@@ -45,26 +44,7 @@ void LuaObject<T>::set(lua_State *L, int table_index, const char *key)
 }
 
 template<class T>
-void LuaObject<T>::PushSelf(lua_State* L)
-{
-	//每次PushSelf都会new一个userdata出来，如何将userdata保存到LuaObject,Push的时候直接使用？
-	T** ppT = (T**)lua_newuserdata(L, sizeof(T**));
-	//const void* pUserData = lua_topointer(L, -1);
-	*ppT = static_cast<T*>(this);//此userdata就是self
-
-	luaL_getmetatable(L, T::className);
-	if (lua_isnil(L, -1)) {
-		lua_pop(L, 1);
-		RegisterMethods(L);
-		luaL_getmetatable(L, T::className);
-	}
-	assert(!lua_isnil(L, -1));
-	//luaL_ref(); lua_getuservalue();
-	lua_setmetatable(L, -2);
-}
-
-template<class T>
-void  LuaObject<T>::PushSelfEx(lua_State* L)
+void  LuaObject<T>::PushSelf(lua_State* L)
 {
 	//改进版PushSelf,将类的对象对应的UserData保存到 ClassName元表中，以this指针为key。
 	luaL_getmetatable(L, T::className);

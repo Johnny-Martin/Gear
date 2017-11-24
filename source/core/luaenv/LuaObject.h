@@ -46,11 +46,8 @@ void LuaObject<T>::set(lua_State *L, int table_index, const char *key)
 template<class T>
 void LuaObject<T>::PushSelf(lua_State* L)
 {
-	int fir = lua_gettop(L);
 	T** ppT = (T**)lua_newuserdata(L, sizeof(T**));
 	*ppT = static_cast<T*>(this);//´Ëuserdata¾ÍÊÇself
-
-	int sec = lua_gettop(L);
 
 	luaL_getmetatable(L, T::className);
 	if (lua_isnil(L, -1)) {
@@ -60,9 +57,7 @@ void LuaObject<T>::PushSelf(lua_State* L)
 	}
 	assert(!lua_isnil(L, -1));
 
-	int thi = lua_gettop(L);
 	lua_setmetatable(L, -2);
-	int forth = lua_gettop(L);
 }
 
 template<class T>

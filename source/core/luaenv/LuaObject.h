@@ -26,6 +26,7 @@ class LuaObject
 {
 public:
 	void PushSelf(lua_State* luaState);
+	void PushSelfEx(lua_State* luaState);
 protected:
 	typedef int (T::*mfp)(lua_State *L);
 	typedef struct { const char *name; mfp mfunc; } RegType;
@@ -46,7 +47,9 @@ void LuaObject<T>::set(lua_State *L, int table_index, const char *key)
 template<class T>
 void LuaObject<T>::PushSelf(lua_State* L)
 {
+	//每次PushSelf都会new一个userdata出来，如何将userdata保存到LuaObject,Push的时候直接使用？
 	T** ppT = (T**)lua_newuserdata(L, sizeof(T**));
+	//const void* pUserData = lua_topointer(L, -1);
 	*ppT = static_cast<T*>(this);//此userdata就是self
 
 	luaL_getmetatable(L, T::className);
@@ -56,8 +59,41 @@ void LuaObject<T>::PushSelf(lua_State* L)
 		luaL_getmetatable(L, T::className);
 	}
 	assert(!lua_isnil(L, -1));
-
+	//luaL_ref(); lua_getuservalue();
 	lua_setmetatable(L, -2);
+}
+
+template<class T>
+void  LuaObject<T>::PushSelfEx(lua_State* L)
+{
+	//改进版PushSelf,将类的对象对应的UserData保存到 ClassName元表中，以this指针为key。
+	luaL_getmetatable(L, T::className);
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		RegisterMethods(L);
+		luaL_getmetatable(L, T::className);
+	}
+	assert(!lua_isnil(L, -1));
+
+	//以this指针为key，在metatable中检索userdata
+	lua_pushlightuserdata(L, this);
+	lua_rawget(L, -2);
+	if (!luaL_testudata(L, -1, T::className)){
+		//该对象尚未创建userdata——即尚未注册到lua
+		lua_pop(L, 1);
+		lua_pushlightuserdata(L, this);
+		T** ppT = (T**)lua_newuserdata(L, sizeof(T**));
+		*ppT = static_cast<T*>(this);
+
+		lua_pushvalue(L, -1);
+		lua_insert(L, -4);
+		lua_rawset(L, -3);
+
+		lua_setmetatable(L, -2);
+	} else {
+		lua_insert(L, -2);
+		lua_pop(L, 1);
+	}
 }
 
 template<class T>
@@ -68,6 +104,11 @@ void LuaObject<T>::RegisterMethods(lua_State* L)
 
 	luaL_newmetatable(L, T::className);
 	int metatable = lua_gettop(L);
+
+	//隐藏userdata的实质的元表，也就是说在Lua中
+	//调用getmetatable(self)得到的是self本身，而不是metatable table
+	lua_pushvalue(L, methods);
+	set(L, metatable, "__metatable");
 
 	lua_pushvalue(L, methods);
 	set(L, metatable, "__index");

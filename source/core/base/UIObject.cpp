@@ -50,7 +50,8 @@ bool UIEvent::Fire(UIObject* pObj, const int& x, const int& y)
 		ERR("UIEvent Fire error: can not find lua function, name: {}, lua file: {}",m_funcName, m_filePath);
 		return false;
 	}
-	pObj->PushSelf(luaState);
+	//pObj->PushSelf(luaState);
+	pObj->PushSelfEx(luaState);
 	lua_pushnumber(luaState, x);
 	lua_pushnumber(luaState, y);
 

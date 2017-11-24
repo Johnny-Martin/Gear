@@ -35,7 +35,9 @@ Release/
 Backup/
 Debug/
 ipch/
+temp/
 .vs/
+bin/
 
 *.vcxproj.user
 *.opendb

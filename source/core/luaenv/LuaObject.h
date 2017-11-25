@@ -26,6 +26,7 @@ class LuaObject
 {
 public:
 	void PushSelf(lua_State* luaState);
+	bool RegisterGlobal(lua_State* luaState, const char* name);
 protected:
 	typedef int (T::*mfp)(lua_State *L);
 	typedef struct { const char *name; mfp mfunc; } RegType;
@@ -75,7 +76,20 @@ void  LuaObject<T>::PushSelf(lua_State* L)
 		lua_pop(L, 1);
 	}
 }
+template<class T>
+bool LuaObject<T>::RegisterGlobal(lua_State* L, const char* name)
+{
+	lua_getglobal(L, name);
+	if (!lua_isnil(L, -1)){
+		//已经有同名的全局标识符
+		lua_pop(L, 1);
+		ERR("RegisterGlobal error: global object already exisit, name: {}", name);
+		return false;
+	}
+	lua_pop(L, 1);
 
+	return false;
+}
 template<class T>
 void LuaObject<T>::RegisterMethods(lua_State* L)
 {

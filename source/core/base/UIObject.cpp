@@ -51,6 +51,8 @@ bool UIEvent::Fire(UIObject* pObj, const int& x, const int& y)
 		return false;
 	}
 	//pObj->PushSelf(luaState);
+	auto spName = pObj->GetAttrValue("id");
+	pObj->RegisterGlobal(luaState, spName->c_str());
 	pObj->PushSelf(luaState);
 	lua_pushnumber(luaState, x);
 	lua_pushnumber(luaState, y);

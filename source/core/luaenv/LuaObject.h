@@ -25,16 +25,62 @@ template<class T>
 class LuaObject
 {
 public:
-	void PushSelf(lua_State* luaState);
-	bool RegisterGlobal(lua_State* luaState, const char* name);
+							LuaObject();
+							~LuaObject();
+	void					PushSelf(lua_State* luaState);
+	bool					RegisterGlobal(lua_State* luaState, const char* name);
 protected:
 	typedef int (T::*mfp)(lua_State *L);
 	typedef struct { const char *name; mfp mfunc; } RegType;
 private:
-	void RegisterMethods(lua_State* luaState);
-	static int thunk(lua_State *L);
-	static void set(lua_State *L, int table_index, const char *key);
+	bool					CheckLuaState(lua_State* L);
+	void					RegisterMethods(lua_State* luaState);
+	static int				thunk(lua_State *L);
+	static void				set(lua_State *L, int table_index, const char *key);
+	lua_State*				m_pLuaState;
+	string					m_strGlobalName;
 };
+
+template<class T>
+LuaObject<T>::LuaObject():m_pLuaState(nullptr), m_strGlobalName()
+{
+
+}
+
+template<class T>
+LuaObject<T>::~LuaObject()
+{
+	if (!m_pLuaState){
+		return;
+	}
+	//清除T::className元表中this指针位置的value
+	luaL_getmetatable(m_pLuaState, T::className);
+	assert(!lua_isnil(m_pLuaState, -1));
+	lua_pushlightuserdata(m_pLuaState, this);
+	lua_pushnil(m_pLuaState);
+	lua_rawset(m_pLuaState, -3);//将mt[this] = nil
+	lua_pop(m_pLuaState, 1);
+
+	//若曾经设置过全局对象，则需清除
+	if (m_strGlobalName.empty()){
+		return;
+	}
+
+	lua_getglobal(m_pLuaState, m_strGlobalName.c_str());
+	//该全局对象已被Lua代码清除、或重置为一个非userdata对象
+	if (!luaL_testudata(m_pLuaState, -1, T::className)) {
+		return;
+	}
+
+	T** ppT = (T**)lua_topointer(m_pLuaState, -1);
+	//该全局对象已被Lua代码更改
+	if (*ppT != this) {
+		return;
+	}
+
+	lua_pushnil(m_pLuaState);
+	lua_setglobal(m_pLuaState, m_strGlobalName.c_str());
+}
 
 template<class T>
 void LuaObject<T>::set(lua_State *L, int table_index, const char *key)
@@ -47,6 +93,7 @@ void LuaObject<T>::set(lua_State *L, int table_index, const char *key)
 template<class T>
 void  LuaObject<T>::PushSelf(lua_State* L)
 {
+	CheckLuaState(L);
 	//改进版PushSelf,将类的对象对应的UserData保存到 ClassName元表中，以this指针为key。
 	luaL_getmetatable(L, T::className);
 	if (lua_isnil(L, -1)) {
@@ -79,16 +126,29 @@ void  LuaObject<T>::PushSelf(lua_State* L)
 template<class T>
 bool LuaObject<T>::RegisterGlobal(lua_State* L, const char* name)
 {
+	CheckLuaState(L);
+
 	lua_getglobal(L, name);
 	if (!lua_isnil(L, -1)){
-		//已经有同名的全局标识符
+		//已经有同名的全局标识符,检查是不是自身
+		if (luaL_testudata(L, -1, T::className)) {
+			T** ppT = (T**)lua_topointer(L, -1);
+			if (*ppT == this){
+				lua_pop(L, 1);
+				//WARN("RegisterGlobal warning: LuaObject already registered");
+				return true;
+			}
+		}
 		lua_pop(L, 1);
-		ERR("RegisterGlobal error: global object already exisit, name: {}", name);
+		ERR("RegisterGlobal error: different global object using the same name already exisit, name: {}", name);
 		return false;
 	}
 	lua_pop(L, 1);
 
-	return false;
+	PushSelf(L);
+	lua_setglobal(L, name);
+	m_strGlobalName = name;
+	return true;
 }
 template<class T>
 void LuaObject<T>::RegisterMethods(lua_State* L)
@@ -122,7 +182,7 @@ template<class T>
 int LuaObject<T>::thunk(lua_State *L)
 {
 	int index = (int)lua_tonumber(L, lua_upvalueindex(1));
-	//假如Lua中使用self.Func,这里会check不通过，进而rise一个error
+	//假如Lua中使用self.Func,这里会check不通过，进而raise一个error
 	T** obj = static_cast<T**>(luaL_checkudata(L, 1, T::className));
 	//lua_remove(L, -1);
 	if (obj && *obj)
@@ -130,4 +190,19 @@ int LuaObject<T>::thunk(lua_State *L)
 		return ((*obj)->*(T::methods[index].mfunc))(L);
 	}
 	return 0;
+}
+
+template<class T>
+bool LuaObject<T>::CheckLuaState(lua_State* L)
+{
+	if (!m_pLuaState){
+		m_pLuaState = L;
+		return true;
+	} else if(m_pLuaState != L){
+		//一个LuaObject应该自始至终运行在同一个LuaState
+		ERR("LuaObject CheckLuaState error: LuaObject should not run across luaState");
+		luaL_error(L, "LuaObject should not run across different LuaState");
+		return false;
+	}
+	return true;
 }

@@ -39,10 +39,11 @@ private:
 	static void				set(lua_State *L, int table_index, const char *key);
 	lua_State*				m_pLuaState;
 	string					m_strGlobalName;
+	T**						m_userData;
 };
 
 template<class T>
-LuaObject<T>::LuaObject():m_pLuaState(nullptr), m_strGlobalName()
+LuaObject<T>::LuaObject():m_pLuaState(nullptr), m_strGlobalName(), m_userData(nullptr)
 {
 
 }
@@ -53,15 +54,24 @@ LuaObject<T>::~LuaObject()
 	if (!m_pLuaState){
 		return;
 	}
-	//清除T::className元表中this指针位置的value
+	
 	luaL_getmetatable(m_pLuaState, T::className);
 	assert(!lua_isnil(m_pLuaState, -1));
 	lua_pushlightuserdata(m_pLuaState, this);
+	lua_rawget(m_pLuaState, -2);
+	if (luaL_testudata(m_pLuaState, -1, T::className)) {
+		//重置T::className元表mt中this指针位置的UserData里的对象指针
+		T** ppT = (T**)lua_topointer(m_pLuaState, -1);
+		*ppT = nullptr;
+	}
+
+	lua_pop(m_pLuaState, 1);
+	lua_pushlightuserdata(m_pLuaState, this);
 	lua_pushnil(m_pLuaState);
-	lua_rawset(m_pLuaState, -3);//将mt[this] = nil
+	lua_rawset(m_pLuaState, -3);//将mt[this] = nil,减少UserData的引用，以便GC回收
 	lua_pop(m_pLuaState, 1);
 
-	//若曾经设置过全局对象，则需清除
+	//若曾经设置过全局对象，则需清除全局对象对UserData的引用，以便GC回收
 	if (m_strGlobalName.empty()){
 		return;
 	}
@@ -74,7 +84,7 @@ LuaObject<T>::~LuaObject()
 
 	T** ppT = (T**)lua_topointer(m_pLuaState, -1);
 	//该全局对象已被Lua代码更改
-	if (*ppT != this) {
+	if (ppT != m_userData) {
 		return;
 	}
 
@@ -111,6 +121,7 @@ void  LuaObject<T>::PushSelf(lua_State* L)
 		lua_pop(L, 1);
 		lua_pushlightuserdata(L, this);
 		T** ppT = (T**)lua_newuserdata(L, sizeof(T**));
+		m_userData = ppT;
 		*ppT = static_cast<T*>(this);
 
 		lua_pushvalue(L, -1);
@@ -123,6 +134,7 @@ void  LuaObject<T>::PushSelf(lua_State* L)
 		lua_pop(L, 1);
 	}
 }
+
 template<class T>
 bool LuaObject<T>::RegisterGlobal(lua_State* L, const char* name)
 {
@@ -185,9 +197,10 @@ int LuaObject<T>::thunk(lua_State *L)
 	//假如Lua中使用self.Func,这里会check不通过，进而raise一个error
 	T** obj = static_cast<T**>(luaL_checkudata(L, 1, T::className));
 	//lua_remove(L, -1);
-	if (obj && *obj)
-	{
+	if (obj && *obj){
 		return ((*obj)->*(T::methods[index].mfunc))(L);
+	} else {
+		luaL_error(L, "LuaObject thunk error: can not get LuaObject from UserData, maybe destoryed");
 	}
 	return 0;
 }

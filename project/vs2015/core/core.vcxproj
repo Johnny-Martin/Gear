@@ -185,6 +185,7 @@
     <ClCompile Include="..\..\..\source\core\metaobject\UIRectangle.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIText.cpp" />
     <ClCompile Include="..\..\..\source\core\metaobject\UIWindow.cpp" />
+    <ClCompile Include="..\..\..\source\core\moduletest\ModuleTest.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResColor.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResFont.cpp" />
     <ClCompile Include="..\..\..\source\core\resource\ResImage.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="..\..\..\source\core\metaobject\UIRectangle.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIText.h" />
     <ClInclude Include="..\..\..\source\core\metaobject\UIWindow.h" />
+    <ClInclude Include="..\..\..\source\core\moduletest\ModuleTest.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResColor.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResFont.h" />
     <ClInclude Include="..\..\..\source\core\resource\ResImage.h" />

@@ -9,6 +9,7 @@
 
 #include "resource/ResManager.h"
 #include "entry/GearEnv.h"
+#include "moduletest/ModuleTest.h"
 //#include "..\luabridge\LuaBridge.h"
 //#include "zlib.h"
 
@@ -117,6 +118,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GearEnv::Init();
 
 	TestFunc();
+	TestLuaObj_TestCode();
 	ResManager::GetInstance().AddResPath(L"..\\..\\..\\..\\docs\\");
 	Gear::Xml::XmlAgent& xmlAgent = Gear::Xml::XmlAgent::GetInstance();
 	xmlAgent.GetXmlRootElement("..\\..\\..\\docs\\SampleWnd.xml");

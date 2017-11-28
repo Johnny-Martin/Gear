@@ -31,19 +31,11 @@ public:
 
 
 namespace LuaCFunction {
-	template<typename T, typename... Args>
-	void Push(lua_State* L, T t, Args... args) {
-		Push(L, t);
-		Push(L, args...);
+	template<typename T1, typename T2, typename... Args>
+	void Push(lua_State* L, T1 t1, T2 t2, Args... args) {
+		Push(L, t1);
+		Push(L, t2, args...);
 	}
-	//template<>
-	//void Push(lua_State* L, const long long& value);
-	////template<>
-	//void Push(lua_State* L, const bool& value);
-	////template<>
-	//void Push(lua_State* L, const double& value);
-	////template<>
-	//void Push(lua_State* L, const char* value);
 
 	template<typename T>
 	T Read(lua_State* L, int index);
@@ -72,6 +64,31 @@ namespace LuaCFunction {
 		return retTuple;
 	}
 
+	template<typename T>
+	std::tuple<T> _get2(lua_State* L, int index) {
+		return std::make_tuple<T>(Read<T>(L, index));
+	}
+
+	template<typename T1, typename T2, typename... Args>
+	std::tuple<T1, T2, Args...> _get2(lua_State* L, int index) {
+		std::tuple<T1> head = std::make_tuple<T1>(Read<T1>(L, index));
+		return std::tuple_cat(head, _get2<T2, Args...>(L, index + 1));
+	}
+
+	template<typename... Args>
+	std::tuple<Args...> Pop(lua_State* L) {
+		const int length = sizeof...(Args);
+		std::tuple<Args...> retTuple = _get2<Args...>(L, -length);
+		lua_pop(L, length);
+		return retTuple;
+	}
+
+	template<typename... Args>
+	std::tuple<Args...> Get(lua_State* L) {
+		const int length = sizeof...(Args);
+		std::tuple<Args...> retTuple = _get2<Args...>(L, -length);
+		return retTuple;
+	}
 }
 void TestLuaObj_TestCode();
 void TestLuaCFunction_TestCode();

@@ -52,7 +52,6 @@ void TestLuaObj_TestCode()
 }
 
 namespace LuaCFunction {
-	void Push(lua_State* L) {}
 	void Push(lua_State* L, const long long& value) {
 		lua_pushinteger(L, value);
 	}
@@ -71,7 +70,7 @@ namespace LuaCFunction {
 
 	template<>
 	int Read(lua_State* L, int index) {
-		return lua_tointeger(L, index);
+		return (int)lua_tointeger(L, index);
 	}
 	template<>
 	long long Read(lua_State* L, int index) {
@@ -87,30 +86,24 @@ namespace LuaCFunction {
 	}
 	template<>
 	bool  Read(lua_State* L, int index) {
-		return lua_toboolean(L, index);
+		return lua_toboolean(L, index) == 1;
 	}
 }
 
 void TestLuaCFunction_TestCode()
 {
-	//const char* pPath = "D:\\Code\\Gear\\docs\\LuaCFunction.lua";
-	//lua_State* luaState = LuaEnv::GetInstance().GetLuaState(pPath);
-	//luaState = luaState ? luaState : LuaEnv::GetInstance().LoadLuaModule(pPath);
-
 	lua_State* luaState = luaL_newstate();
 	int retA = lua_gettop(luaState);
 
-	LuaCFunction::Push(luaState, false);
-	LuaCFunction::Push(luaState, 1006);
-	LuaCFunction::Push(luaState, "Strin in Lua State");
-	LuaCFunction::Push(luaState, 66.996);
+	LuaCFunction::Push(luaState, false, 1006, "Strin in Lua State", 66.996);
 	int retB = lua_gettop(luaState);
 
 	bool		paramA;
 	int			paramB;
 	const char* paramC;
 	double		paramD;
-	std::tie(paramD, paramC, paramB, paramA) = LuaCFunction::PopFromTop<double, const char*, int, bool>(luaState);
+	//std::tie(paramD, paramC, paramB, paramA) = LuaCFunction::PopFromTop<double, const char*, int, bool>(luaState);
+	std::tie(paramA, paramB, paramC, paramD) = LuaCFunction::Pop<bool, int, const char*, double>(luaState);
 
 	int retC = lua_gettop(luaState);
 	int i = 0;

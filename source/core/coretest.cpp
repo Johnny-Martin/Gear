@@ -118,6 +118,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GearEnv::Init();
 
 	TestFunc();
+	TestLuaCFunction_TestCode();
 	TestLuaObj_TestCode();
 	ResManager::GetInstance().AddResPath(L"..\\..\\..\\..\\docs\\");
 	Gear::Xml::XmlAgent& xmlAgent = Gear::Xml::XmlAgent::GetInstance();

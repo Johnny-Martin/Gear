@@ -28,4 +28,50 @@ public:
 	string m_strName;
 };
 
+
+
+namespace LuaCFunction {
+	template<typename T, typename... Args>
+	void Push(lua_State* L, T t, Args... args) {
+		Push(L, t);
+		Push(L, args...);
+	}
+	//template<>
+	//void Push(lua_State* L, const long long& value);
+	////template<>
+	//void Push(lua_State* L, const bool& value);
+	////template<>
+	//void Push(lua_State* L, const double& value);
+	////template<>
+	//void Push(lua_State* L, const char* value);
+
+	template<typename T>
+	T Read(lua_State* L, int index);
+
+	template<typename T>
+	std::tuple<T> _get(lua_State* L, int index) {
+		return std::make_tuple<T>(Read<T>(L, index));
+	}
+
+	template<typename T1, typename T2, typename... Args>
+	std::tuple<T1, T2, Args...> _get(lua_State* L, int index) {
+		std::tuple<T1> head = std::make_tuple<T1>(Read<T1>(L, index));
+		return std::tuple_cat(head, _get<T2, Args...>(L, index - 1));
+	}
+
+	template<typename... Args>
+	std::tuple<Args...> PopFromTop(lua_State* L) {
+		std::tuple<Args...> retTuple = _get<Args...>(L, -1);
+		lua_pop(L, sizeof...(Args));
+		return retTuple;
+	}
+
+	template<typename... Args>
+	std::tuple<Args...> GetFromTop(lua_State* L) {
+		std::tuple<Args...> retTuple = _get<Args...>(L, -1);
+		return retTuple;
+	}
+
+}
 void TestLuaObj_TestCode();
+void TestLuaCFunction_TestCode();

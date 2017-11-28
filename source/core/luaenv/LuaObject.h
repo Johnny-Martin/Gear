@@ -79,15 +79,18 @@ LuaObject<T>::~LuaObject()
 	lua_getglobal(m_pLuaState, m_strGlobalName.c_str());
 	//该全局对象已被Lua代码清除、或重置为一个非userdata对象
 	if (!luaL_testudata(m_pLuaState, -1, T::className)) {
+		lua_pop(m_pLuaState, 1);
 		return;
 	}
 
 	T** ppT = (T**)lua_topointer(m_pLuaState, -1);
 	//该全局对象已被Lua代码更改
 	if (ppT != m_userData) {
+		lua_pop(m_pLuaState, 1);
 		return;
 	}
 
+	lua_pop(m_pLuaState, 1);
 	lua_pushnil(m_pLuaState);
 	lua_setglobal(m_pLuaState, m_strGlobalName.c_str());
 }

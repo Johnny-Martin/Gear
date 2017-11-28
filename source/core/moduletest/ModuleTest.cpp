@@ -40,4 +40,11 @@ void TestLuaObj_TestCode()
 		const char* error = lua_tostring(luaState, -1);//打印错误结果 
 		ERR("UIEvent Fire error: script run error: {}", error);
 	}
+
+	lua_getglobal(luaState, "TestLuaGlobalObj");
+	ret = lua_pcall(luaState, 0, 1, 0);
+	if (ret != 0) {
+		const char* error = lua_tostring(luaState, -1);//打印错误结果 
+		ERR("UIEvent Fire error: script run error: {}", error);
+	}
 }

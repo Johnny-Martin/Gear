@@ -106,6 +106,22 @@ void TestLuaCFunction_TestCode()
 	std::tie(paramA, paramB, paramC, paramD) = LuaCFunction::Pop<bool, int, const char*, double>(luaState);
 
 	int retC = lua_gettop(luaState);
+
+	TestLuaObj testObj("testObj");
+	auto funWrapper = LuaCFunction::LambdaWrapper(luaState, &testObj, &TestLuaObj::RawMemFunc);
+
+	int sizeLambda		= sizeof(funWrapper);
+	int sizeMemberFunc	= sizeof(&TestLuaObj::RawMemFunc);
+	int sizeMemberFunc2 = sizeof(&TestLuaObj::RawMemFuncEx);
+	int sizeInt			= sizeof(int);
+
+	LuaCFunction::Push(luaState, 15, 16);
+	int retD = lua_gettop(luaState);
+	funWrapper(luaState);
+	int retE = lua_gettop(luaState);
+	std::tie(paramD) = LuaCFunction::Pop< double>(luaState);
+
+	int retF = lua_gettop(luaState);
 	int i = 0;
 	++i;
 }

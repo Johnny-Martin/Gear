@@ -21,8 +21,12 @@ public:
 		return 1;
 	}
 
-	int RawMemFunc(int a, int b) {
+	double RawMemFunc(int a, int b) {
 		return a + b * 2;
+	}
+
+	double RawMemFuncEx(int a, int b, double c, int d, double e, int f, double g, int h) {
+		return a + b + c + d + e + f + g + h;
 	}
 
 	string m_strName;
@@ -88,6 +92,24 @@ namespace LuaCFunction {
 		const int length = sizeof...(Args);
 		std::tuple<Args...> retTuple = _get2<Args...>(L, -length);
 		return retTuple;
+	}
+
+	/*template<typename T, typename Ret, typename... Args>
+	std::function<Ret(Args...)> CreateLambdaThunk(lua_State* L, T* pObj, Ret(T::*mfun)(Args...)) {
+		std::function<Ret(Args...)> lambdaThunk = [L, pObj, mfun](Args... args)->Ret {
+			return pObj->*mfun(args...);
+		}
+		return lambdaThunk;
+	} */
+
+	template<typename T, typename Ret, typename... Args>
+	std::function<int(lua_State*)> LambdaWrapper(lua_State* L, T* pObj, Ret(T::*mfun)(Args...)) {
+		return  [pObj, mfun](lua_State* luaState)->int {
+			auto paramTuple = Pop<Args...>(luaState);
+			Ret result = (pObj->*mfun)(14, 15);
+			Push(luaState, result);
+			return 1;
+		};
 	}
 }
 void TestLuaObj_TestCode();

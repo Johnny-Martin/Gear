@@ -7,6 +7,7 @@ Description:		单元测试
 *****************************************************/
 #include "..\stdafx.h"
 #include "..\luaenv/LuaObject.h"
+#include "..\luaenv/LuaBridge.h"
 #include "..\luaenv/LuaEnv.h"
 
 class TestLuaObj :public LuaObject<TestLuaObj>
@@ -94,23 +95,52 @@ namespace LuaCFunction {
 		return retTuple;
 	}
 
-	/*template<typename T, typename Ret, typename... Args>
-	std::function<Ret(Args...)> CreateLambdaThunk(lua_State* L, T* pObj, Ret(T::*mfun)(Args...)) {
-		std::function<Ret(Args...)> lambdaThunk = [L, pObj, mfun](Args... args)->Ret {
-			return pObj->*mfun(args...);
-		}
-		return lambdaThunk;
-	} */
-
 	template<typename T, typename Ret, typename... Args>
 	std::function<int(lua_State*)> LambdaWrapper(lua_State* L, T* pObj, Ret(T::*mfun)(Args...)) {
 		return  [pObj, mfun](lua_State* luaState)->int {
 			auto paramTuple = Pop<Args...>(luaState);
+			auto paramA = std::get<0>(paramTuple);
+			auto paramB = std::get<1>(paramTuple);
+			//如何将paramTuple内的所有参数自动拆出来？？？？
 			Ret result = (pObj->*mfun)(14, 15);
 			Push(luaState, result);
 			return 1;
 		};
 	}
+
+	template<typename... Ret, typename... Args>
+	std::tuple<Ret...> CallLuaFunc(lua_State* L, const char* funcName, const Args&... args) {
+		const int argCount = sizeof...(Args);
+		const int retCount = sizeof...(Ret);
+
+		lua_getglobal(L, funcName);
+		Push(args...);
+		lua_pcall(L, argCount, retCount, 0);
+		return Pop<Ret...>();
+	}
+
+	template<typename T>
+	bool PushSelf(lua_State* L, T* pObj) {
+
+		return true;
+	}
+
+	template<typename... Ret, typename T, typename... Args>
+	std::tuple<Ret...> CallLuaFunc2(lua_State* L, const char* funcName, T* pObj, const Args&... args) {
+		const int argCount = sizeof...(Args) + 1;
+		const int retCount = sizeof...(Ret);
+		lua_getglobal(L, funcName);
+		PushSelf(L, pObj);
+		Push(args...);
+		lua_pcall(L, argCount, retCount, 0);
+		return Pop<Ret...>();
+	}
 }
+
+
+class TestBridge :public LuaBridge<TestBridge>
+{
+
+};
 void TestLuaObj_TestCode();
 void TestLuaCFunction_TestCode();

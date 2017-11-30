@@ -211,6 +211,7 @@
     <ClInclude Include="..\..\..\source\core\entry\WndManager.h" />
     <ClInclude Include="..\..\..\source\core\entry\XmlAgent.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaAPI.h" />
+    <ClInclude Include="..\..\..\source\core\luaenv\LuaBridge.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaEnv.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaModule.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaObject.h" />

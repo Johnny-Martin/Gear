@@ -230,6 +230,9 @@
     <ClInclude Include="..\..\..\source\core\moduletest\ModuleTest.h">
       <Filter>moduletest</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\core\luaenv\LuaBridge.h">
+      <Filter>luaenv</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\source\core\ReadMe.txt" />

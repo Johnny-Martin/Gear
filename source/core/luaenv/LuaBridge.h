@@ -19,206 +19,84 @@ extern "C" {
 
 #pragma comment(lib, "lua.lib")
 
-//LuaObject的子类不能直接用来在Lua中创建对象。要在C++中创建、销毁。
-//Lua中只管使用。T需要提供两个内容：className跟要注册的函数信息(methods)
-template<class T>
-class LuaObject
-{
+//LuaBridge的子类不能直接用来在Lua中创建对象。要在C++中创建、销毁。
+//Lua中只管使用。DrivedClass需要提供两个内容：className跟要注册的函数信息(methods)
+template<typename DrivedClass>
+class LuaBridge {
 public:
-							LuaObject();
-							~LuaObject();
-	void					PushSelf(lua_State* luaState);
-	bool					RegisterGlobal(lua_State* luaState, const char* name);
-protected:
-	typedef int (T::*mfp)(lua_State *L);
-	typedef struct { const char *name; mfp mfunc; } RegType;
+																	LuaBridge();
+	virtual															~LuaBridge();
+	bool															RegisterGlobal(lua_State* L, const char* szName);
+	template<typename... Ret, typename... Args> std::tuple<Ret...>	CallLuaFunc(lua_State*, const char* szFuncName, Args... args);
 private:
-	bool					CheckLuaState(lua_State* L);
-	void					RegisterMethods(lua_State* luaState);
-	static int				thunk(lua_State *L);
-	static void				set(lua_State *L, int table_index, const char *key);
-	lua_State*				m_pLuaState;
-	string					m_strGlobalName;
-	T**						m_userData;
+
+	lua_State*														m_pLuaState;
+	string															m_strGlobalName;
+	DrivedClass**													m_userData;
+
+private:
+	template<typename T1, typename T2, typename... Args> void		Push(lua_State* L, T1 t1, T2 t2, Args... args)	{ Push(L, t1); Push(L, t2, args...); }
+	void															Push(lua_State* L, const int& value)			{ lua_pushinteger(L, value); }
+	void															Push(lua_State* L, const long long& value)		{ lua_pushstring(L, value); }
+	void															Push(lua_State* L, const double& value)			{ lua_pushnumber(L, value); }
+	void															Push(lua_State* L, const float& value)			{ lua_pushnumber(L, value); }
+	void															Push(lua_State* L, const bool& value)			{ lua_pushboolean(L, value); }
+	void															Push(lua_State* L, const char* value)			{ lua_pushstring(L, value); }
+	void															Push(lua_State* L, const string& value)			{ lua_pushstring(L, value.c_str()); }
+	void															Push(lua_State* L, DrivedClass* pObj);
+	
+	//占位用模板成员函数，实际使用的永远是该模板函数的特化(模板类的模板成员函数无法在类外特化)
+	template<typename T> T											Read(lua_State* L, int index);
+	template<> int													Read(lua_State* L, int index)					{ return (int)lua_tointeger(L, index); }
+	template<> long long											Read(lua_State* L, int index)					{ return lua_tointeger(L, index); }
+	template<> bool													Read(lua_State* L, int index)					{ return lua_toboolean(L, index) == 1; }
+	template<> double												Read(lua_State* L, int index)					{ return lua_tonumber(L, index); }
+	template<> float												Read(lua_State* L, int index)					{ return (float)lua_tonumber(L, index); }
+	template<> const char*											Read(lua_State* L, int index)					{ return lua_tostring(L, index); }
+	template<typename T> std::tuple<T>								ReadToTuple(lua_State* L, int index)			{ return std::make_tuple(Read<T>(L, index)); }
+	template<class T1,class T2,class... Args> tuple<T1,T2,Args...>	ReadToTuple(lua_State* L, int index)			{ return std::tuple_cat(std::make_tuple(Read<T1>(L, index)), ReadToTuple<T2, Args...>(L, index + 1)); }
+	template<typename... Args> std::tuple<Args...>					Get(lua_State* L)								{ return ReadToTuple<Args...>(L, -(sizeof...(Args))); }
+	template<typename... Args> std::tuple<Args...>					Pop(lua_State* L)								{ auto ret = Get<Args...>(L); lua_pop(L, sizeof...(Args)); return ret; }
 };
 
-template<class T>
-LuaObject<T>::LuaObject():m_pLuaState(nullptr), m_strGlobalName(), m_userData(nullptr)
+////////////////////////////////////////////////////////////////////////////////////////
+template<class DrivedClass>
+LuaBridge<DrivedClass>::LuaBridge() :m_pLuaState(nullptr), m_strGlobalName(), m_userData(nullptr)
 {
 
 }
 
-template<class T>
-LuaObject<T>::~LuaObject()
+template<class DrivedClass>
+LuaBridge<DrivedClass>::~LuaBridge()
 {
-	if (!m_pLuaState){
-		return;
-	}
+	//重置DrivedClass::className元表mt中this指针位置的UserData里的对象指针
+
+	//将mt[this] = nil,减少UserData的引用，以便GC回收UserData
+
+	//若曾经设置过全局对象，则需清除全局对象对UserData的引用，以便GC回收UserData
+}
+
+template<typename DrivedClass>
+bool LuaBridge<DrivedClass>::RegisterGlobal(lua_State* L, const char* szName)
+{
+
+	return true;
+}
+
+template<typename DrivedClass> template<typename... Ret, typename... Args>
+std::tuple<Ret...>	LuaBridge<DrivedClass>::CallLuaFunc(lua_State*, const char* szFuncName, Args... args)
+{
+	const int argCount = sizeof...(Args);
+	const int retCount = sizeof...(Ret);
+	lua_getglobal(L, szFuncName);
+	Push<Args...>(args...);
+	lua_pcall(L, argCount, retCount, 0);
+	return Pop<Ret...>();
+}
+
+//将pObj以UserData的形式压入栈中
+template<typename DrivedClass>
+void LuaBridge<DrivedClass>::Push(lua_State* L, DrivedClass* pObj)
+{
 	
-	luaL_getmetatable(m_pLuaState, T::className);
-	assert(!lua_isnil(m_pLuaState, -1));
-	lua_pushlightuserdata(m_pLuaState, this);
-	lua_rawget(m_pLuaState, -2);
-	if (luaL_testudata(m_pLuaState, -1, T::className)) {
-		//重置T::className元表mt中this指针位置的UserData里的对象指针
-		T** ppT = (T**)lua_topointer(m_pLuaState, -1);
-		*ppT = nullptr;
-	}
-
-	lua_pop(m_pLuaState, 1);
-	lua_pushlightuserdata(m_pLuaState, this);
-	lua_pushnil(m_pLuaState);
-	lua_rawset(m_pLuaState, -3);//将mt[this] = nil,减少UserData的引用，以便GC回收
-	lua_pop(m_pLuaState, 1);
-
-	//若曾经设置过全局对象，则需清除全局对象对UserData的引用，以便GC回收
-	if (m_strGlobalName.empty()){
-		return;
-	}
-
-	lua_getglobal(m_pLuaState, m_strGlobalName.c_str());
-	//该全局对象已被Lua代码清除、或重置为一个非userdata对象
-	if (!luaL_testudata(m_pLuaState, -1, T::className)) {
-		lua_pop(m_pLuaState, 1);
-		return;
-	}
-
-	T** ppT = (T**)lua_topointer(m_pLuaState, -1);
-	//该全局对象已被Lua代码更改
-	if (ppT != m_userData) {
-		lua_pop(m_pLuaState, 1);
-		return;
-	}
-
-	lua_pop(m_pLuaState, 1);
-	lua_pushnil(m_pLuaState);
-	lua_setglobal(m_pLuaState, m_strGlobalName.c_str());
-}
-
-template<class T>
-void LuaObject<T>::set(lua_State *L, int table_index, const char *key)
-{
-	lua_pushstring(L, key);
-	lua_insert(L, -2); //交换key和value
-	lua_settable(L, table_index);//等效于t[key]=value，t位于table_index处，栈顶是value，栈顶之下是key
-}
-
-template<class T>
-void  LuaObject<T>::PushSelf(lua_State* L)
-{
-	CheckLuaState(L);
-	//改进版PushSelf,将类的对象对应的UserData保存到 ClassName元表中，以this指针为key。
-	luaL_getmetatable(L, T::className);
-	if (lua_isnil(L, -1)) {
-		lua_pop(L, 1);
-		RegisterMethods(L);
-		luaL_getmetatable(L, T::className);
-	}
-	assert(!lua_isnil(L, -1));
-
-	//以this指针为key，在metatable中检索userdata
-	lua_pushlightuserdata(L, this);
-	lua_rawget(L, -2);
-	if (!luaL_testudata(L, -1, T::className)){
-		//该对象尚未创建userdata——即尚未注册到lua
-		lua_pop(L, 1);
-		lua_pushlightuserdata(L, this);
-		T** ppT = (T**)lua_newuserdata(L, sizeof(T**));
-		m_userData = ppT;
-		*ppT = static_cast<T*>(this);
-
-		lua_pushvalue(L, -1);
-		lua_insert(L, -4);
-		lua_rawset(L, -3);
-
-		lua_setmetatable(L, -2);
-	} else {
-		lua_insert(L, -2);
-		lua_pop(L, 1);
-	}
-}
-
-template<class T>
-bool LuaObject<T>::RegisterGlobal(lua_State* L, const char* name)
-{
-	CheckLuaState(L);
-
-	lua_getglobal(L, name);
-	if (!lua_isnil(L, -1)){
-		//已经有同名的全局标识符,检查是不是自身
-		if (luaL_testudata(L, -1, T::className)) {
-			T** ppT = (T**)lua_topointer(L, -1);
-			if (*ppT == this){
-				lua_pop(L, 1);
-				//WARN("RegisterGlobal warning: LuaObject already registered");
-				return true;
-			}
-		}
-		lua_pop(L, 1);
-		ERR("RegisterGlobal error: different global object using the same name already exisit, name: {}", name);
-		return false;
-	}
-	lua_pop(L, 1);
-
-	PushSelf(L);
-	lua_setglobal(L, name);
-	m_strGlobalName = name;
-	return true;
-}
-template<class T>
-void LuaObject<T>::RegisterMethods(lua_State* L)
-{
-	lua_newtable(L);
-	int methods = lua_gettop(L);
-
-	luaL_newmetatable(L, T::className);
-	int metatable = lua_gettop(L);
-
-	//隐藏userdata的实质的元表，也就是说在Lua中
-	//调用getmetatable(self)得到的是self本身，而不是metatable table
-	lua_pushvalue(L, methods);
-	set(L, metatable, "__metatable");
-
-	lua_pushvalue(L, methods);
-	set(L, metatable, "__index");
-
-	for (int i = 0; T::methods[i].name; ++i)
-	{
-		lua_pushstring(L, T::methods[i].name);
-		lua_pushnumber(L, i);
-		lua_pushcclosure(L, thunk, 1);
-		lua_settable(L, methods);
-	}
-
-	lua_pop(L, 2);
-}
-
-template<class T>
-int LuaObject<T>::thunk(lua_State *L)
-{
-	int index = (int)lua_tonumber(L, lua_upvalueindex(1));
-	//假如Lua中使用self.Func,这里会check不通过，进而raise一个error
-	T** obj = static_cast<T**>(luaL_checkudata(L, 1, T::className));
-	//lua_remove(L, -1);
-	if (obj && *obj){
-		return ((*obj)->*(T::methods[index].mfunc))(L);
-	} else {
-		luaL_error(L, "LuaObject thunk error: can not get LuaObject from UserData, maybe destoryed");
-	}
-	return 0;
-}
-
-template<class T>
-bool LuaObject<T>::CheckLuaState(lua_State* L)
-{
-	if (!m_pLuaState){
-		m_pLuaState = L;
-		return true;
-	} else if(m_pLuaState != L){
-		//一个LuaObject应该自始至终运行在同一个LuaState
-		ERR("LuaObject CheckLuaState error: LuaObject should not run across luaState");
-		luaL_error(L, "LuaObject should not run across different LuaState");
-		return false;
-	}
-	return true;
 }

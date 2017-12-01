@@ -140,7 +140,36 @@ namespace LuaCFunction {
 
 class TestBridge :public LuaBridge<TestBridge>
 {
-
+public:
+	double RawFuncA(double a, int b) { return a + b; }
 };
 void TestLuaObj_TestCode();
 void TestLuaCFunction_TestCode();
+
+template<typename T>
+class BaseClassT {
+public:
+	static const char* GetClassName() { return typeid(T).name(); }
+};
+
+class BaseClass {
+public:
+	static const char* GetClassName() {return "BaseClass";}
+};
+
+class DrivedClass :public BaseClass {
+public:
+	//static const char* GetClassName() {	return "DrivedClass";}
+};
+
+class DrivedClassT :public BaseClassT<DrivedClassT> {
+public:
+	//static const char* GetClassName() {	return "DrivedClass";}
+};
+
+class DDrivedClass :public DrivedClassT {
+public:
+	//static const char* GetClassName() {	return "DrivedClass";}
+};
+
+void TestClassName();

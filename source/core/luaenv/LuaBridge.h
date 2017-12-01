@@ -19,6 +19,10 @@ extern "C" {
 
 #pragma comment(lib, "lua.lib")
 
+#define LUABRIDGE_DEFINE_MEMBER_FUNCTION(className, funcName)  \
+int funcName(lua_State* L){return LambdaWrapper(L, this, &className::funcName)(L);}
+
+
 //LuaBridge的子类不能直接用来在Lua中创建对象。要在C++中创建、销毁。
 //Lua中只管使用。DrivedClass需要提供两个内容：className跟要注册的函数信息(methods)
 template<typename DrivedClass>
@@ -28,8 +32,8 @@ public:
 	virtual															~LuaBridge();
 	bool															RegisterGlobal(lua_State* L, const char* szName);
 	template<typename... Ret, typename... Args> std::tuple<Ret...>	CallLuaFunc(lua_State*, const char* szFuncName, Args... args);
-private:
 
+private:
 	lua_State*														m_pLuaState;
 	string															m_strGlobalName;
 	DrivedClass**													m_userData;
@@ -57,6 +61,10 @@ private:
 	template<class T1,class T2,class... Args> tuple<T1,T2,Args...>	ReadToTuple(lua_State* L, int index)			{ return std::tuple_cat(std::make_tuple(Read<T1>(L, index)), ReadToTuple<T2, Args...>(L, index + 1)); }
 	template<typename... Args> std::tuple<Args...>					Get(lua_State* L)								{ return ReadToTuple<Args...>(L, -(sizeof...(Args))); }
 	template<typename... Args> std::tuple<Args...>					Pop(lua_State* L)								{ auto ret = Get<Args...>(L); lua_pop(L, sizeof...(Args)); return ret; }
+
+protected:
+	typedef int (DrivedClass::*mfp)(lua_State *L);
+	typedef struct { const char *name; mfp mfunc; }					LuaRegType;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -99,4 +107,32 @@ template<typename DrivedClass>
 void LuaBridge<DrivedClass>::Push(lua_State* L, DrivedClass* pObj)
 {
 	
+}
+
+//对于C++的普通成员函数(相对于Lua_CFunction来讲)，返回值要么1个，要么没有(void)
+//模板类的成员模板函数不支持偏特化，故此处将LambdaWrapper定义在全局
+template<typename T, typename Ret, typename... Args>
+std::function<int(lua_State*)> LambdaWrapper(lua_State* L, T* pObj, Ret(T::*mfun)(Args...)) {
+	return  [pObj, mfun](lua_State* luaState)->int {
+		auto paramTuple = Pop<Args...>(luaState);
+		auto paramA = std::get<0>(paramTuple);
+		auto paramB = std::get<1>(paramTuple);
+		//如何将paramTuple内的所有参数自动拆出来？？？？
+		Ret result = (pObj->*mfun)(14, 15);
+		Push(luaState, result);
+		return 1;
+	};
+}
+
+//无返回值的原生成员方法使用改特化生成Wrapper
+template<typename T, typename... Args>
+std::function<int(lua_State*)> LambdaWrapper(lua_State* L, T* pObj, void(T::*mfun)(Args...)) {
+	return  [pObj, mfun](lua_State* luaState)->int {
+		auto paramTuple = Pop<Args...>(luaState);
+		auto paramA = std::get<0>(paramTuple);
+		auto paramB = std::get<1>(paramTuple);
+		//如何将paramTuple内的所有参数自动拆出来？？？？
+		(pObj->*mfun)(14, 15);
+		return 0;
+	};
 }

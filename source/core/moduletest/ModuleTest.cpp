@@ -125,3 +125,20 @@ void TestLuaCFunction_TestCode()
 	int i = 0;
 	++i;
 }
+
+void TestClassName()
+{
+	//BaseClass* pBase = new DrivedClass();
+	auto ret =  BaseClass::GetClassName();
+	auto ret2 = DrivedClass::GetClassName();
+
+	auto ret3 = typeid(BaseClass).name();
+	auto ret4 = typeid(DrivedClass).name();
+
+	//auto ret5 = BaseClassT::GetClassName();
+	auto ret6 = DrivedClassT::GetClassName();
+	auto ret7 = DDrivedClass::GetClassName();
+
+	int i = 0;
+	i++;
+}

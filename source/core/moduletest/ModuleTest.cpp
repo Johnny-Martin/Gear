@@ -139,6 +139,11 @@ void TestClassName()
 	auto ret6 = DrivedClassT::GetClassName();
 	auto ret7 = DDrivedClass::GetClassName();
 
+	auto ret8 = DrivedClassT().m_finalClassName;
+	auto ret9 = DDrivedClass().m_finalClassName;
+
+	DrivedClassT* p = new DDrivedClass();
+	auto ret10 = typeid(*p).name();
 	int i = 0;
 	i++;
 }

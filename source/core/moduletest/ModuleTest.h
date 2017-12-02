@@ -149,7 +149,11 @@ void TestLuaCFunction_TestCode();
 template<typename T>
 class BaseClassT {
 public:
+	BaseClassT(const char* strFinalClassName) :m_finalClassName(strFinalClassName) {};
 	static const char* GetClassName() { return typeid(T).name(); }
+	BaseClassT() = delete;
+public:
+	const char* m_finalClassName;
 };
 
 class BaseClass {
@@ -162,14 +166,15 @@ public:
 	//static const char* GetClassName() {	return "DrivedClass";}
 };
 
-class DrivedClassT :public BaseClassT<DrivedClassT> {
+class DrivedClassT :public virtual BaseClassT<DrivedClassT> {
 public:
 	//static const char* GetClassName() {	return "DrivedClass";}
+	DrivedClassT():BaseClassT<DrivedClassT>(typeid(this).name()) {}
 };
 
 class DDrivedClass :public DrivedClassT {
 public:
-	//static const char* GetClassName() {	return "DrivedClass";}
+	DDrivedClass() :BaseClassT<DrivedClassT>(typeid(this).name()) {}
 };
 
 void TestClassName();

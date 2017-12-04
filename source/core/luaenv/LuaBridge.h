@@ -32,7 +32,7 @@ class IndicesBuilder<0, S...> { using type = Indices<S...>; };
 template<std::size_t... S, typename T, typename Ret, typename... Args>
 Ret CallMemberFunction(Indices<S...> indices, T* pObj, Ret(T::*mfunc)(Args...), std::tuple<Args...> paramTuple)
 {
-	return (pObj->*mfunc)(std::get<S>(paramTuple));
+	return (pObj->*mfunc)(std::get<S>(paramTuple)...);
 }
 
 #define LUABRIDGE_DEFINE_MEMBER_FUNCTION(className, funcName)  \

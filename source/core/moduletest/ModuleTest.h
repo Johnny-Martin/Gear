@@ -177,4 +177,28 @@ public:
 	DDrivedClass() :BaseClassT<DrivedClassT>(typeid(this).name()) {}
 };
 
+class TestPrivateBaseClass {
+public:
+	void FuncA() {
+		cout << "TestPrivateBaseClass FuncA" << endl;
+	};
+protected:
+	void FuncB() {
+		cout << "TestPrivateBaseClass FuncB" << endl;
+	};
+private:
+	void FuncC() {
+		cout << "TestPrivateBaseClass FuncC" << endl;
+	};
+};
+class TestPrivateDrivedClass:private  TestPrivateBaseClass {
+public:
+	TestPrivateDrivedClass() { FuncA(); FuncB(); }
+};
+
+class TestPrivateDDClass :public  TestPrivateDrivedClass, private TestPrivateBaseClass {
+public:
+	TestPrivateDDClass() { TestPrivateBaseClass::FuncA(); TestPrivateBaseClass::FuncB(); }
+};
+
 void TestClassName();

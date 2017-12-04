@@ -289,3 +289,24 @@ std::function<int(lua_State*)> LambdaWrapper(lua_State* L, T* pObj, void(T::*mfu
 		return 0;
 	};
 }
+
+template<typename T, T> struct LambdaWrapperProxy;
+
+template<typename T, typename Ret, typename... Args, Ret(T::*ptmf)(Args...)>
+struct LambdaWrapperProxy<Ret(T::*)(Args...), ptmf>
+{
+	static std::function<int(lua_State*)> LambdaWrapper(T* pObj, Ret(T::*ptmf)(Args...))
+	{
+		return [pObj, ptmf](ua_State* luaState)->int {
+			CallMemberFunction(
+				typename IndicesBuilder<sizeof...(Args)>::type(),
+				pObj,
+				ptmf,
+				pObj->Pop<Args...>(luaState));
+
+			pObj->Push(luaState, result);
+			return 1;
+		};
+	}
+};
+

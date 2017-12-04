@@ -218,4 +218,8 @@ public:
 	int AddNum(lua_State* L) {
 		return (LambdaWrapper<UIObjectFake, const char*, int, int>(L, this, &UIObjectFake::AddNum))(L);
 	}
+	int Add(lua_State* L) {
+		
+		return 0;
+	}
 };

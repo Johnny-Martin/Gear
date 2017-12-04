@@ -21,13 +21,13 @@ extern "C" {
 
 
 template<std::size_t... S>
-class Indices {};
+struct Indices {};
 
 template<std::size_t N, std::size_t... S>
-class IndicesBuilder :public Indices<N - 1, N - 1, S...> {};
+struct IndicesBuilder :IndicesBuilder<N - 1, N - 1, S...> {};
 
 template<std::size_t... S>
-class IndicesBuilder<0, S...> { using type = Indices<S...>; };
+struct IndicesBuilder<0, S...> { typedef Indices<S...> type;};
 
 template<std::size_t... S, typename T, typename Ret, typename... Args>
 Ret CallMemberFunction(Indices<S...> indices, T* pObj, Ret(T::*mfunc)(Args...), std::tuple<Args...> paramTuple)
@@ -36,7 +36,7 @@ Ret CallMemberFunction(Indices<S...> indices, T* pObj, Ret(T::*mfunc)(Args...), 
 }
 
 #define LUABRIDGE_DEFINE_MEMBER_FUNCTION(className, funcName)  \
-int funcName(lua_State* L){return LambdaWrapper(L, this, &className::funcName)(L);}
+int funcName(lua_State* L){return (LambdaWrapper(L, this, &className::funcName))(L);}
 
 
 //LuaBridge的子类不能直接用来在Lua中创建对象。要在C++中创建、销毁。
@@ -54,7 +54,7 @@ private:
 	string															m_strGlobalName;
 	DrivedClass**													m_userData;
 
-private:
+public:
 	template<typename T1, typename T2, typename... Args> void		Push(lua_State* L, T1 t1, T2 t2, Args... args)	{ Push(L, t1); Push(L, t2, args...); }
 	void															Push(lua_State* L, const int& value)			{ lua_pushinteger(L, value); }
 	void															Push(lua_State* L, const long long& value)		{ lua_pushstring(L, value); }
@@ -266,12 +266,12 @@ std::function<int(lua_State*)> LambdaWrapper(lua_State* L, T* pObj, Ret(T::*mfun
 	return  [pObj, mfun](lua_State* luaState)->int {
 		//将tuple变成一个parameter pack
 		Ret result = CallMemberFunction(
-			IndicesBuilder<sizeof...(Args)>::type(),
+			typename IndicesBuilder<sizeof...(Args)>::type(),
 			pObj, 
 			mfun, 
-			Pop<Args...>(luaState));
+			pObj->Pop<Args...>(luaState));
 
-		Push(luaState, result);
+		pObj->Push(luaState, result);
 		return 1;
 	};
 }

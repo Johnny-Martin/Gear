@@ -202,3 +202,20 @@ public:
 };
 
 void TestClassName();
+
+class UIObjectFake:public LuaBridge<UIObjectFake>
+{
+public:
+	static const LuaBridge<UIObjectFake>::LuaRegType methods[];
+	const char* AddNum(int a, int b) {
+		return "Call C++ class member function AddNum";
+	}
+	long long Add(int a, int b) {
+		return a + b;
+	}
+	//LUABRIDGE_DEFINE_MEMBER_FUNCTION(UIObjectFake, AddNum)
+	//LUABRIDGE_DEFINE_MEMBER_FUNCTION(UIObjectFake, Add)
+	int AddNum(lua_State* L) {
+		return (LambdaWrapper<UIObjectFake, const char*, int, int>(L, this, &UIObjectFake::AddNum))(L);
+	}
+};

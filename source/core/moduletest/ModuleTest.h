@@ -214,7 +214,10 @@ public:
 		itoa(result, szResult, 10);
 		string ret = "Call C++ class member function AddNum: ";
 		ret += szResult;
-		return ret.c_str();
+
+		char* szRet = new char[ret.length() + 1];
+		strcpy(szRet, ret.c_str());
+		return szRet;
 	}
 	long long Add(int a, int b) {
 		return a + b;

@@ -48,7 +48,8 @@ public:
 																	LuaBridge();
 	virtual															~LuaBridge();
 	bool															RegisterGlobal(lua_State* L, const char* szName);
-	template<typename Ret, typename... Args> std::tuple<Ret>	CallLuaFunc(lua_State*, const char* szFuncName, Args... args);
+	template<typename Ret, typename... Args> Ret					CallLuaFunc(lua_State*, const char* szFuncName, Args... args);
+	template<typename... Args> void									CallLuaFunc(lua_State*, const char* szFuncName, Args... args);
 
 private:
 	lua_State*														m_pLuaState;
@@ -234,23 +235,27 @@ void LuaBridge<DrivedClass>::RegisterMethods(lua_State* L)
 	lua_pop(L, 2);
 }
 
+//默认将self传给Lua
 template<typename DrivedClass> 
 template<typename Ret, typename... Args >
-std::tuple<Ret>	LuaBridge<DrivedClass>::CallLuaFunc(lua_State* L, const char* szFuncName, Args... args)
+Ret	LuaBridge<DrivedClass>::CallLuaFunc(lua_State* L, const char* szFuncName, Args... args)
 {
-	const int argCount = sizeof...(Args);
 	lua_getglobal(L, szFuncName);
-	Push(L, args...);
-	lua_pcall(L, argCount, 1, 0);
-	return Pop<Ret>(L);
+	Push(L, static_cast<DrivedClass*>(this), args...);
+	lua_pcall(L, sizeof...(Args) + 1, 1, 0);
+
+	Ret ret{};
+	std::tie(ret) = Pop<Ret>(L);
+	return ret;
 }
 
-template<typename T, typename Ret, typename... Args>
-std::tuple<Ret> InvokeLuaFunction(T* pObj, lua_State* L, const char* szFuncName, Args... args)
+template<typename DrivedClass>
+template<typename... Args>
+void LuaBridge<DrivedClass>::CallLuaFunc(lua_State* L, const char* szFuncName, Args... args)
 {
-	const int argCount = sizeof...(Args);
 	lua_getglobal(L, szFuncName);
-
+	Push(L, static_cast<DrivedClass*>(this), args...);
+	lua_pcall(L, sizeof...(Args)+1, 0, 0);
 }
 
 template<typename DrivedClass>

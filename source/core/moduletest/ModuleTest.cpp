@@ -161,11 +161,16 @@ void TestLuaBridge()
 	lua_State* luaState = LuaEnv::GetInstance().GetLuaState(pPath);
 	luaState = luaState ? luaState : LuaEnv::GetInstance().LoadLuaModule(pPath);
 
+	auto size1 = lua_gettop(luaState);
 	assert(luaState);
 	const char* szRet = nullptr;
 	int i = 0;
-	std::tie(szRet) = fakeUIObj.CallLuaFunc<const char*, UIObjectFake*, int, int>(luaState, "TestLuaBridgeFuncA", &fakeUIObj, 15, 20);
 	
+	//若想CallLuaFunc返回指定类型的返回值，必须手动实例化，指定CallLuaFunc模板的所有参数类型
+	szRet = fakeUIObj.CallLuaFunc<const char*, int, int>(luaState, "TestLuaBridgeFuncA", 50, 20);
+	fakeUIObj.CallLuaFunc(luaState, "TestLuaBridgeFuncA", 15, 20);
+
+	auto size2 = lua_gettop(luaState);
 	if (szRet){
 		i += 3;
 	} else {

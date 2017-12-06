@@ -13,6 +13,12 @@ TestLuaObj::TestLuaObj(const char* name):m_strName(name)
 {
 }
 
+const LuaBridge<UIObjectFake>::LuaRegType UIObjectFake::methods[] = {
+	{ "AddNum", &UIObjectFake::AddNum_LCF },
+	{ "SetSomething", &UIObjectFake::SetSomething_LCF},
+	{ 0 }
+};
+
 void TestLuaObj_TestCode()
 {
 	TestLuaObj* pObjA = new TestLuaObj("TestLuaObj_ObjA");
@@ -146,4 +152,23 @@ void TestClassName()
 	auto ret10 = typeid(*p).name();
 	int i = 0;
 	i++;
+}
+
+void TestLuaBridge()
+{
+	UIObjectFake fakeUIObj;
+	const char* pPath = "D:\\Code\\temp\\Gear\\docs\\ModuleTest.lua";
+	lua_State* luaState = LuaEnv::GetInstance().GetLuaState(pPath);
+	luaState = luaState ? luaState : LuaEnv::GetInstance().LoadLuaModule(pPath);
+
+	assert(luaState);
+	const char* szRet = nullptr;
+	int i = 0;
+	std::tie(szRet) = fakeUIObj.CallLuaFunc<const char*, UIObjectFake*, int, int>(luaState, "TestLuaBridgeFuncA", &fakeUIObj, 15, 20);
+	
+	if (szRet){
+		i += 3;
+	} else {
+		i += 4;
+	}
 }

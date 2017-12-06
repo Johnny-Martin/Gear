@@ -117,6 +117,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	_Module.AddMessageLoop(&theLoop);
 	GearEnv::Init();
 
+
+	TestLuaBridge();
 	TestClassName();
 	TestFunc();
 	TestLuaCFunction_TestCode();

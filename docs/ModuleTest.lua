@@ -26,3 +26,11 @@ function TestLuaGlobalObj()
 
 	return "OnMouseMove return"
 end	
+
+
+function TestLuaBridgeFuncA(self, x, y)
+	if not self then
+		return "self is nil"
+	end
+	return self:AddNum(x, y)
+end

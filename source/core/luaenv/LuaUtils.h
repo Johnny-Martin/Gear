@@ -1,8 +1,8 @@
 /*****************************************************
 Author:				Johnny-Martin
 Email:				970803555@qq.com
-Date:				2017.11.9
-Description:		需要注册到Lua中的API
+Date:				2017.12.6
+Description:		常用方法
 *****************************************************/
 
 #pragma once
@@ -15,7 +15,6 @@ extern "C" {
 
 #pragma comment(lib, "lua.lib")
 
-int MsgBox(lua_State* luaState);
-int SpdLog(lua_State* luaState);
-int SetGlobal(lua_State* luaState);
-int GetGlobal(lua_State* luaState);
+namespace LuaUtil{
+	void Push(lua_State* L, int value);
+}

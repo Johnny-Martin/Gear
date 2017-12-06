@@ -126,6 +126,9 @@
     <ClCompile Include="..\..\..\source\core\moduletest\ModuleTest.cpp">
       <Filter>moduletest</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\luaenv\LuaUtils.cpp">
+      <Filter>luaenv</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -231,6 +234,9 @@
       <Filter>moduletest</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\luaenv\LuaBridge.h">
+      <Filter>luaenv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\luaenv\LuaUtils.h">
       <Filter>luaenv</Filter>
     </ClInclude>
   </ItemGroup>

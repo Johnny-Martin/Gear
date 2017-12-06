@@ -156,7 +156,7 @@ void TestClassName()
 
 void TestLuaBridge()
 {
-	UIObjectFake fakeUIObj;
+	UIObjectFake* fakeUIObj = new UIObjectFake();
 	const char* pPath = "D:\\Code\\temp\\Gear\\docs\\ModuleTest.lua";
 	lua_State* luaState = LuaEnv::GetInstance().GetLuaState(pPath);
 	luaState = luaState ? luaState : LuaEnv::GetInstance().LoadLuaModule(pPath);
@@ -167,8 +167,30 @@ void TestLuaBridge()
 	int i = 0;
 	
 	//若想CallLuaFunc返回指定类型的返回值，必须手动实例化，指定CallLuaFunc模板的所有参数类型
-	szRet = fakeUIObj.CallLuaFunc<const char*, int, int>(luaState, "TestLuaBridgeFuncA", 50, 20);
-	fakeUIObj.CallLuaFunc(luaState, "TestLuaBridgeFuncA", 15, 20);
+	szRet = fakeUIObj->CallLuaFunc<const char*, int, int>(luaState, "TestLuaBridgeFuncA", 50, 20);
+	fakeUIObj->CallLuaFunc(luaState, "TestLuaBridgeFuncA", 15, 20);
+
+	//fakeUIObj->RegisterGlobal(luaState, "fakeUIObj");
+	//lua_getglobal(luaState, "TestLuaGlobalObj");
+	//if (lua_isnil(luaState, -1)) {
+	//	lua_pop(luaState, 1);
+	//	ERR("UIEvent Fire error: can not find lua function, name: TestLuaGlobalObj");
+	//	return;
+	//}
+	//int ret = lua_pcall(luaState, 0, 1, 0);
+	//if (ret != 0) {
+	//	const char* error = lua_tostring(luaState, -1);//打印错误结果 
+	//	ERR("UIEvent Fire error: script run error: {}", error);
+	//}
+
+	//delete pObjA;
+
+	//lua_getglobal(luaState, "TestLuaGlobalObj");
+	//ret = lua_pcall(luaState, 0, 1, 0);
+	//if (ret != 0) {
+	//	const char* error = lua_tostring(luaState, -1);//打印错误结果 
+	//	ERR("UIEvent Fire error: script run error: {}", error);
+	//}
 
 	auto size2 = lua_gettop(luaState);
 	if (szRet){

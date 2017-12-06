@@ -242,11 +242,15 @@ Ret	LuaBridge<DrivedClass>::CallLuaFunc(lua_State* L, const char* szFuncName, Ar
 {
 	lua_getglobal(L, szFuncName);
 	Push(L, static_cast<DrivedClass*>(this), args...);
-	lua_pcall(L, sizeof...(Args) + 1, 1, 0);
-
-	Ret ret{};
-	std::tie(ret) = Pop<Ret>(L);
-	return ret;
+	int ret = lua_pcall(L, sizeof...(Args) + 1, 1, 0);
+	if (ret == 0){
+		Ret ret{};
+		std::tie(ret) = Pop<Ret>(L);
+		return ret;
+	}
+	const char* errorInfo = lua_tostring(L, -1);//打印错误结果
+	ERR("LuaBridge CallLuaFunc error: {}", errorInfo);
+	return Ret();
 }
 
 template<typename DrivedClass>
@@ -255,7 +259,11 @@ void LuaBridge<DrivedClass>::CallLuaFunc(lua_State* L, const char* szFuncName, A
 {
 	lua_getglobal(L, szFuncName);
 	Push(L, static_cast<DrivedClass*>(this), args...);
-	lua_pcall(L, sizeof...(Args)+1, 0, 0);
+	int ret = lua_pcall(L, sizeof...(Args)+1, 0, 0);
+	if (ret != 0) {
+		const char* errorInfo = lua_tostring(L, -1);//打印错误结果
+		ERR("LuaBridge CallLuaFunc error: {}", errorInfo);
+	}
 }
 
 template<typename DrivedClass>

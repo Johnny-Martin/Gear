@@ -16,7 +16,7 @@ extern "C" {
 #include "lualib.h"  
 #include "lauxlib.h" 
 }
-
+#include <random>
 #pragma comment(lib, "lua.lib")
 
 
@@ -40,6 +40,15 @@ Ret CallMemberFunction(Indices<S...> indices, T* pObj, Ret(T::*mfunc)(Args...), 
 int funcName##_LCF(lua_State* L){return (LambdaWrapper(this, &className::funcName))(L);}
 //原生方法使用funcName做名称，则与之对应的LuaCFunction不能与之重名，否则会导致模板推导失败
 
+struct LuaListenerInfo {
+	LuaListenerInfo() :cbkRef(0), objRef(0), cookie(0){};
+	LuaListenerInfo(int cbk) :cbkRef(cbk), objRef(0), cookie(0) {};
+	LuaListenerInfo(int cbk, int obj) :cbkRef(cbk), objRef(obj), cookie(0) {};
+	int cbkRef;
+	int objRef;
+	unsigned int cookie;
+};
+
 //LuaBridge的子类不能直接用来在Lua中创建对象。要在C++中创建、销毁。
 //Lua中只管使用。DrivedClass需要提供两个内容：className跟要注册的函数信息(methods)
 template<typename DrivedClass>
@@ -50,12 +59,9 @@ public:
 	bool															RegisterGlobal(lua_State* L, const char* szName);
 	template<typename Ret, typename... Args> Ret					CallLuaFunc(lua_State*, const char* szFuncName, Args... args);
 	template<typename... Args> void									CallLuaFunc(lua_State*, const char* szFuncName, Args... args);
-
-private:
-	lua_State*														m_pLuaState;
-	string															m_strGlobalName;
-	DrivedClass**													m_userData;
-
+	int																AttachListener(lua_State* L);//这俩接口不提供给C++，只暴露到Lua
+	int																DetachListener(lua_State* L);
+	template<typename... Args> void									DispatchEvent(lua_State* L, const char* szEventName, Args... args);
 public:
 	template<typename T1, typename T2, typename... Args> void		Push(lua_State* L, T1 t1, T2 t2, Args... args)	{ Push(L, t1); Push(L, t2, args...); }
 	void															Push(lua_State* L, const int& value)			{ lua_pushinteger(L, value); }
@@ -99,7 +105,59 @@ public:
 public:
 	typedef int (DrivedClass::*mfp)(lua_State *L);
 	typedef struct { const char *name; mfp mfunc; }					LuaRegType;
+	typedef std::list<LuaListenerInfo>								LuaListenerListType;
+private:
+	lua_State*														m_pLuaState;
+	string															m_strGlobalName;
+	DrivedClass**													m_userData;
+	std::map<string, LuaListenerListType>							m_luaLisenerMap;
 };
+
+//AttachListener、DetachListener、DispatchEvent三个方法实现Lua与C++之间的事件机制。
+//前两者由Lua代码调用，添加、移除监听者，第三个由C++调用，通知Lua里的监听者
+template<typename DrivedClass>
+int LuaBridge<DrivedClass>::AttachListener(lua_State* L)
+{
+	int argsCount = lua_gettop(L);
+	if (argsCount != 2 && argsCount != 3){
+		ERR("AttachListener failed: argument error");
+		return 0;
+	}
+	const char* szEventName = lua_tostring(L, 1);
+	int cbkRef = 0;
+	int objRef = 0;
+	if (argsCount == 3){
+		objRef = luaL_ref(L, LUA_REGISTRYINDEX);
+		cbkRef = luaL_ref(L, LUA_REGISTRYINDEX);
+	} else {
+		cbkRef = luaL_ref(L, LUA_REGISTRYINDEX);
+	}
+
+	std::random_device rd;
+	LuaListenerListType& listenerList = m_luaLisenerMap[szEventName];
+	LuaListenerInfo info(cbkRef, objRef);
+	info.cookie = rd();
+	listenerList.push_back(info);
+
+	lua_pushinteger(L, info.cookie);
+	//lua_tocfunction()
+	int i = 0;
+	++i;
+	return 1;
+}
+
+template<typename DrivedClass>
+int LuaBridge<DrivedClass>::DetachListener(lua_State* L)
+{
+	return 0;
+}
+
+template<typename DrivedClass>
+template<typename... Args>
+void LuaBridge<DrivedClass>::DispatchEvent(lua_State* L, const char* szEventName, Args... args)
+{
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 template<class DrivedClass>

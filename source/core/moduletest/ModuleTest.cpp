@@ -15,7 +15,10 @@ TestLuaObj::TestLuaObj(const char* name):m_strName(name)
 
 const LuaBridge<UIObjectFake>::LuaRegType UIObjectFake::methods[] = {
 	{ "AddNum", &UIObjectFake::AddNum_LCF },
-	{ "SetSomething", &UIObjectFake::SetSomething_LCF},
+	{ "SetSomething", &UIObjectFake::SetSomething_LCF },
+	{ "AttachListener", &UIObjectFake::AttachListener },
+	{ "DetachListener", &UIObjectFake::DetachListener },
+	{ "RemoveAllListener", &UIObjectFake::RemoveAllListener },
 	{ 0 }
 };
 
@@ -167,8 +170,11 @@ void TestLuaBridge()
 	int i = 0;
 	
 	//若想CallLuaFunc返回指定类型的返回值，必须手动实例化，指定CallLuaFunc模板的所有参数类型
-	szRet = fakeUIObj->CallLuaFunc<const char*, int, int>(luaState, "TestLuaBridgeFuncA", 50, 20);
+	//szRet = fakeUIObj->CallLuaFunc<const char*, int, int>(luaState, "TestLuaBridgeFuncA", 50, 20);
 	fakeUIObj->CallLuaFunc(luaState, "TestLuaBridgeFuncA", 15, 20);
+
+	fakeUIObj->FireEvent(luaState, "OnMouseIn", 524, 111);
+	fakeUIObj->FireEvent(luaState, "OnMouseMove", 524, 254);
 
 	//fakeUIObj->RegisterGlobal(luaState, "fakeUIObj");
 	//lua_getglobal(luaState, "TestLuaGlobalObj");

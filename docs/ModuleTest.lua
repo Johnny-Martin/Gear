@@ -1,4 +1,18 @@
 
+
+local LuaObjectXXX = {attr = "attr"}
+function LuaObjectXXX:OnMouseIn(x, y)
+	MsgBox("OnMouseIn" .. tostring(self) .. " x: " .. tostring(x) .. " y: " .. tostring(y) .. tostring(self and self.attr))
+end
+
+function LuaObjectXXX:OnMouseMove(x, y)
+	MsgBox("OnMouseMove" .. tostring(self) .. " x: " .. tostring(x) .. " y: " .. tostring(y) .. tostring(self and self.attr))
+end
+
+function OnMouseIn(x, y)
+	MsgBox("OnMouseIn"  .. " x: " .. tostring(x) .. " y: " .. tostring(y))
+end
+
 local TestLuaObj_ObjA__ = nil
 function TestLuaGlobalObj()
 	if TestLuaObj_ObjA then
@@ -33,6 +47,11 @@ function TestLuaBridgeFuncA(self, x, y)
 		return "self is nil"
 	end
 	pObj = self
+	
+	self:AttachListener("OnMouseIn", LuaObjectXXX.OnMouseIn, LuaObjectXXX)
+	self:AttachListener("OnMouseIn", OnMouseIn)
+	self:AttachListener("OnMouseMove", LuaObjectXXX.OnMouseMove, LuaObjectXXX)
+	
 	return self:AddNum(x, y)
 end
 

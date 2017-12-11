@@ -7,6 +7,7 @@ Description:		ÄÜÔÚLua½Å±¾ÖÐµ÷ÓÃC++ Obj¼°Æä³ÉÔ±·½·¨£¬Í¬Ê±ÄÜµ÷ÓÃLuaÄÚµÄº¯Êý²¢·µ»Ø¶
 Ïà±ÈLuaObjectµÄ¸Ä½ø£º
 1£¬Ö§³Öµ÷ÓÃLuaº¯Êý¡¢·µ»Ø¶à¸öÖµ
 2£¬Ê¹ÓÃlambda½«Ô­Éú³ÉÔ±·½·¨°ü×°³ÉLua_CFunction
+3£¬Ö§³ÖLua¼àÌýObjectÊÂ¼þ
 *****************************************************/
 
 #pragma once
@@ -16,7 +17,6 @@ extern "C" {
 #include "lualib.h"  
 #include "lauxlib.h" 
 }
-#include <random>
 #pragma comment(lib, "lua.lib")
 
 
@@ -42,8 +42,7 @@ int funcName##_LCF(lua_State* L){return (LambdaWrapper(this, &className::funcNam
 
 struct LuaListenerInfo {
 	LuaListenerInfo() :cbkRef(0), objRef(0), cookie(0){};
-	LuaListenerInfo(int cbk) :cbkRef(cbk), objRef(0), cookie(0) {};
-	LuaListenerInfo(int cbk, int obj) :cbkRef(cbk), objRef(obj), cookie(0) {};
+	LuaListenerInfo(int cbk, int obj, unsigned long c) :cbkRef(cbk), objRef(obj), cookie(c) {};
 	int cbkRef;
 	int objRef;
 	unsigned int cookie;
@@ -61,7 +60,8 @@ public:
 	template<typename... Args> void									CallLuaFunc(lua_State*, const char* szFuncName, Args... args);
 	int																AttachListener(lua_State* L);//ÕâÁ©½Ó¿Ú²»Ìá¹©¸øC++£¬Ö»±©Â¶µ½Lua
 	int																DetachListener(lua_State* L);
-	template<typename... Args> void									DispatchEvent(lua_State* L, const char* szEventName, Args... args);
+	int																RemoveAllListener(lua_State* L);
+	template<typename... Args> void									FireEvent(lua_State* L, const char* szEventName, Args... args);
 public:
 	template<typename T1, typename T2, typename... Args> void		Push(lua_State* L, T1 t1, T2 t2, Args... args)	{ Push(L, t1); Push(L, t2, args...); }
 	void															Push(lua_State* L, const int& value)			{ lua_pushinteger(L, value); }
@@ -111,57 +111,105 @@ private:
 	string															m_strGlobalName;
 	DrivedClass**													m_userData;
 	std::map<string, LuaListenerListType>							m_luaLisenerMap;
+	unsigned long													m_curListenerCookie;
 };
 
 //AttachListener¡¢DetachListener¡¢DispatchEventÈý¸ö·½·¨ÊµÏÖLuaÓëC++Ö®¼äµÄÊÂ¼þ»úÖÆ¡£
 //Ç°Á½ÕßÓÉLua´úÂëµ÷ÓÃ£¬Ìí¼Ó¡¢ÒÆ³ý¼àÌýÕß£¬µÚÈý¸öÓÉC++µ÷ÓÃ£¬Í¨ÖªLuaÀïµÄ¼àÌýÕß
+//
 template<typename DrivedClass>
 int LuaBridge<DrivedClass>::AttachListener(lua_State* L)
 {
 	int argsCount = lua_gettop(L);
-	if (argsCount != 2 && argsCount != 3){
+	if (argsCount != 3 && argsCount != 4){
 		ERR("AttachListener failed: argument error");
 		return 0;
 	}
-	const char* szEventName = lua_tostring(L, 1);
+	const char* szEventName = lua_tostring(L, 2);
+	if (!szEventName){
+		ERR("AttachListener failed: Event Name error");
+		return 0;
+	}
 	int cbkRef = 0;
 	int objRef = 0;
-	if (argsCount == 3){
+	if (argsCount == 4){
 		objRef = luaL_ref(L, LUA_REGISTRYINDEX);
 		cbkRef = luaL_ref(L, LUA_REGISTRYINDEX);
 	} else {
 		cbkRef = luaL_ref(L, LUA_REGISTRYINDEX);
 	}
 
-	std::random_device rd;
+	//´Ë´¦Ã»×öÖØ¸´¼àÌýµÄ¼ì²â£¬Í¬Ò»¸öListenerÖØ¸´¼àÌýÍ¬Ò»¸öevent£¬»áµ¼ÖÂfiresÊÂ¼þÊ±ÖØ¸´µ÷ÓÃ¼àÌýÕß
+	//Ðè¿ª·¢Õß×Ô¼º±£Ö¤
 	LuaListenerListType& listenerList = m_luaLisenerMap[szEventName];
-	LuaListenerInfo info(cbkRef, objRef);
-	info.cookie = rd();
+	LuaListenerInfo info(cbkRef, objRef, m_curListenerCookie++);
 	listenerList.push_back(info);
 
 	lua_pushinteger(L, info.cookie);
-	//lua_tocfunction()
-	int i = 0;
-	++i;
 	return 1;
 }
 
 template<typename DrivedClass>
 int LuaBridge<DrivedClass>::DetachListener(lua_State* L)
 {
+	int argsCount = lua_gettop(L);
+	if (argsCount != 2) {
+		ERR("DetachListener failed: argument error");
+		return 0;
+	}
+	const char* szEventName = lua_tostring(L, 1);
+	unsigned long cookie    = lua_tonumber(L, 2);
+	LuaListenerListType& listenerList = m_luaLisenerMap[szEventName];
+	for (auto it = listenerList.begin(); it != listenerList.end(); ++it){
+		if (it->cookie == cookie){
+			listenerList.erase(it);
+			break;
+		}
+	}
 	return 0;
 }
 
 template<typename DrivedClass>
-template<typename... Args>
-void LuaBridge<DrivedClass>::DispatchEvent(lua_State* L, const char* szEventName, Args... args)
+int LuaBridge<DrivedClass>::RemoveAllListener(lua_State* L)
 {
+	const char* szEventName = lua_tostring(L, 1);
+	if (szEventName && m_luaLisenerMap.find(szEventName) != m_luaLisenerMap.end()){
+		LuaListenerListType& listenerList = m_luaLisenerMap[szEventName];
+		listenerList.clear();
+	}
+	return 0;
+}
 
+//Õâ¸ö·½·¨ÊÇ¸øC++ÓÃµÄ£¬Í¨ÖªÖÚLua¼àÌýÕß
+template<typename DrivedClass>
+template<typename... Args>
+void LuaBridge<DrivedClass>::FireEvent(lua_State* L, const char* szEventName, Args... args)
+{
+	if (!szEventName || m_luaLisenerMap.find(szEventName) == m_luaLisenerMap.end()) {
+		return;
+	}
+	LuaListenerListType& listenerList = m_luaLisenerMap[szEventName];
+	for (auto& it:listenerList){
+		int argsCount = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, it.cbkRef);
+		if (it.objRef != 0){
+			lua_rawgeti(L, LUA_REGISTRYINDEX, it.objRef);
+			argsCount = 1;
+		}
+		
+		Push(L, args...);
+		argsCount += sizeof...(Args);
+		int err = lua_pcall(L, argsCount, 0, 0);
+		if (err != 0){
+			const char* errInfo = lua_tostring(L, -1);
+			ERR("FireEvent error: {}", errInfo);
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 template<class DrivedClass>
-LuaBridge<DrivedClass>::LuaBridge() :m_pLuaState(nullptr), m_strGlobalName(), m_userData(nullptr)
+LuaBridge<DrivedClass>::LuaBridge() :m_pLuaState(nullptr), m_strGlobalName(), m_userData(nullptr), m_curListenerCookie(1)
 {
 
 }

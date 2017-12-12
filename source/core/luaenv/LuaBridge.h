@@ -296,11 +296,19 @@ int LuaBridge<DrivedClass>::LuaErrorHandler(lua_State* L)
 {
 	lua_Debug debugInfo;
 	int depth = 0;
+	string stackInfo = "";
+	
 	while (lua_getstack(L, depth, &debugInfo)) {
 		int state = lua_getinfo(L, "Sln", &debugInfo);
 		int localVarIndex = 1;
-		ERR("{}: {} ==> {}", debugInfo.short_src, debugInfo.currentline, debugInfo.name ? debugInfo.name : "?");
-		ERR("==>");
+		stackInfo += debugInfo.short_src;
+		stackInfo += " : ";
+		stringstream ss;
+		ss << debugInfo.currentline;
+		stackInfo += ss.str();
+		stackInfo += " : ";
+		stackInfo += debugInfo.name ? debugInfo.name : "?";
+		stackInfo += " <== ";
 
 		//暂时不打印局部变量
 		/*const char* localVarName = lua_getlocal(L, &debugInfo, localVarIndex);
@@ -313,6 +321,7 @@ int LuaBridge<DrivedClass>::LuaErrorHandler(lua_State* L)
 		}*/
 		depth++;
 	}
+	ERR("{}", stackInfo);
 	return 0;
 }
 

@@ -9,8 +9,31 @@ function LuaObjectXXX:OnMouseMove(x, y)
 	MsgBox("OnMouseMove" .. tostring(self) .. " x: " .. tostring(x) .. " y: " .. tostring(y) .. tostring(self and self.attr))
 end
 
+function FuncA(x, y)
+	MsgBox("Call FuncA")
+	local var = 3
+	var.a = 3
+end
+
+function FuncB(x, y)
+	FuncA(x + 1, y + 1)
+end
+
+function FuncC(x, y)
+	FuncB(x + 2, y + 2)
+end
+
+function FuncD(x, y)
+	FuncC(x+3, y+3)
+end
+
+function FuncE(x, y)
+	FuncD(x+4, y+4)
+end
+
 function OnMouseIn(x, y)
-	MsgBox("OnMouseIn"  .. " x: " .. tostring(x) .. " y: " .. tostring(y))
+	-- MsgBox("OnMouseIn"  .. " x: " .. tostring(x) .. " y: " .. tostring(y))
+	FuncE(x, y)
 end
 
 local TestLuaObj_ObjA__ = nil

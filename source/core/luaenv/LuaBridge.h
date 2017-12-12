@@ -62,6 +62,7 @@ public:
 	int																DetachListener(lua_State* L);
 	int																RemoveAllListener(lua_State* L);
 	template<typename... Args> void									FireEvent(lua_State* L, const char* szEventName, Args... args);
+	
 public:
 	template<typename T1, typename T2, typename... Args> void		Push(lua_State* L, T1 t1, T2 t2, Args... args)	{ Push(L, t1); Push(L, t2, args...); }
 	void															Push(lua_State* L, const int& value)			{ lua_pushinteger(L, value); }
@@ -76,7 +77,7 @@ public:
 	void															RegisterMethods(lua_State* L);
 	void															set(lua_State *L, int table_index, const char *key);
 	static int														thunk(lua_State *L);
-
+	static int														LuaErrorHandler(lua_State* L);
 	//占位用模板成员函数，实际使用的永远是该模板函数的特化(模板类的模板成员函数无法在类外特化)
 	template<typename T> T											Read(lua_State* L, int index);
 	template<> int													Read(lua_State* L, int index)					{ return (int)lua_tointeger(L, index); }
@@ -190,6 +191,9 @@ void LuaBridge<DrivedClass>::FireEvent(lua_State* L, const char* szEventName, Ar
 	}
 	LuaListenerListType& listenerList = m_luaLisenerMap[szEventName];
 	for (auto& it:listenerList){
+		lua_pushcfunction(L, LuaBridge<DrivedClass>::LuaErrorHandler);
+		int errIndex = lua_gettop(L);
+		
 		int argsCount = 0;
 		lua_rawgeti(L, LUA_REGISTRYINDEX, it.cbkRef);
 		if (it.objRef != 0){
@@ -199,10 +203,12 @@ void LuaBridge<DrivedClass>::FireEvent(lua_State* L, const char* szEventName, Ar
 		
 		Push(L, args...);
 		argsCount += sizeof...(Args);
-		int err = lua_pcall(L, argsCount, 0, 0);
+		int err = lua_pcall(L, argsCount, 0, errIndex);
 		if (err != 0){
 			const char* errInfo = lua_tostring(L, -1);
 			ERR("FireEvent error: {}", errInfo);
+			lua_pop(L, 1);
+			//LuaStackTrace(L);
 		}
 	}
 }
@@ -281,6 +287,31 @@ int LuaBridge<DrivedClass>::thunk(lua_State *L)
 		return ((*obj)->*(DrivedClass::methods[index].mfunc))(L);
 	} else {
 		luaL_error(L, "LuaObject thunk error: can not get LuaObject from UserData, maybe destoryed");
+	}
+	return 0;
+}
+
+template<typename DrivedClass>
+int LuaBridge<DrivedClass>::LuaErrorHandler(lua_State* L)
+{
+	lua_Debug debugInfo;
+	int depth = 0;
+	while (lua_getstack(L, depth, &debugInfo)) {
+		int state = lua_getinfo(L, "Sln", &debugInfo);
+		int localVarIndex = 1;
+		ERR("{}: {} ==> {}", debugInfo.short_src, debugInfo.currentline, debugInfo.name ? debugInfo.name : "?");
+		ERR("==>");
+
+		//暂时不打印局部变量
+		/*const char* localVarName = lua_getlocal(L, &debugInfo, localVarIndex);
+		while (localVarName) {
+			const char* value = lua_tostring(L, -1);
+			lua_pop(L, 1);
+			ERR("localVarName: {}  value: {}", localVarName, value ? value : "nil");
+
+			localVarName = lua_getlocal(L, &debugInfo, ++localVarIndex);
+		}*/
+		depth++;
 	}
 	return 0;
 }

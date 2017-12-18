@@ -176,6 +176,7 @@
     <ClCompile Include="..\..\..\source\core\entry\UIFactory.cpp" />
     <ClCompile Include="..\..\..\source\core\entry\WndManager.cpp" />
     <ClCompile Include="..\..\..\source\core\entry\XmlAgent.cpp" />
+    <ClCompile Include="..\..\..\source\core\luaenv\DllHelper.cpp" />
     <ClCompile Include="..\..\..\source\core\luaenv\LuaAPI.cpp" />
     <ClCompile Include="..\..\..\source\core\luaenv\LuaEnv.cpp" />
     <ClCompile Include="..\..\..\source\core\luaenv\LuaModule.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="..\..\..\source\core\entry\UIFactory.h" />
     <ClInclude Include="..\..\..\source\core\entry\WndManager.h" />
     <ClInclude Include="..\..\..\source\core\entry\XmlAgent.h" />
+    <ClInclude Include="..\..\..\source\core\luaenv\DllHelper.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaAPI.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaBridge.h" />
     <ClInclude Include="..\..\..\source\core\luaenv\LuaEnv.h" />

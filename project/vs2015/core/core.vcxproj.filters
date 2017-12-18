@@ -129,6 +129,9 @@
     <ClCompile Include="..\..\..\source\core\luaenv\LuaUtils.cpp">
       <Filter>luaenv</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\core\luaenv\DllHelper.cpp">
+      <Filter>luaenv</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\core\stdafx.h">
@@ -237,6 +240,9 @@
       <Filter>luaenv</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\luaenv\LuaUtils.h">
+      <Filter>luaenv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\luaenv\DllHelper.h">
       <Filter>luaenv</Filter>
     </ClInclude>
   </ItemGroup>

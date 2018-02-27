@@ -54,6 +54,7 @@ void UIWindow::InitAttrMap()
 	ADD_ATTR("max",			"0")
 	ADD_ATTR("blur",		"0")
 	ADD_ATTR("show",		"1")
+	ADD_ATTR("titlebar",	"20")//感应鼠标拖拽的标题栏的高度
 	ADD_ATTR("shadow",		"0,0,0,0")
 	ADD_ATTR("border",		"0,0,0,0")
 	ADD_ATTR("resize",		"0,0,0,0")
@@ -192,11 +193,13 @@ bool UIWindow::CreateUIWindow()
 	Create(m_hWndParent, GetWndRect(), wstrWndName.c_str(), GetWndStyle(), GetExWndStyle());
 
 	ATLASSERT(m_hWnd);
+	SetHostWndHandle(m_hWnd);
 	ShowWindow(atoi(m_attrMap["show"].c_str()));
 	
 	WndManager::GetInstance().AddWindow(this);
 	return m_hWnd != NULL;
 }
+
 BOOL UIWindow::PreTranslateMessage(MSG* pMsg)
 {
 	return FALSE;

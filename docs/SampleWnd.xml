@@ -51,7 +51,8 @@
 		</layout>
 		<event id="OnCreate" func="..\\Program File\\test.lua"/>
 		<event name="OnDestory" func="OnWindowCreateDestory" />
-		<event name="OnMouseMove" file="SampleWnd2.lua" />
+		<!-- <event name="OnMouseMove" /> -->
+		<event name="OnMouseEnter" />
 	</window>
 	<window id="TestLayout2" pos="500, 400, 200, 200" title="测试布局对象">
 		<rectangle id="button.bkg.fskk" pos="10,10,180,180" limit="0" corner="20" color="#FFFFFF" border="3" antialias="0" bordercolor="#FF00FF" zorder="5">

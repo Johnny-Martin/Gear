@@ -68,7 +68,8 @@ public:
 	const UIPos									GetPosObject();
 	void										SortChildrenByZorder();
 	UIPos										GetWndCoordinatePos();
-
+	bool										SetHostWndHandle(HWND hWnd);
+	HWND										GetHostWndHandle();
 	///////////////////////////////¸øLuaÓÃµÄ///////////////////////////////
 	int											Set(lua_State* L);
 	int											Get(lua_State* L);
@@ -89,6 +90,7 @@ protected:
 	vector<PAIR>*								m_pVecChildrenPair;
 	UIPos										m_pos;
 	bool										m_bWndObj;
+	HWND										m_hHostWnd;
 	void										InitAttrMap();
 	void										InitEventMap();
 	void										InitAttrValuePatternMap();

@@ -1,6 +1,10 @@
 
 function OnMouseMove(self, x, y)
-	if MsgBox ~= nil then
-		MsgBox(tostring(self))
+	
+end
+
+function OnMouseEnter(self, x, y)
+	if SpdLog ~= nil then
+		SpdLog("OnMouseEnter: " .. tostring(self))
 	end
 end

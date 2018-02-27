@@ -216,6 +216,7 @@ bool LuaObject<T>::CheckLuaState(lua_State* L)
 		return true;
 	} else if(m_pLuaState != L){
 		//一个LuaObject应该自始至终运行在同一个LuaState
+		//这意味着，XML中一个UI对象的事件处理方法应该在同一个lua文件中
 		ERR("LuaObject CheckLuaState error: LuaObject should not run across luaState");
 		luaL_error(L, "LuaObject should not run across different LuaState");
 		return false;

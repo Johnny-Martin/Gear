@@ -81,7 +81,7 @@ UIObject::RegType UIObject::methods[] = {
 	{ 0 }
 };
 
-UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pVecChildrenPair(nullptr), m_bWndObj(false)
+UIObject::UIObject():m_pos(), m_parentObj(nullptr), m_pVecChildrenPair(nullptr), m_bWndObj(false), m_hHostWnd(0)
 {
 	InitAttrMap();
 	InitEventMap();
@@ -177,6 +177,7 @@ void UIObject::InitEventMap()
 	ADD_EVENT("OnMouseEnter",		nullptr)
 	ADD_EVENT("OnMouseLeave",		nullptr)
 	ADD_EVENT("OnMouseMove",		nullptr)
+	ADD_EVENT("OnMouseDrag",		nullptr)
 }
 /*************************************************************************
 *检查属性值是否合法
@@ -567,6 +568,24 @@ UIPos UIObject::GetWndCoordinatePos()
 	pos.height   = m_pos.height;
 	return pos;
 }
+
+bool UIObject::SetHostWndHandle(HWND hWnd)
+{
+	if (m_hHostWnd == NULL){
+		m_hHostWnd = hWnd;
+		//设置子节点的hwnd
+		for (auto it = m_childrenMap.begin(); it != m_childrenMap.end(); ++it) {
+			it->second->SetHostWndHandle(hWnd);
+		}
+	}
+	return m_hHostWnd == hWnd;
+}
+
+HWND UIObject::GetHostWndHandle()
+{
+	return m_hHostWnd;
+}
+
 LayoutObject::LayoutObject()
 {
 	InitAttrMap();

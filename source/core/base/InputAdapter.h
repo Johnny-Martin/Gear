@@ -16,6 +16,7 @@ public:
 	//负责处理、转发鼠标消息。x、y的值是相对于当前对象的的左上角的值，
 	//当将消息转给子节点时，需要转为子节点的坐标值
 	//合成OnMouseEnter、OnMouseDrag两条常用消息
+	//将窗口的WM_MOUSEMOVE视情况转为以下几种事件：OnMouseMove、OnMouseEnter、OnMouseLeave
 	virtual LRESULT	MouseAdapter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	virtual LRESULT	KeyboardAdapter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 

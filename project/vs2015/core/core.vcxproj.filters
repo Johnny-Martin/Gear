@@ -34,6 +34,9 @@
     <Filter Include="moduletest">
       <UniqueIdentifier>{e577c056-ab00-4419-8644-4dc0dba9afc0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="netlib">
+      <UniqueIdentifier>{51933a61-0ad8-46d0-b5e7-3cf34cb813bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\core\coretest.cpp">
@@ -131,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\core\luaenv\DllHelper.cpp">
       <Filter>luaenv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\core\netlib\LuaNetLib.cpp">
+      <Filter>netlib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\core\luaenv\DllHelper.h">
       <Filter>luaenv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\core\netlib\LuaNetLib.h">
+      <Filter>netlib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

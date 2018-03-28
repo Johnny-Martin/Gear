@@ -18,6 +18,9 @@
     <ClCompile Include="..\..\..\source\netlib\test\test_socket_client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\netlib\test\client_base.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\netlib\test\client_async.h">
@@ -33,6 +36,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\netlib\test\client_overlapped.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\netlib\test\client_base.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\..\source\netlib\test\client_base.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\netlib\test\client_blocking.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\netlib\test\client_async.h">

@@ -16,10 +16,13 @@ namespace skt {
 	static void UnInit();
 
 	class Socket {
+	public:
 		Socket();
 		Socket(int af, int type, int proto);
 		~Socket();
-
+		int Connect(sockaddr * pAddrStrc, const int iSize);
+		int Send(const char* pData, const int iSize, const int iFlag = 0);
+		SocketState GetState();
 	private:
 		SOCKET		m_socket;
 		SocketState m_state;

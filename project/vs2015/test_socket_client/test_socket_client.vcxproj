@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\netlib\test\client_base.cpp" />
+    <ClCompile Include="..\..\..\source\netlib\test\client_blocking.cpp" />
     <ClCompile Include="..\..\..\source\netlib\test\test_socket_client.cpp" />
   </ItemGroup>
   <ItemGroup>
